@@ -764,14 +764,21 @@
             margin: 14px 0;
         }
         .step-simulation h3 { font-size: 14px; color: #2c3e50; margin-bottom: 12px; }
-        .sim-steps { position: relative; min-height: 100px; }
+        .sim-steps { position: relative; }
         .sim-step {
-            display: none;
+            display: block;
+            visibility: hidden;
+            opacity: 0;
             padding: 8px 0;
             line-height: 2;
             font-size: 15px;
+            -webkit-transition: opacity 0.5s ease;
+            transition: opacity 0.5s ease;
         }
-        .sim-step.active { display: block; }
+        .sim-step.revealed {
+            visibility: visible;
+            opacity: 1;
+        }
         .sim-step .step-line {
             margin: 4px 0;
             padding: 4px 8px;
@@ -825,7 +832,7 @@
         }
         .algebra-tiles h3 { font-size: 14px; color: #2c3e50; margin-bottom: 12px; }
         .tiles-container { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-        .tiles-container svg { max-width: 340px; width: 100%; height: auto; }
+        .tiles-container svg { max-width: 330px; width: 100%; height: auto; }
         .tile-rect {
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
@@ -854,6 +861,28 @@
             border-radius: 3px;
             display: inline-block;
         }
+        .tiles-formula {
+            text-align: center;
+            font-size: 16px;
+            margin: 12px 0 8px;
+            line-height: 2.2;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 2px;
+        }
+        .term-group {
+            padding: 2px 6px;
+            border-radius: 6px;
+            -webkit-transition: background 0.3s, opacity 0.3s;
+            transition: background 0.3s, opacity 0.3s;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .term-group.highlight { background: #fff3cd; }
+        .term-group.dim { opacity: 0.3; }
+        .term-op { font-size: 14px; color: #666; }
         .tiles-interaction {
             text-align: center;
             margin-top: 10px;
@@ -1009,7 +1038,7 @@
 
         <div class="step-simulation" id="simMultiply">
             <div class="sim-steps">
-                <div class="sim-step active" data-step="0">
+                <div class="sim-step" data-step="0">
                     <div class="step-line">\((x - 2y)(3x + y)\)</div>
                     <div class="step-line" style="color:#888; font-size:13px;">분배법칙을 이용하여 전개해 봅시다.</div>
                 </div>
@@ -1141,35 +1170,36 @@
         <div class="algebra-tiles" id="algebraTiles">
             <h3><span class="badge">비주얼 개념</span> 대수 타일로 이해하는 \((a+b+c)^2\)</h3>
             <div class="tiles-container">
-                <svg viewBox="0 0 340 340" id="tilesSvg" xmlns="http://www.w3.org/2000/svg">
-                    <!-- 축 라벨 -->
-                    <text x="75" y="15" font-size="15" fill="#C0392B" text-anchor="middle" font-weight="600" font-style="italic">a</text>
-                    <text x="190" y="15" font-size="15" fill="#2980B9" text-anchor="middle" font-weight="600" font-style="italic">b</text>
-                    <text x="290" y="15" font-size="15" fill="#27AE60" text-anchor="middle" font-weight="600" font-style="italic">c</text>
-                    <text x="12" y="85" font-size="15" fill="#C0392B" text-anchor="middle" font-weight="600" font-style="italic">a</text>
-                    <text x="12" y="195" font-size="15" fill="#2980B9" text-anchor="middle" font-weight="600" font-style="italic">b</text>
-                    <text x="12" y="295" font-size="15" fill="#27AE60" text-anchor="middle" font-weight="600" font-style="italic">c</text>
-                    <!-- Row 1: a × a, a × b, a × c -->
-                    <rect class="tile-rect" data-group="a2" x="25" y="25" width="100" height="100" rx="4" fill="#E74C3C" opacity="0.7"/>
-                    <text x="75" y="82" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">a²</text>
-                    <rect class="tile-rect" data-group="ab" x="130" y="25" width="100" height="100" rx="4" fill="#E67E22" opacity="0.7"/>
-                    <text x="180" y="82" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">ab</text>
-                    <rect class="tile-rect" data-group="ac" x="235" y="25" width="100" height="100" rx="4" fill="#16A085" opacity="0.7"/>
-                    <text x="285" y="82" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">ac</text>
-                    <!-- Row 2: b × a, b × b, b × c -->
-                    <rect class="tile-rect" data-group="ab" x="25" y="130" width="100" height="100" rx="4" fill="#E67E22" opacity="0.7"/>
-                    <text x="75" y="187" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">ba</text>
-                    <rect class="tile-rect" data-group="b2" x="130" y="130" width="100" height="100" rx="4" fill="#2980B9" opacity="0.7"/>
-                    <text x="180" y="187" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">b²</text>
-                    <rect class="tile-rect" data-group="bc" x="235" y="130" width="100" height="100" rx="4" fill="#8E44AD" opacity="0.7"/>
-                    <text x="285" y="187" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">bc</text>
-                    <!-- Row 3: c × a, c × b, c × c -->
-                    <rect class="tile-rect" data-group="ac" x="25" y="235" width="100" height="100" rx="4" fill="#16A085" opacity="0.7"/>
-                    <text x="75" y="292" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">ca</text>
-                    <rect class="tile-rect" data-group="bc" x="130" y="235" width="100" height="100" rx="4" fill="#8E44AD" opacity="0.7"/>
-                    <text x="180" y="292" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">cb</text>
-                    <rect class="tile-rect" data-group="c2" x="235" y="235" width="100" height="100" rx="4" fill="#27AE60" opacity="0.7"/>
-                    <text x="285" y="292" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">c²</text>
+                <svg viewBox="0 0 330 330" id="tilesSvg" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 축 라벨 (top) -->
+                    <text x="90" y="15" font-size="15" fill="#C0392B" text-anchor="middle" font-weight="600" font-style="italic">a</text>
+                    <text x="205" y="15" font-size="15" fill="#2980B9" text-anchor="middle" font-weight="600" font-style="italic">b</text>
+                    <text x="285" y="15" font-size="15" fill="#27AE60" text-anchor="middle" font-weight="600" font-style="italic">c</text>
+                    <!-- 축 라벨 (left) -->
+                    <text x="12" y="95" font-size="15" fill="#C0392B" text-anchor="middle" font-weight="600" font-style="italic">a</text>
+                    <text x="12" y="210" font-size="15" fill="#2980B9" text-anchor="middle" font-weight="600" font-style="italic">b</text>
+                    <text x="12" y="290" font-size="15" fill="#27AE60" text-anchor="middle" font-weight="600" font-style="italic">c</text>
+                    <!-- Row 1 (a): h=130 -->
+                    <rect class="tile-rect" data-group="a2" x="25" y="25" width="130" height="130" rx="4" fill="#E74C3C" opacity="0.7"/>
+                    <text x="90" y="97" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">a²</text>
+                    <rect class="tile-rect" data-group="ab" x="160" y="25" width="90" height="130" rx="4" fill="#E67E22" opacity="0.7"/>
+                    <text x="205" y="97" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">ab</text>
+                    <rect class="tile-rect" data-group="ac" x="255" y="25" width="60" height="130" rx="4" fill="#16A085" opacity="0.7"/>
+                    <text x="285" y="97" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">ac</text>
+                    <!-- Row 2 (b): h=90 -->
+                    <rect class="tile-rect" data-group="ab" x="25" y="160" width="130" height="90" rx="4" fill="#E67E22" opacity="0.7"/>
+                    <text x="90" y="210" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">ba</text>
+                    <rect class="tile-rect" data-group="b2" x="160" y="160" width="90" height="90" rx="4" fill="#2980B9" opacity="0.7"/>
+                    <text x="205" y="210" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">b²</text>
+                    <rect class="tile-rect" data-group="bc" x="255" y="160" width="60" height="90" rx="4" fill="#8E44AD" opacity="0.7"/>
+                    <text x="285" y="210" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">bc</text>
+                    <!-- Row 3 (c): h=60 -->
+                    <rect class="tile-rect" data-group="ac" x="25" y="255" width="130" height="60" rx="4" fill="#16A085" opacity="0.7"/>
+                    <text x="90" y="290" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">ca</text>
+                    <rect class="tile-rect" data-group="bc" x="160" y="255" width="90" height="60" rx="4" fill="#8E44AD" opacity="0.7"/>
+                    <text x="205" y="290" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">cb</text>
+                    <rect class="tile-rect" data-group="c2" x="255" y="255" width="60" height="60" rx="4" fill="#27AE60" opacity="0.7"/>
+                    <text x="285" y="290" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">c²</text>
                 </svg>
                 <div class="tiles-legend">
                     <span><span class="legend-dot" style="background:#E74C3C;"></span> a²</span>
@@ -1180,8 +1210,22 @@
                     <span><span class="legend-dot" style="background:#16A085;"></span> 2ca</span>
                 </div>
             </div>
+            <div class="tiles-formula" id="tilesFormula">
+                <span class="formula-lhs">\((a+b+c)^2 =\)</span>
+                <span class="term-group" data-term="a2">\(\textcolor{#E74C3C}{a^2}\)</span>
+                <span class="term-op">\(+\)</span>
+                <span class="term-group" data-term="b2">\(\textcolor{#2980B9}{b^2}\)</span>
+                <span class="term-op">\(+\)</span>
+                <span class="term-group" data-term="c2">\(\textcolor{#27AE60}{c^2}\)</span>
+                <span class="term-op">\(+\)</span>
+                <span class="term-group" data-term="ab">\(\textcolor{#E67E22}{2ab}\)</span>
+                <span class="term-op">\(+\)</span>
+                <span class="term-group" data-term="bc">\(\textcolor{#8E44AD}{2bc}\)</span>
+                <span class="term-op">\(+\)</span>
+                <span class="term-group" data-term="ac">\(\textcolor{#16A085}{2ca}\)</span>
+            </div>
             <div class="tiles-interaction">
-                <p class="tiles-prompt">타일을 탭하여 해당 항을 확인하세요</p>
+                <p class="tiles-prompt">타일 또는 항을 탭하여 대응 관계를 확인하세요</p>
                 <div class="tiles-result" id="tilesResult"></div>
             </div>
         </div>
@@ -1236,7 +1280,7 @@
         <div class="step-simulation" id="simCube">
             <h3><span class="badge">비주얼 개념</span> \((a - 2b)^3\) 전개 과정</h3>
             <div class="sim-steps">
-                <div class="sim-step active" data-step="0">
+                <div class="sim-step" data-step="0">
                     <div class="step-line">\((a - 2b)^3\)</div>
                     <div class="step-line" style="color:#888; font-size:13px;">세제곱을 단계별로 전개해 봅시다.</div>
                 </div>
@@ -1842,24 +1886,37 @@ class StepSimulation {
         this.total = this.steps.length;
         this.current = 0;
         this.progressEl = document.getElementById(containerId + '-progress');
+        // 첫 스텝만 표시 (누적 표시 시작점)
+        if (this.steps.length > 0) {
+            this.steps[0].classList.add('revealed');
+            this.steps[0].dataset.rendered = 'true';
+        }
         this.updateUI();
     }
     showStep(n) {
         if (n < 0 || n >= this.total) return;
-        this.steps.forEach(s => s.classList.remove('active'));
-        this.steps[n].classList.add('active');
         this.current = n;
+        // 누적 표시: 0~n까지 revealed, n+1~ 숨김
+        this.steps.forEach((s, i) => {
+            if (i <= n) {
+                s.classList.add('revealed');
+                // KaTeX 렌더링 (새로 표시된 스텝만)
+                if (!s.dataset.rendered) {
+                    if (typeof renderMathInElement === 'function') {
+                        renderMathInElement(s, {delimiters: [{left: '\\(', right: '\\)', display: false}], throwOnError: false});
+                    }
+                    s.dataset.rendered = 'true';
+                }
+            } else {
+                s.classList.remove('revealed');
+            }
+        });
         this.updateUI();
-        // KaTeX re-render for dynamic content
-        if (typeof renderMathInElement === 'function') {
-            renderMathInElement(this.steps[n], {delimiters: [{left: '\\(', right: '\\)', display: false}], throwOnError: false});
-        }
     }
     next() { this.showStep(this.current + 1); }
     prev() { this.showStep(this.current - 1); }
     updateUI() {
         if (this.progressEl) this.progressEl.textContent = (this.current + 1) + ' / ' + this.total;
-        // Update button states via data attributes
         const btns = this.container.querySelectorAll('.sim-btn');
         btns.forEach(btn => {
             if (btn.dataset.dir === 'prev') btn.disabled = (this.current === 0);
@@ -1903,6 +1960,11 @@ class AlgebraTiles {
         this.tiles.forEach(tile => {
             tile.addEventListener('touchstart', (e) => { e.preventDefault(); }, opts);
         });
+        // 역방향 연동: 전개식 항 클릭 → 타일 하이라이트
+        this.formulaTerms = document.querySelectorAll('#tilesFormula .term-group');
+        this.formulaTerms.forEach(term => {
+            term.addEventListener('click', () => this.handleTap(term.dataset.term));
+        });
     }
     handleTap(group) {
         if (this.activeGroup === group) {
@@ -1910,9 +1972,14 @@ class AlgebraTiles {
             this.activeGroup = null;
             this.tiles.forEach(t => t.classList.remove('dim', 'glow'));
             if (this.resultEl) this.resultEl.innerHTML = '';
+            // 전개식 항 초기화
+            if (this.formulaTerms) {
+                this.formulaTerms.forEach(t => t.classList.remove('highlight', 'dim'));
+            }
             return;
         }
         this.activeGroup = group;
+        // 타일 하이라이트
         this.tiles.forEach(t => {
             if (t.dataset.group === group) {
                 t.classList.remove('dim');
@@ -1922,6 +1989,18 @@ class AlgebraTiles {
                 t.classList.add('dim');
             }
         });
+        // 전개식 항 연동 하이라이트
+        if (this.formulaTerms) {
+            this.formulaTerms.forEach(t => {
+                if (t.dataset.term === group) {
+                    t.classList.add('highlight');
+                    t.classList.remove('dim');
+                } else {
+                    t.classList.add('dim');
+                    t.classList.remove('highlight');
+                }
+            });
+        }
         const info = this.groupInfo[group];
         if (this.resultEl && info) {
             this.resultEl.innerHTML = info.label + ' &rarr; ' + info.formula;
