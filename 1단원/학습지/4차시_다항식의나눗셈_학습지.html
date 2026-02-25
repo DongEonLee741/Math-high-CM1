@@ -813,6 +813,28 @@
         .sim-btn:disabled { opacity: 0.4; cursor: default; }
         .sim-progress { font-size: 13px; color: #888; font-weight: 600; min-width: 40px; text-align: center; }
 
+        /* ── Visual Mode: 공통 ── */
+        .visual-sim [data-show] { visibility: hidden; }
+        .sim-desc { margin-top: 12px; padding: 10px 12px; background: #f0f4ff; border-radius: 8px; min-height: 48px; }
+        .sim-desc-step { display: none; font-size: 14px; line-height: 1.8; color: #2c3e50; }
+
+        /* ── 세로 나눗셈 테이블 ── */
+        .ld-table { margin: 8px auto; border-collapse: collapse; font-size: 16px; line-height: 2; }
+        .ld-table td { padding: 2px 10px; text-align: center; white-space: nowrap; }
+        .ld-divisor { text-align: right !important; padding-right: 6px !important; font-weight: 600; }
+        .ld-dividend-row td:not(.ld-divisor) { border-top: 2px solid #2c3e50; }
+        .ld-dividend-row .ld-divisor { border-right: 2px solid #2c3e50; }
+        .ld-sub-line td { padding: 0 !important; }
+        .ld-sub-line hr { border: none; border-top: 1.5px solid #888; margin: 0; }
+
+        /* ── 조립제법 테이블 ── */
+        .sd-table { margin: 8px auto; border-collapse: collapse; font-size: 16px; line-height: 2.2; }
+        .sd-table td { padding: 2px 14px; text-align: center; white-space: nowrap; }
+        .sd-divisor { font-weight: 700; border-right: 2px solid #2c3e50; padding-right: 10px !important; }
+        .sd-bottom td { border-top: 2px solid #2c3e50; }
+        .sd-result { font-weight: 600; }
+        .sd-remainder { font-weight: 700; }
+
         /* SVG 다이어그램 */
         .tablecloth-svg {
             max-width: 380px;
@@ -949,49 +971,92 @@
             </div>
         </div>
 
-        <!-- 스텝 시뮬레이션: 세로 나눗셈 -->
-        <div class="step-simulation" id="simDivision">
+        <!-- 스텝 시뮬레이션: 세로 나눗셈 (Visual Mode) -->
+        <div class="step-simulation visual-sim" id="simDivision" data-mode="visual">
             <h3 style="font-size:14px; color:#2c3e50; margin-bottom:10px;"><span class="badge">비주얼 개념</span> 세로 나눗셈: \((3x^2 - 7x + 5) \div (x - 2)\)</h3>
-            <div class="sim-steps">
-                <div class="sim-step" data-step="0">
-                    <div class="step-line" style="font-size:15px; text-align:center; padding:10px 0;">
-                        \(3x^2 - 7x + 5\)를 \(x - 2\)로 나누어 봅시다.
-                    </div>
-                    <div class="step-line" style="color:#888; font-size:13px; text-align:center;">내림차순으로 정리된 상태에서 세로 나눗셈을 시작합니다.</div>
+
+            <table class="ld-table">
+                <!-- 몫 행 -->
+                <tr>
+                    <td class="ld-divisor" style="border:none;"></td>
+                    <td data-show="1">\(\textcolor{#E74C3C}{3x}\)</td>
+                    <td data-show="3">\(\textcolor{#27AE60}{-1}\)</td>
+                    <td></td>
+                </tr>
+                <!-- 피제식 행 (항상 표시) -->
+                <tr class="ld-dividend-row">
+                    <td class="ld-divisor">\(x - 2\)</td>
+                    <td>\(3x^2\)</td>
+                    <td>\(-7x\)</td>
+                    <td>\(+5\)</td>
+                </tr>
+                <!-- 1차 곱셈 -->
+                <tr>
+                    <td></td>
+                    <td data-show="2">\(\textcolor{#2980B9}{3x^2}\)</td>
+                    <td data-show="2">\(\textcolor{#2980B9}{-6x}\)</td>
+                    <td></td>
+                </tr>
+                <!-- 1차 빼기선 -->
+                <tr class="ld-sub-line">
+                    <td></td>
+                    <td colspan="3" data-show="2"><hr></td>
+                </tr>
+                <!-- 1차 나머지 -->
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td data-show="2">\(\textcolor{#E67E22}{-x}\)</td>
+                    <td data-show="2">\(\textcolor{#E67E22}{+5}\)</td>
+                </tr>
+                <!-- 2차 곱셈 -->
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td data-show="4">\(\textcolor{#8E44AD}{-x}\)</td>
+                    <td data-show="4">\(\textcolor{#8E44AD}{+2}\)</td>
+                </tr>
+                <!-- 2차 빼기선 -->
+                <tr class="ld-sub-line">
+                    <td></td>
+                    <td></td>
+                    <td colspan="2" data-show="4"><hr></td>
+                </tr>
+                <!-- 최종 나머지 -->
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td data-show="4" style="font-weight:700;">\(\textcolor{#E74C3C}{3}\)</td>
+                </tr>
+            </table>
+            <!-- VERIFY: (x-2)(3x-1)+3 = 3x²-x-6x+2+3 = 3x²-7x+5 ✓ -->
+
+            <!-- 설명 (교체형) -->
+            <div class="sim-desc">
+                <div class="sim-desc-step" data-desc="0">
+                    \(3x^2 - 7x + 5\)를 \(x - 2\)로 나누어 봅시다. 내림차순으로 정리된 상태에서 세로 나눗셈을 시작합니다.
                 </div>
-                <div class="sim-step" data-step="1">
-                    <div class="step-line" style="font-size:13px; color:#888; margin-bottom:4px;">Step 1: 첫째 항 나누기</div>
-                    <div class="step-line">\(\textcolor{#E74C3C}{3x^2} \div x = \textcolor{#E74C3C}{3x}\) &nbsp; ← 몫의 첫째 항</div>
-                    <div class="step-line" style="margin-top:6px;">
-                        \((x - 2) \times \textcolor{#E74C3C}{3x} = \textcolor{#2980B9}{3x^2 - 6x}\)
-                    </div>
-                    <div class="step-line" style="color:#888; font-size:13px;">← 나누는 식 \(\times\) 몫의 첫째 항</div>
+                <div class="sim-desc-step" data-desc="1">
+                    <b>Step 1: 첫째 항 나누기</b><br>
+                    \(\textcolor{#E74C3C}{3x^2} \div x = \textcolor{#E74C3C}{3x}\) &nbsp; ← 몫의 첫째 항
                 </div>
-                <div class="sim-step" data-step="2">
-                    <div class="step-line" style="font-size:13px; color:#888; margin-bottom:4px;">Step 2: 빼기</div>
-                    <div class="step-line">\((3x^2 - 7x + 5) - (\textcolor{#2980B9}{3x^2 - 6x})\)</div>
-                    <div class="step-line highlight">\(= \textcolor{#E67E22}{-x + 5}\)</div>
-                    <div class="step-line" style="color:#888; font-size:13px;">← 나머지로 다음 단계 진행</div>
+                <div class="sim-desc-step" data-desc="2">
+                    <b>Step 2: 곱하고 빼기</b><br>
+                    \((x - 2) \times 3x = \textcolor{#2980B9}{3x^2 - 6x}\)<br>
+                    빼면 \(\textcolor{#E67E22}{-x + 5}\) → 다음 단계로
                 </div>
-                <div class="sim-step" data-step="3">
-                    <div class="step-line" style="font-size:13px; color:#888; margin-bottom:4px;">Step 3: 둘째 항 나누기</div>
-                    <div class="step-line">\(\textcolor{#E67E22}{-x} \div x = \textcolor{#27AE60}{-1}\) &nbsp; ← 몫의 둘째 항</div>
-                    <div class="step-line" style="margin-top:6px;">
-                        \((x - 2) \times \textcolor{#27AE60}{(-1)} = \textcolor{#8E44AD}{-x + 2}\)
-                    </div>
+                <div class="sim-desc-step" data-desc="3">
+                    <b>Step 3: 둘째 항 나누기</b><br>
+                    \(\textcolor{#E67E22}{-x} \div x = \textcolor{#27AE60}{-1}\) &nbsp; ← 몫의 둘째 항
                 </div>
-                <div class="sim-step" data-step="4">
-                    <div class="step-line" style="font-size:13px; color:#888; margin-bottom:4px;">Step 4: 최종 나머지</div>
-                    <div class="step-line">\((\textcolor{#E67E22}{-x + 5}) - (\textcolor{#8E44AD}{-x + 2}) = \textcolor{#E74C3C}{3}\)</div>
-                    <div class="step-line highlight" style="margin-top:8px;">
-                        몫: \(\boldsymbol{3x - 1}\), &nbsp; 나머지: \(\boldsymbol{3}\)
-                    </div>
-                    <div class="step-line" style="margin-top:6px;">
-                        \(\therefore\; 3x^2 - 7x + 5 = (x - 2)(3x - 1) + 3\)
-                    </div>
-                    <!-- VERIFY: LLM-computed — (x-2)(3x-1)+3 = 3x²-x-6x+2+3 = 3x²-7x+5 ✓ -->
+                <div class="sim-desc-step" data-desc="4">
+                    <b>Step 4: 최종 나머지</b><br>
+                    \((x - 2) \times (-1) = \textcolor{#8E44AD}{-x + 2}\)를 빼면 나머지 \(\textcolor{#E74C3C}{3}\)<br>
+                    \(\therefore\) <b>몫:</b> \(\boldsymbol{3x - 1}\), &nbsp; <b>나머지:</b> \(\boldsymbol{3}\)
                 </div>
             </div>
+
             <div class="sim-controls">
                 <button class="sim-btn" data-sim="simDivision" data-dir="prev" disabled>◀ 이전</button>
                 <span class="sim-progress" id="simDivision-progress">1 / 5</span>
@@ -1081,67 +1146,58 @@
             </div>
         </div>
 
-        <!-- 스텝 시뮬레이션: 조립제법 -->
-        <div class="step-simulation" id="simSynthetic">
+        <!-- 스텝 시뮬레이션: 조립제법 (Visual Mode) -->
+        <div class="step-simulation visual-sim" id="simSynthetic" data-mode="visual">
             <h3 style="font-size:14px; color:#2c3e50; margin-bottom:10px;"><span class="badge">비주얼 개념</span> 조립제법: \((2x^3 - x^2 - 5x + 2) \div (x - 2)\)</h3>
-            <div class="sim-steps">
-                <div class="sim-step" data-step="0">
-                    <div class="step-line" style="font-size:14px; text-align:center;">
-                        \(x - 2 = 0\)에서 \(x = \textcolor{#E74C3C}{2}\)를 왼쪽에 적고,<br>
-                        다항식의 계수 \(2, -1, -5, 2\)를 차례로 적습니다.
-                    </div>
-                    <div style="text-align:center; margin:12px 0; font-family:monospace; font-size:16px; line-height:2;">
-                        <span style="color:#E74C3C; font-weight:700;">2</span> &nbsp;│&nbsp; 2 &nbsp;&nbsp; -1 &nbsp;&nbsp; -5 &nbsp;&nbsp; 2<br>
-                        &nbsp; &nbsp;│<br>
-                        ──┼────────────────<br>
-                        &nbsp; &nbsp;│
-                    </div>
+
+            <table class="sd-table">
+                <tr class="sd-top">
+                    <td class="sd-divisor">\(\textcolor{#E74C3C}{2}\)</td>
+                    <td>2</td>
+                    <td>\(-1\)</td>
+                    <td>\(-5\)</td>
+                    <td>2</td>
+                </tr>
+                <tr class="sd-mid">
+                    <td></td>
+                    <td></td>
+                    <td data-show="2">\(\textcolor{#E67E22}{4}\)</td>
+                    <td data-show="3">\(\textcolor{#27AE60}{6}\)</td>
+                    <td data-show="4">\(\textcolor{#8E44AD}{2}\)</td>
+                </tr>
+                <tr class="sd-bottom">
+                    <td></td>
+                    <td data-show="1" class="sd-result">\(\textcolor{#2980B9}{2}\)</td>
+                    <td data-show="2" class="sd-result">\(\textcolor{#2980B9}{3}\)</td>
+                    <td data-show="3" class="sd-result">\(\textcolor{#2980B9}{1}\)</td>
+                    <td data-show="4" class="sd-remainder">\(\textcolor{#E74C3C}{4}\)</td>
+                </tr>
+            </table>
+            <!-- VERIFY: (x-2)(2x²+3x+1)+4 = 2x³-x²-5x+2 ✓ -->
+
+            <div class="sim-desc">
+                <div class="sim-desc-step" data-desc="0">
+                    \(x - 2 = 0\)에서 \(x = \textcolor{#E74C3C}{2}\)를 왼쪽에 적고, 계수 \(2, -1, -5, 2\)를 차례로 적습니다.
                 </div>
-                <div class="sim-step" data-step="1">
-                    <div class="step-line" style="font-size:13px; color:#888; margin-bottom:4px;">Step 1: 첫째 계수 내림</div>
-                    <div style="text-align:center; margin:12px 0; font-family:monospace; font-size:16px; line-height:2;">
-                        <span style="color:#E74C3C; font-weight:700;">2</span> &nbsp;│&nbsp; 2 &nbsp;&nbsp; -1 &nbsp;&nbsp; -5 &nbsp;&nbsp; 2<br>
-                        &nbsp; &nbsp;│<br>
-                        ──┼────────────────<br>
-                        &nbsp; &nbsp;│&nbsp; <span style="color:#2980B9; font-weight:700;">2</span>
-                    </div>
-                    <div class="step-line" style="color:#888; font-size:13px; text-align:center;">← 첫째 계수 \(2\)를 그대로 내린다</div>
+                <div class="sim-desc-step" data-desc="1">
+                    <b>Step 1: 첫째 계수 내림</b><br>
+                    첫째 계수 \(\textcolor{#2980B9}{2}\)를 그대로 내린다.
                 </div>
-                <div class="sim-step" data-step="2">
-                    <div class="step-line" style="font-size:13px; color:#888; margin-bottom:4px;">Step 2: 곱하고 더하기 (첫 번째)</div>
-                    <div style="text-align:center; margin:12px 0; font-family:monospace; font-size:16px; line-height:2;">
-                        <span style="color:#E74C3C; font-weight:700;">2</span> &nbsp;│&nbsp; 2 &nbsp;&nbsp; -1 &nbsp;&nbsp; -5 &nbsp;&nbsp; 2<br>
-                        &nbsp; &nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:#E67E22; font-weight:700;">4</span><br>
-                        ──┼────────────────<br>
-                        &nbsp; &nbsp;│&nbsp; 2 &nbsp;&nbsp;&nbsp; <span style="color:#2980B9; font-weight:700;">3</span>
-                    </div>
-                    <div class="step-line" style="color:#888; font-size:13px; text-align:center;">\(\textcolor{#E74C3C}{2} \times 2 = \textcolor{#E67E22}{4}\), &nbsp; \(-1 + \textcolor{#E67E22}{4} = \textcolor{#2980B9}{3}\)</div>
+                <div class="sim-desc-step" data-desc="2">
+                    <b>Step 2: 곱하고 더하기</b><br>
+                    \(\textcolor{#E74C3C}{2} \times 2 = \textcolor{#E67E22}{4}\), &nbsp; \(-1 + \textcolor{#E67E22}{4} = \textcolor{#2980B9}{3}\)
                 </div>
-                <div class="sim-step" data-step="3">
-                    <div class="step-line" style="font-size:13px; color:#888; margin-bottom:4px;">Step 3: 곱하고 더하기 (두 번째)</div>
-                    <div style="text-align:center; margin:12px 0; font-family:monospace; font-size:16px; line-height:2;">
-                        <span style="color:#E74C3C; font-weight:700;">2</span> &nbsp;│&nbsp; 2 &nbsp;&nbsp; -1 &nbsp;&nbsp; -5 &nbsp;&nbsp; 2<br>
-                        &nbsp; &nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 &nbsp;&nbsp;&nbsp; <span style="color:#27AE60; font-weight:700;">6</span><br>
-                        ──┼────────────────<br>
-                        &nbsp; &nbsp;│&nbsp; 2 &nbsp;&nbsp;&nbsp; 3 &nbsp;&nbsp;&nbsp; <span style="color:#2980B9; font-weight:700;">1</span>
-                    </div>
-                    <div class="step-line" style="color:#888; font-size:13px; text-align:center;">\(\textcolor{#E74C3C}{2} \times 3 = \textcolor{#27AE60}{6}\), &nbsp; \(-5 + \textcolor{#27AE60}{6} = \textcolor{#2980B9}{1}\)</div>
+                <div class="sim-desc-step" data-desc="3">
+                    <b>Step 3: 곱하고 더하기</b><br>
+                    \(\textcolor{#E74C3C}{2} \times 3 = \textcolor{#27AE60}{6}\), &nbsp; \(-5 + \textcolor{#27AE60}{6} = \textcolor{#2980B9}{1}\)
                 </div>
-                <div class="sim-step" data-step="4">
-                    <div class="step-line" style="font-size:13px; color:#888; margin-bottom:4px;">Step 4: 곱하고 더하기 (마지막) → 나머지</div>
-                    <div style="text-align:center; margin:12px 0; font-family:monospace; font-size:16px; line-height:2;">
-                        <span style="color:#E74C3C; font-weight:700;">2</span> &nbsp;│&nbsp; 2 &nbsp;&nbsp; -1 &nbsp;&nbsp; -5 &nbsp;&nbsp; 2<br>
-                        &nbsp; &nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4 &nbsp;&nbsp;&nbsp; 6 &nbsp;&nbsp;&nbsp; <span style="color:#8E44AD; font-weight:700;">2</span><br>
-                        ──┼────────────────<br>
-                        &nbsp; &nbsp;│&nbsp; 2 &nbsp;&nbsp;&nbsp; 3 &nbsp;&nbsp;&nbsp; 1 &nbsp;&nbsp; <span style="color:#E74C3C; font-weight:700;">4</span>
-                    </div>
-                    <div class="step-line" style="color:#888; font-size:13px; text-align:center;">\(\textcolor{#E74C3C}{2} \times 1 = \textcolor{#8E44AD}{2}\), &nbsp; \(2 + \textcolor{#8E44AD}{2} = \textcolor{#E74C3C}{4}\) ← 나머지</div>
-                    <div class="step-line highlight" style="margin-top:8px;">
-                        몫: \(\boldsymbol{2x^2 + 3x + 1}\), &nbsp; 나머지: \(\boldsymbol{4}\)
-                    </div>
-                    <!-- VERIFY: LLM-computed — (x-2)(2x²+3x+1)+4 = 2x³+3x²+x-4x²-6x-2+4 = 2x³-x²-5x+2 ✓ -->
+                <div class="sim-desc-step" data-desc="4">
+                    <b>Step 4: 마지막 → 나머지</b><br>
+                    \(\textcolor{#E74C3C}{2} \times 1 = \textcolor{#8E44AD}{2}\), &nbsp; \(2 + \textcolor{#8E44AD}{2} = \textcolor{#E74C3C}{4}\) ← 나머지<br>
+                    \(\therefore\) <b>몫:</b> \(\boldsymbol{2x^2 + 3x + 1}\), &nbsp; <b>나머지:</b> \(\boldsymbol{4}\)
                 </div>
             </div>
+
             <div class="sim-controls">
                 <button class="sim-btn" data-sim="simSynthetic" data-dir="prev" disabled>◀ 이전</button>
                 <span class="sim-progress" id="simSynthetic-progress">1 / 5</span>
@@ -1646,40 +1702,63 @@ class StepSimulation {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
         if (!this.container) return;
-        this.steps = this.container.querySelectorAll('.sim-step');
-        this.total = this.steps.length;
+        this.isVisual = this.container.dataset.mode === 'visual';
         this.current = 0;
         this.progressEl = document.getElementById(containerId + '-progress');
-        if (this.steps.length > 0) {
-            this.steps[0].classList.add('revealed');
-            this.steps[0].dataset.rendered = 'true';
+
+        if (this.isVisual) {
+            this.showEls = this.container.querySelectorAll('[data-show]');
+            this.descEls = this.container.querySelectorAll('.sim-desc-step');
+            this.total = this.descEls.length;
+        } else {
+            this.steps = this.container.querySelectorAll('.sim-step');
+            this.total = this.steps.length;
+            if (this.steps.length > 0) {
+                this.steps[0].classList.add('revealed');
+                this.steps[0].dataset.rendered = 'true';
+            }
         }
+        this.applyStep(0);
         this.updateUI();
+    }
+    applyStep(n) {
+        if (this.isVisual) {
+            this.showEls.forEach(function(el) {
+                el.style.visibility = parseInt(el.dataset.show) <= n ? 'visible' : 'hidden';
+            });
+            this.descEls.forEach(function(el, i) {
+                el.style.display = i === n ? 'block' : 'none';
+            });
+            if (typeof renderMathInElement === 'function' && !this.container.dataset.rendered) {
+                renderMathInElement(this.container, {delimiters: [{left: '\\(', right: '\\)', display: false}], throwOnError: false});
+                this.container.dataset.rendered = 'true';
+            }
+        } else {
+            this.steps.forEach(function(s, i) {
+                if (i <= n) {
+                    s.classList.add('revealed');
+                    if (!s.dataset.rendered && typeof renderMathInElement === 'function') {
+                        renderMathInElement(s, {delimiters: [{left: '\\(', right: '\\)', display: false}], throwOnError: false});
+                        s.dataset.rendered = 'true';
+                    }
+                } else { s.classList.remove('revealed'); }
+            });
+        }
     }
     showStep(n) {
         if (n < 0 || n >= this.total) return;
         this.current = n;
-        this.steps.forEach((s, i) => {
-            if (i <= n) {
-                s.classList.add('revealed');
-                if (!s.dataset.rendered) {
-                    if (typeof renderMathInElement === 'function') {
-                        renderMathInElement(s, {delimiters: [{left: '\\(', right: '\\)', display: false}], throwOnError: false});
-                    }
-                    s.dataset.rendered = 'true';
-                }
-            } else { s.classList.remove('revealed'); }
-        });
+        this.applyStep(n);
         this.updateUI();
     }
     next() { this.showStep(this.current + 1); }
     prev() { this.showStep(this.current - 1); }
     updateUI() {
         if (this.progressEl) this.progressEl.textContent = (this.current + 1) + ' / ' + this.total;
-        const btns = this.container.querySelectorAll('.sim-btn');
-        btns.forEach(btn => {
-            if (btn.dataset.dir === 'prev') btn.disabled = (this.current === 0);
-            if (btn.dataset.dir === 'next') btn.disabled = (this.current === this.total - 1);
+        var cur = this.current, tot = this.total;
+        this.container.querySelectorAll('.sim-btn').forEach(function(btn) {
+            if (btn.dataset.dir === 'prev') btn.disabled = (cur === 0);
+            if (btn.dataset.dir === 'next') btn.disabled = (cur === tot - 1);
         });
     }
 }
