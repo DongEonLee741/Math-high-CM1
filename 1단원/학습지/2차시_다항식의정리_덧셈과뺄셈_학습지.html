@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>다항식의 정리, 덧셈과 뺄셈</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #f0f2f5;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-overscroll-behavior: none;
+            overscroll-behavior: none;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 12px;
+        }
+
+        /* ── 헤더 ── */
+        .header {
+            display: flex;
+            align-items: stretch;
+            border: 2px solid #1a1a1a;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            background: #fff;
+        }
+        .header-unit {
+            background: #2c3e50;
+            color: #fff;
+            padding: 10px 16px;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        .header-title {
+            flex: 1;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .header-title h1 {
+            font-size: 17px;
+            font-weight: 800;
+            color: #2c3e50;
+        }
+        .header-info span {
+            background: #f0f0f0;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        /* ── 학생 정보 ── */
+        .student-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .student-info .field {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            background: #fff;
+            border: 1.5px solid #d0d8e0;
+            border-radius: 8px;
+            padding: 5px 10px;
+        }
+        .student-info .field label { font-weight: 600; color: #555; font-size: 12px; }
+        .student-info .field input {
+            border: none;
+            width: 70px;
+            font-size: 14px;
+            padding: 2px 4px;
+            background: transparent;
+            font-family: inherit;
+            outline: none;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .student-info .field input::placeholder { color: #bbb; font-weight: 400; }
+        .student-info .field:focus-within { border-color: #6fa3d4; box-shadow: 0 0 0 2px rgba(111,163,212,0.15); }
+
+        /* ── 성취기준 ── */
+        .achievement {
+            background: #eef3f8;
+            border-left: 4px solid #2c3e50;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            border-radius: 0 8px 8px 0;
+            font-size: 14px;
+        }
+        .achievement strong { color: #2c3e50; }
+
+        /* ── 카드 (섹션) ── */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #2c3e50;
+        }
+        .section-number {
+            background: #2c3e50;
+            color: #fff;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .section-title h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        /* ── 개념 박스 ── */
+        .concept-box {
+            background: #fafafa;
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+        }
+        .concept-box.highlight { background: #f8f4ee; border-color: #d4a853; }
+        .concept-box.blue { background: #f0f5fa; border-color: #6fa3d4; }
+        .concept-box h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .concept-box h3 .badge {
+            background: #2c3e50;
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .concept-box p, .concept-box li { font-size: 14px; line-height: 1.7; }
+        .concept-box ul { padding-left: 20px; }
+        .concept-box ul li { margin-bottom: 3px; }
+
+        /* ── 공식 ── */
+        .formula {
+            background: #fff;
+            border: 1.5px solid #2c3e50;
+            border-radius: 8px;
+            padding: 10px 16px;
+            margin: 8px 0;
+            text-align: center;
+            font-size: 16px;
+        }
+        .formula-row { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+        .formula-item { padding: 4px 0; }
+        .formula-label { font-size: 12px; color: #888; margin-right: 6px; }
+
+        /* ── 탐구 ── */
+        .inquiry-box {
+            background: #f0faf0;
+            border: 1.5px solid #8cc68c;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+        }
+        .inquiry-box h3 { font-size: 15px; font-weight: 700; color: #2d7a2d; margin-bottom: 6px; }
+
+        /* ── 문제 ── */
+        .problem { margin-bottom: 16px; }
+        .problem-label {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 15px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .problem-label .p-num {
+            background: #e8e8e8;
+            padding: 2px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .sub-problem {
+            margin: 8px 0 8px 8px;
+            font-size: 15px;
+        }
+        .sub-problem .num { font-weight: 600; margin-right: 4px; }
+
+        /* ── 캔버스 필기 영역 ── */
+        .writing-area {
+            position: relative;
+            margin: 8px 0 12px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1.5px solid #c8d6e5;
+            background: #fff;
+            touch-action: none;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .writing-area canvas {
+            display: block;
+            width: 100%;
+            cursor: crosshair;
+            touch-action: none;
+            background: repeating-linear-gradient(
+                transparent, transparent 27px, #e8edf2 27px, #e8edf2 28px
+            );
+        }
+        .writing-area .canvas-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            background: linear-gradient(to bottom, #f8f9fb, #eef1f5);
+            border-top: 1px solid #dde3ea;
+        }
+        .canvas-toolbar button {
+            border: 1.5px solid #c8d0d8;
+            background: #fff;
+            border-radius: 7px;
+            padding: 5px 11px;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            transition: all 0.15s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .canvas-toolbar button:active, .canvas-toolbar button.active {
+            background: #2c3e50;
+            color: #fff;
+            border-color: #2c3e50;
+            box-shadow: none;
+        }
+        .canvas-toolbar .spacer { flex: 1; }
+        .canvas-toolbar .pen-sizes {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .canvas-toolbar .pen-size {
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            border: 1.5px solid #c8d0d8;
+            background: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .canvas-toolbar .pen-size.active { border-color: #2c3e50; background: #eef3f8; box-shadow: 0 0 0 2px rgba(44,62,80,0.12); }
+        .canvas-toolbar .pen-size .dot {
+            border-radius: 50%;
+            background: #444;
+        }
+
+        /* ── 정답 영역 ── */
+        .answer-reveal {
+            margin: 6px 0 14px 0;
+        }
+        .answer-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: #f0f7ff;
+            border: 1.5px solid #b3d4f0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c6faa;
+            transition: all 0.2s;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .answer-toggle:active { background: #ddeeff; }
+        .answer-toggle .arrow { -webkit-transition: -webkit-transform 0.3s; transition: transform 0.3s; font-size: 12px; }
+        .answer-toggle.open .arrow { -webkit-transform: rotate(90deg); transform: rotate(90deg); }
+
+        .answer-content {
+            max-height: 0;
+            overflow: hidden;
+            -webkit-transition: max-height 0.4s ease, padding 0.3s ease;
+            transition: max-height 0.4s ease, padding 0.3s ease;
+            background: #f8fbff;
+            border-radius: 0 0 8px 8px;
+            padding: 0 14px;
+            font-size: 15px;
+            line-height: 1.8;
+            border: 0px solid #b3d4f0;
+            border-top: none;
+        }
+        .answer-content.open {
+            max-height: 500px;
+            padding: 12px 14px;
+            border-width: 1.5px;
+        }
+        .answer-content .ans-label {
+            font-weight: 700;
+            color: #2c6faa;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        /* ── 예제 박스 ── */
+        .example-box {
+            background: #fff;
+            border: 2px solid #2c3e50;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+        .example-header {
+            background: #2c3e50;
+            color: #fff;
+            padding: 7px 14px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .example-content { padding: 12px 16px; }
+        .example-content p { font-size: 14px; margin-bottom: 4px; }
+
+        /* ── 풀이 ── */
+        .solution {
+            background: #f9f9f9;
+            border-left: 3px solid #6fa3d4;
+            padding: 12px 14px;
+            margin: 8px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .solution .step { font-size: 14px; margin-bottom: 4px; }
+        .solution .label { font-size: 11px; color: #6fa3d4; font-weight: 600; }
+
+        /* ── TIP ── */
+        .tip-box {
+            background: #fff8f0;
+            border: 1px solid #e8c48a;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin: 8px 0;
+            font-size: 13px;
+            color: #8a6d3b;
+        }
+        .tip-box::before { content: "TIP "; font-weight: 700; }
+
+        /* ── 스스로 하기 ── */
+        .self-practice {
+            background: #f5f0ff;
+            border: 1.5px solid #b8a9d4;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+        .self-practice-header {
+            background: #7c6aa0;
+            color: #fff;
+            padding: 7px 14px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .self-practice-content { padding: 14px 16px; }
+
+        /* ── 구분선 ── */
+        .divider { border: none; border-top: 1px solid #e5e5e5; margin: 14px 0; }
+
+        /* ── 두 열 ── */
+        .two-col { display: flex; gap: 12px; }
+        .two-col > div { flex: 1; min-width: 0; }
+
+        sup { font-size: 0.7em; vertical-align: super; }
+
+        /* ── 푸터 ── */
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            padding: 10px 0 20px;
+        }
+
+        /* ── 전체 정답 토글 버튼 ── */
+        .global-answer-btn {
+            position: fixed;
+            bottom: 20px;
+            bottom: calc(20px + env(safe-area-inset-bottom));
+            right: 20px;
+            background: #2c3e50;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .global-answer-btn:active { transform: scale(0.95); }
+        .global-answer-btn.active { background: #e74c3c; }
+
+        /* ── 저장/불러오기 ── */
+        .save-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .save-actions button {
+            border: 1.5px solid #d0d8e0;
+            background: #fff;
+            border-radius: 8px;
+            padding: 5px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            -webkit-transition: all 0.15s;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .save-actions button:active {
+            -webkit-transform: scale(0.96);
+            transform: scale(0.96);
+        }
+        .save-actions .btn-save {
+            background: #27ae60;
+            color: #fff;
+            border-color: #27ae60;
+        }
+        .save-actions .btn-save:active { background: #1e8449; }
+        .save-actions .btn-records {
+            background: #f0f7ff;
+            color: #2c6faa;
+            border-color: #b3d4f0;
+        }
+        .save-actions .btn-records:active { background: #ddeeff; }
+
+        /* ── 기록 모달 오버레이 ── */
+        .records-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .records-panel {
+            background: #fff;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 420px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .records-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            border-bottom: 1px solid #e8e8e8;
+            flex-shrink: 0;
+        }
+        .records-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+        .records-header .close-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #999;
+            padding: 0 4px;
+            line-height: 1;
+        }
+        .records-header .close-btn:active { color: #333; }
+        .records-list {
+            overflow-y: auto;
+            padding: 8px 14px 14px;
+            -webkit-overflow-scrolling: touch;
+            flex: 1;
+        }
+        .records-empty {
+            text-align: center;
+            padding: 30px 10px;
+            color: #999;
+            font-size: 14px;
+        }
+        .record-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border: 1.5px solid #e8e8e8;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            gap: 10px;
+        }
+        .record-info { flex: 1; min-width: 0; }
+        .record-date {
+            font-size: 12px;
+            color: #999;
+            font-weight: 500;
+        }
+        .record-detail {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .record-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .record-btn {
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            -webkit-transition: all 0.15s;
+            transition: all 0.15s;
+        }
+        .record-btn:active {
+            -webkit-transform: scale(0.95);
+            transform: scale(0.95);
+        }
+        .record-btn.load { background: #2c6faa; color: #fff; }
+        .record-btn.load:active { background: #1e5a8d; }
+        .record-btn.delete { background: #f5e6e6; color: #c0392b; }
+        .record-btn.delete:active { background: #e8d0d0; }
+
+        /* ── 토스트 알림 ── */
+        .save-toast {
+            position: fixed;
+            bottom: 80px;
+            bottom: calc(80px + env(safe-area-inset-bottom));
+            left: 50%;
+            -webkit-transform: translateX(-50%) translateY(20px);
+            transform: translateX(-50%) translateY(20px);
+            background: #2c3e50;
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            opacity: 0;
+            -webkit-transition: all 0.3s ease;
+            transition: all 0.3s ease;
+            z-index: 300;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .save-toast.show {
+            opacity: 1;
+            -webkit-transform: translateX(-50%) translateY(0);
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── 카드 매칭 게임 ── */
+        .matching-game {
+            background: linear-gradient(135deg, #f0f5fa 0%, #e8f0fe 100%);
+            border: 2px solid #6fa3d4;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+        .matching-game .game-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .matching-game .game-title .badge {
+            background: #e67e22;
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .matching-game .game-desc {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .game-stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #444;
+        }
+        .game-stats span {
+            background: #fff;
+            padding: 3px 10px;
+            border-radius: 6px;
+            border: 1px solid #d0d8e0;
+        }
+        .timer-display {
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+            min-width: 70px;
+            text-align: center;
+        }
+        .timer-display.warning { color: #e74c3c; border-color: #e74c3c; -webkit-animation: pulse 1s infinite; animation: pulse 1s infinite; }
+        @-webkit-keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .match-card {
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 60px;
+            aspect-ratio: 3/2;
+            background: #fff;
+            border: 2.5px solid #d0d8e0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 6px;
+            font-size: 13px;
+            line-height: 1.4;
+            font-weight: 600;
+            color: #2c3e50;
+            -webkit-transition: all 0.2s ease;
+            transition: all 0.2s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        @supports not (aspect-ratio: 1) {
+            .match-card { min-height: 70px; }
+        }
+        .match-card:active { transform: scale(0.97); }
+        .match-card.selected {
+            border-color: #e67e22;
+            background: #fef5ec;
+            box-shadow: 0 0 0 3px rgba(230,126,34,0.25);
+        }
+        .match-card.matched {
+            border-color: #27ae60;
+            background: #eafaf1;
+            cursor: default;
+        }
+        .match-card.wrong {
+            border-color: #e74c3c;
+            background: #fdf0ef;
+        }
+        .match-card.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .match-card.swap-out {
+            -webkit-animation: swapOut 0.3s ease forwards;
+            animation: swapOut 0.3s ease forwards;
+        }
+        .match-card.swap-in {
+            -webkit-animation: swapIn 0.3s ease forwards;
+            animation: swapIn 0.3s ease forwards;
+        }
+        @-webkit-keyframes swapOut { to { opacity:0; -webkit-transform:scale(0.8); transform:scale(0.8); } }
+        @keyframes swapOut { to { opacity:0; transform:scale(0.8); } }
+        @-webkit-keyframes swapIn { from { opacity:0; -webkit-transform:scale(0.8); transform:scale(0.8); } to { opacity:1; -webkit-transform:scale(1); transform:scale(1); } }
+        @keyframes swapIn { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+        .game-controls button {
+            background: #e67e22;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .game-controls button:active {
+            transform: scale(0.96);
+            background: #d35400;
+        }
+        .game-controls button.btn-start {
+            background: #27ae60;
+        }
+        .game-controls button.btn-start:active {
+            background: #1e8449;
+        }
+        .game-controls button:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+        .game-complete {
+            text-align: center;
+            padding: 12px;
+            background: #eafaf1;
+            border: 1.5px solid #27ae60;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #1e8449;
+            font-weight: 600;
+            -webkit-animation: fadeIn 0.4s ease;
+            animation: fadeIn 0.4s ease;
+        }
+        @-webkit-keyframes fadeIn { from { opacity: 0; -webkit-transform: translateY(-8px); transform: translateY(-8px); } to { opacity: 1; -webkit-transform: translateY(0); transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 500px) {
+            .container { padding: 8px; }
+            .header-title h1 { font-size: 14px; }
+            .two-col { flex-direction: column; gap: 0; }
+            .card-grid { grid-template-columns: repeat(2, 1fr); }
+            .match-card-back { font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ── 헤더 ── -->
+    <div class="header">
+        <div class="header-unit">Ⅰ. 다항식</div>
+        <div class="header-title">
+            <h1>1. 다항식의 연산 &mdash; 다항식의 정리, 덧셈과 뺄셈</h1>
+            <div class="header-info">
+                <span>교과서 11~13쪽</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 학생 정보 -->
+    <div class="student-info">
+        <div class="save-actions">
+            <button class="btn-save" id="btnSave">💾 저장</button>
+            <button class="btn-records" id="btnRecords">📋 기록</button>
+        </div>
+        <div class="field"><label>학년 반</label> <input type="text" placeholder="예: 1-3"></div>
+        <div class="field"><label>번호</label> <input type="text" style="width:40px;" placeholder="00"></div>
+        <div class="field"><label>이름</label> <input type="text" placeholder="이름 입력"></div>
+    </div>
+
+    <!-- 성취기준 -->
+    <div class="achievement">
+        <strong>성취기준</strong> &nbsp; 다항식의 사칙연산의 원리를 설명하고, 그 계산을 할 수 있다.
+    </div>
+
+    <!-- ============ 섹션 1: 다항식의 정리 ============ -->
+    <div class="card">
+        <div class="section-title">
+            <div class="section-number">1</div>
+            <h2>다항식의 정리</h2>
+        </div>
+
+        <div class="inquiry-box">
+            <h3>탐구 열기</h3>
+            <p>다음 두 다항식의 차수를 구하고, 차수를 구하기 편리한 것은 어느 것인지 말해 보자.</p>
+            <div class="sub-problem"><span class="num">⑴</span> 3<i>x</i><sup>2</sup> + 1 + 4<i>x</i><sup>3</sup> + <i>x</i><sup>5</sup> + 4<i>x</i> + 2<i>x</i><sup>4</sup></div>
+            <div class="sub-problem"><span class="num">⑵</span> <i>x</i><sup>5</sup> + 2<i>x</i><sup>4</sup> + 4<i>x</i><sup>3</sup> + 3<i>x</i><sup>2</sup> + 4<i>x</i> + 1</div>
+            <div class="writing-area" data-h="104"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    ⑴, ⑵ 모두 차수는 <b>5</b>이다. &nbsp; 내림차순으로 정리된 <b>⑵</b>가 차수를 구하기 편리하다.
+                </div>
+            </div>
+        </div>
+
+        <div class="concept-box highlight">
+            <h3><span class="badge">개념</span> 다항식의 정리</h3>
+            <ul>
+                <li>다항식을 한 문자에 대하여 차수가 <b>높은</b> 항부터 <b>낮은</b> 항의 순서로 나타내는 것을 그 문자에 대하여 <b>'내림차순으로 정리한다'</b>고 한다.</li>
+                <li>차수가 <b>낮은</b> 항부터 <b>높은</b> 항의 순서로 나타내는 것을 그 문자에 대하여 <b>'오름차순으로 정리한다'</b>고 한다.</li>
+            </ul>
+            <div class="tip-box">다항식에서 상수항의 차수는 <b>0</b>으로 생각한다.</div>
+        </div>
+
+        <!-- 문제 1 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 1</span> 다음 다항식을 <i>x</i>에 대하여 내림차순으로 정리하시오.</div>
+            <div class="sub-problem"><span class="num">⑴</span> 2<i>x</i><sup>2</sup> + 3<i>x</i> + 1 + <i>x</i><sup>3</sup></div>
+            <div class="writing-area" data-h="91"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="sub-problem"><span class="num">⑵</span> <i>xy</i> + 5<i>x</i> + 2<i>y</i><sup>3</sup> &minus; <i>x</i><sup>2</sup><i>y</i> &minus; 2<i>y</i> + 1</div>
+            <div class="writing-area" data-h="91"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    ⑴ <i>x</i><sup>3</sup> + 2<i>x</i><sup>2</sup> + 3<i>x</i> + 1<br>
+                    ⑵ &minus;<i>x</i><sup>2</sup><i>y</i> + (<i>y</i> + 5)<i>x</i> + 2<i>y</i><sup>3</sup> &minus; 2<i>y</i> + 1
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ 섹션 2: 다항식의 덧셈과 뺄셈 ============ -->
+    <div class="card">
+        <div class="section-title">
+            <div class="section-number">2</div>
+            <h2>다항식의 덧셈과 뺄셈</h2>
+        </div>
+
+        <div class="concept-box blue">
+            <h3><span class="badge">개념</span> 다항식의 덧셈과 뺄셈</h3>
+            <ul>
+                <li><b>덧셈</b>: 동류항끼리 모아서 정리한다.</li>
+                <li><b>뺄셈</b>: 빼는 식의 각 항의 부호를 바꾸어서 더한다.</li>
+            </ul>
+            <div class="formula"><i>A</i> &minus; <i>B</i> = <i>A</i> + (&minus;<i>B</i>)</div>
+            <div class="tip-box">동류항이란 문자와 차수가 각각 같은 항을 말한다.</div>
+        </div>
+
+        <!-- 동류항 카드 매칭 미니게임 -->
+        <div class="matching-game">
+            <div class="game-title"><span class="badge">게임</span> 동류항 카드 매칭</div>
+            <div class="game-desc">동류항끼리 짝지어 보세요! 제한시간 1분 안에 최대한 많은 쌍을 찾으세요.</div>
+            <div class="game-stats">
+                <span class="timer-display" id="timerDisplay">⏱ 1:00</span>
+                <span>매칭 <b id="gameMatched">00</b></span>
+            </div>
+            <div class="card-grid" id="cardGrid"></div>
+            <div id="gameComplete" class="game-complete" style="display:none"></div>
+            <div class="game-controls">
+                <button class="btn-start" id="btnStartGame">게임시작</button>
+                <button id="btnRestartGame">다시하기</button>
+            </div>
+        </div>
+
+        <div class="self-practice">
+            <div class="self-practice-header">예제 스스로 하기 &mdash; 다항식의 덧셈과 뺄셈하기</div>
+            <div class="self-practice-content">
+                <p>두 다항식 <i>A</i> = <i>x</i><sup>3</sup> &minus; 2<i>x</i><sup>2</sup> + 1, &nbsp; <i>B</i> = &minus;2<i>x</i><sup>3</sup> &minus; 3<i>x</i> + 5 &nbsp;일 때, 다음을 계산하시오.</p>
+                <div class="sub-problem" style="margin-top:8px;"><span class="num">⑴</span> <i>A</i> + <i>B</i></div>
+                <div class="writing-area" data-h="117"><canvas></canvas><div class="canvas-toolbar"></div></div>
+                <div class="sub-problem"><span class="num">⑵</span> <i>A</i> &minus; <i>B</i></div>
+                <div class="writing-area" data-h="117"><canvas></canvas><div class="canvas-toolbar"></div></div>
+                <div class="answer-reveal">
+                    <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                    <div class="answer-content">
+                        <div class="ans-label">정답</div>
+                        ⑴ &minus;<i>x</i><sup>3</sup> &minus; 2<i>x</i><sup>2</sup> &minus; 3<i>x</i> + 6<br>
+                        ⑵ 3<i>x</i><sup>3</sup> &minus; 2<i>x</i><sup>2</sup> + 3<i>x</i> &minus; 4
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ 섹션 3: 다항식의 덧셈에 대한 성질 ============ -->
+    <div class="card">
+        <div class="section-title">
+            <div class="section-number">3</div>
+            <h2>다항식의 덧셈에 대한 성질</h2>
+        </div>
+
+        <div class="concept-box highlight">
+            <h3><span class="badge">개념</span> 다항식의 덧셈에 대한 성질</h3>
+            <p>세 다항식 <i>A</i>, <i>B</i>, <i>C</i>에 대하여</p>
+            <div class="formula">
+                <div class="formula-row">
+                    <div class="formula-item"><span class="formula-label">&#10102; 교환법칙</span> <i>A</i> + <i>B</i> = <i>B</i> + <i>A</i></div>
+                    <div class="formula-item"><span class="formula-label">&#10103; 결합법칙</span> (<i>A</i> + <i>B</i>) + <i>C</i> = <i>A</i> + (<i>B</i> + <i>C</i>)</div>
+                </div>
+            </div>
+            <p style="font-size:13px; color:#666; margin-top:4px;">덧셈에 대한 결합법칙이 성립하므로 (<i>A</i>+<i>B</i>)+<i>C</i>, <i>A</i>+(<i>B</i>+<i>C</i>)를 괄호를 생략하여 <i>A</i>+<i>B</i>+<i>C</i>로 나타내기도 한다.</p>
+        </div>
+
+        <!-- 예제 -->
+        <div class="example-box">
+            <div class="example-header">예제 &mdash; 다항식의 덧셈에 대한 성질 이해하기</div>
+            <div class="example-content">
+                <p>두 다항식 <i>A</i>, <i>B</i>가</p>
+                <p style="text-align:center; font-size:16px; margin:6px 0;">
+                    <i>A</i> = <i>x</i><sup>3</sup> + <i>x</i><sup>2</sup> + 1, &emsp; <i>B</i> = 3<i>x</i><sup>3</sup> &minus; <i>x</i><sup>2</sup> + 2<i>x</i> + 4
+                </p>
+                <p>일 때, (2<i>A</i> + 3<i>B</i>) + (<i>A</i> &minus; 4<i>B</i>)를 계산하시오.</p>
+            </div>
+        </div>
+
+        <div class="solution">
+            <div class="step"><span class="label">STEP 1</span> &nbsp; 식을 정리한 후 다항식을 대입한다.</div>
+            <div class="step" style="margin-left:12px;">(2<i>A</i> + 3<i>B</i>) + (<i>A</i> &minus; 4<i>B</i>) = 2<i>A</i> + 3<i>B</i> + <i>A</i> &minus; 4<i>B</i></div>
+            <div class="step" style="margin-left:60px;">= 2<i>A</i> + <i>A</i> + 3<i>B</i> &minus; 4<i>B</i> &emsp;<span class="label">... 교환법칙</span></div>
+            <div class="step" style="margin-left:60px;">= (2<i>A</i> + <i>A</i>) + (3<i>B</i> &minus; 4<i>B</i>) &emsp;<span class="label">... 결합법칙</span></div>
+            <div class="step" style="margin-left:60px;">= 3<i>A</i> &minus; <i>B</i></div>
+            <div class="step"><span class="label">STEP 2</span> &nbsp; <i>A</i>, <i>B</i>를 대입하여 계산한다.</div>
+            <div class="step" style="margin-left:12px;">= 3(<i>x</i><sup>3</sup> + <i>x</i><sup>2</sup> + 1) &minus; (3<i>x</i><sup>3</sup> &minus; <i>x</i><sup>2</sup> + 2<i>x</i> + 4)</div>
+            <div class="step" style="margin-left:12px;">= (3<i>x</i><sup>3</sup> + 3<i>x</i><sup>2</sup> + 3) + (&minus;3<i>x</i><sup>3</sup> + <i>x</i><sup>2</sup> &minus; 2<i>x</i> &minus; 4)</div>
+            <div class="step" style="margin-left:12px;">= (3&minus;3)<i>x</i><sup>3</sup> + (3+1)<i>x</i><sup>2</sup> &minus; 2<i>x</i> + (3&minus;4) = <b>4<i>x</i><sup>2</sup> &minus; 2<i>x</i> &minus; 1</b></div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 문제 2 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 2</span> 두 다항식 <i>A</i>, <i>B</i>가 다음과 같을 때, <i>A</i> + <i>B</i>와 <i>A</i> &minus; <i>B</i>를 계산하시오.</div>
+            <div class="sub-problem"><span class="num">⑴</span> <i>A</i> = <i>x</i><sup>3</sup> + 3<i>x</i><sup>2</sup> &minus; 2<i>x</i> + 1, &emsp; <i>B</i> = 2<i>x</i><sup>3</sup> + 5<i>x</i></div>
+            <div class="writing-area" data-h="143"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="sub-problem"><span class="num">⑵</span> <i>A</i> = 2<i>x</i><sup>2</sup> &minus; <i>xy</i> + 2<i>y</i><sup>2</sup>, &emsp; <i>B</i> = <i>x</i><sup>2</sup> &minus; 3<i>xy</i> &minus; 2<i>y</i><sup>2</sup></div>
+            <div class="writing-area" data-h="143"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    ⑴ <i>A</i>+<i>B</i> = 3<i>x</i><sup>3</sup> + 3<i>x</i><sup>2</sup> + 3<i>x</i> + 1, &emsp; <i>A</i>&minus;<i>B</i> = &minus;<i>x</i><sup>3</sup> + 3<i>x</i><sup>2</sup> &minus; 7<i>x</i> + 1<br>
+                    ⑵ <i>A</i>+<i>B</i> = 3<i>x</i><sup>2</sup> &minus; 4<i>xy</i>, &emsp; <i>A</i>&minus;<i>B</i> = <i>x</i><sup>2</sup> + 2<i>xy</i> + 4<i>y</i><sup>2</sup>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 문제 3 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 3</span> 세 다항식 <i>A</i>, <i>B</i>, <i>C</i>가</div>
+            <p style="text-align:center; font-size:15px; margin:4px 0 8px 0;">
+                <i>A</i> = <i>x</i><sup>3</sup> &minus; <i>x</i><sup>2</sup> + 2, &emsp;
+                <i>B</i> = <i>x</i><sup>3</sup> + 2<i>x</i><sup>2</sup>, &emsp;
+                <i>C</i> = &minus;<i>x</i><sup>3</sup> + 3<i>x</i> + 2
+            </p>
+            <p style="margin-bottom:8px;">일 때, 다음을 계산하시오.</p>
+            <div class="sub-problem"><span class="num">⑴</span> (<i>A</i> &minus; 2<i>B</i>) + (3<i>A</i> + <i>B</i>)</div>
+            <div class="writing-area" data-h="156"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="sub-problem"><span class="num">⑵</span> (<i>A</i> &minus; 2<i>B</i>) &minus; (3<i>B</i> &minus; 2<i>C</i>)</div>
+            <div class="writing-area" data-h="156"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    ⑴ 3<i>x</i><sup>3</sup> &minus; 6<i>x</i><sup>2</sup> + 8<br>
+                    ⑵ &minus;6<i>x</i><sup>3</sup> &minus; 11<i>x</i><sup>2</sup> + 6<i>x</i> + 6
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 문제 4 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 4</span> 두 다항식 <i>A</i>, <i>B</i>가 다음과 같을 때, 등식을 만족시키는 다항식 <i>X</i>를 구하시오.</div>
+            <p style="text-align:center; font-size:15px; margin:4px 0 8px 0;">
+                <i>A</i> = <i>x</i><sup>2</sup> + 2<i>y</i><sup>2</sup>, &emsp;
+                <i>B</i> = 4<i>x</i><sup>2</sup> &minus; <i>y</i>
+            </p>
+            <div class="sub-problem"><span class="num">⑴</span> <i>A</i> + <i>X</i> = <i>B</i></div>
+            <div class="writing-area" data-h="130"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="sub-problem"><span class="num">⑵</span> 3<i>X</i> &minus; 2<i>A</i> = <i>B</i> + 2<i>X</i></div>
+            <div class="writing-area" data-h="130"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    ⑴ <i>X</i> = 3<i>x</i><sup>2</sup> &minus; 2<i>y</i><sup>2</sup> &minus; <i>y</i><br>
+                    ⑵ <i>X</i> = 6<i>x</i><sup>2</sup> + 4<i>y</i><sup>2</sup> &minus; <i>y</i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">공통수학1 &middot; Ⅰ. 다항식 &middot; 1. 다항식의 연산</div>
+</div>
+
+<!-- 전체 정답 표시 버튼 -->
+<button class="global-answer-btn" id="globalAnswerBtn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    정답 전체 보기
+</button>
+
+<!-- 기록 모달 오버레이 -->
+<div class="records-overlay" id="recordsOverlay">
+    <div class="records-panel">
+        <div class="records-header">
+            <h3>📋 저장 기록</h3>
+            <button class="close-btn" id="btnCloseRecords">&times;</button>
+        </div>
+        <div class="records-list" id="recordsList"></div>
+    </div>
+</div>
+
+<script>
+// ── file:// 프로토콜 감지 (iPad Safari에서 localStorage 차단됨) ──
+if (window.location.protocol === 'file:') {
+    var fileWarning = document.createElement('div');
+    fileWarning.style.cssText = 'background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px 16px;margin:8px 0;font-size:14px;color:#856404;line-height:1.5;';
+    fileWarning.innerHTML = '⚠️ <b>오프라인 모드</b>: 현재 파일을 직접 열어 사용 중입니다. 저장/불러오기 기능을 사용하려면 웹 주소(https://)로 접속해 주세요.';
+    var studentInfo = document.querySelector('.student-info');
+    if (studentInfo) studentInfo.after(fileWarning);
+}
+
+// ── 정답 토글 ──
+function toggleAnswer(el) {
+    el.classList.toggle('open');
+    const content = el.nextElementSibling;
+    content.classList.toggle('open');
+}
+
+let allAnswersOpen = false;
+function toggleAllAnswers() {
+    allAnswersOpen = !allAnswersOpen;
+    const btn = document.getElementById('globalAnswerBtn');
+    btn.classList.toggle('active', allAnswersOpen);
+    btn.innerHTML = allAnswersOpen
+        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg> 정답 전체 숨기기'
+        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> 정답 전체 보기';
+    document.querySelectorAll('.answer-toggle').forEach(t => {
+        const isOpen = t.classList.contains('open');
+        if (allAnswersOpen && !isOpen) { t.classList.add('open'); t.nextElementSibling.classList.add('open'); }
+        if (!allAnswersOpen && isOpen) { t.classList.remove('open'); t.nextElementSibling.classList.remove('open'); }
+    });
+}
+
+// ── localStorage 저장/불러오기 시스템 ──
+function getStorageKey() {
+    return 'worksheet_2차시_다항식';
+}
+
+function getAllRecords() {
+    try {
+        const raw = localStorage.getItem(getStorageKey());
+        if (!raw) return [];
+        const data = JSON.parse(raw);
+        return data.records || [];
+    } catch (e) {
+        console.warn('저장 데이터 읽기 오류:', e);
+        return [];
+    }
+}
+
+function saveAllRecords(records) {
+    const data = { version: 1, records: records };
+    try {
+        localStorage.setItem(getStorageKey(), JSON.stringify(data));
+        return true;
+    } catch (e) {
+        if (window.location.protocol === 'file:') {
+            alert('오프라인(file://) 환경에서는 저장이 불가합니다.\n웹 주소(https://)로 접속하면 저장할 수 있습니다.');
+        } else {
+            alert('저장 공간이 부족합니다. 이전 기록을 삭제한 후 다시 시도해 주세요.');
+        }
+        return false;
+    }
+}
+
+function isCanvasBlank(wc) {
+    try {
+        const px = wc.ctx.getImageData(0, 0, wc.canvas.width, wc.canvas.height).data;
+        for (let i = 3; i < px.length; i += 4) {
+            if (px[i] !== 0) return false;
+        }
+        return true;
+    } catch (e) {
+        return true;
+    }
+}
+
+function canvasToJpeg(wc) {
+    // 투명 배경 → 검정 방지: 흰색 배경 합성 후 JPEG 변환
+    const tmp = document.createElement('canvas');
+    tmp.width = wc.canvas.width;
+    tmp.height = wc.canvas.height;
+    const tc = tmp.getContext('2d');
+    tc.fillStyle = '#ffffff';
+    tc.fillRect(0, 0, tmp.width, tmp.height);
+    tc.drawImage(wc.canvas, 0, 0);
+    return tmp.toDataURL('image/jpeg', 0.3);
+}
+
+function captureCurrentState() {
+    const inputs = document.querySelectorAll('.student-info .field input');
+    const studentInfo = {
+        classGroup: inputs[0] ? inputs[0].value : '',
+        number: inputs[1] ? inputs[1].value : '',
+        name: inputs[2] ? inputs[2].value : ''
+    };
+
+    const canvasData = canvases.map(function(wc) {
+        if (isCanvasBlank(wc)) return null;
+        return canvasToJpeg(wc);
+    });
+
+    const gameState = {
+        matched: matchState.matched,
+        timeLeft: matchState.timeLeft,
+        gameRunning: false
+    };
+
+    return {
+        id: String(Date.now()),
+        timestamp: new Date().toISOString(),
+        studentInfo: studentInfo,
+        canvasData: canvasData,
+        gameState: gameState
+    };
+}
+
+function saveRecord() {
+    var record = captureCurrentState();
+    var records = getAllRecords();
+
+    if (records.length >= 5) {
+        records.sort(function(a, b) { return new Date(a.timestamp) - new Date(b.timestamp); });
+        records = records.slice(records.length - 4);
+    }
+
+    records.push(record);
+    if (saveAllRecords(records)) {
+        showToast('저장되었습니다.');
+    }
+}
+
+function loadRecord(recordId) {
+    var records = getAllRecords();
+    var record = records.find(function(r) { return r.id === recordId; });
+    if (!record) {
+        alert('저장 기록을 찾을 수 없습니다.');
+        return;
+    }
+
+    // 학생 정보 복원
+    var inputs = document.querySelectorAll('.student-info .field input');
+    if (inputs[0]) inputs[0].value = record.studentInfo.classGroup || '';
+    if (inputs[1]) inputs[1].value = record.studentInfo.number || '';
+    if (inputs[2]) inputs[2].value = record.studentInfo.name || '';
+
+    // 캔버스 복원
+    record.canvasData.forEach(function(dataUrl, idx) {
+        if (idx >= canvases.length) return;
+        var wc = canvases[idx];
+
+        wc.ctx.save();
+        wc.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        wc.ctx.clearRect(0, 0, wc.canvas.width, wc.canvas.height);
+
+        if (dataUrl) {
+            var img = new Image();
+            img.onload = function() {
+                wc.ctx.save();
+                wc.ctx.setTransform(1, 0, 0, 1, 0, 0);
+                wc.ctx.drawImage(img, 0, 0);
+                wc.ctx.restore();
+                wc.history = [wc.canvas.toDataURL()];
+                wc.historyIndex = 0;
+            };
+            img.src = dataUrl;
+        } else {
+            wc.history = [wc.canvas.toDataURL()];
+            wc.historyIndex = 0;
+        }
+        wc.ctx.restore();
+    });
+
+    // 게임 상태 복원 (표시만)
+    if (matchState.timerInterval) clearInterval(matchState.timerInterval);
+    matchState.matched = record.gameState.matched || 0;
+    matchState.timeLeft = record.gameState.timeLeft || 0;
+    matchState.gameRunning = false;
+    document.getElementById('gameMatched').textContent =
+        String(matchState.matched).padStart(2, '0');
+    updateTimerDisplay();
+
+    if (record.gameState.matched > 0) {
+        var comp = document.getElementById('gameComplete');
+        comp.innerHTML = '불러온 기록: 총 <b>' + matchState.matched + '</b>쌍 매칭';
+        comp.style.display = 'block';
+    }
+
+    closeRecordsPanel();
+    showToast('불러왔습니다.');
+}
+
+function deleteRecord(recordId) {
+    var records = getAllRecords();
+    records = records.filter(function(r) { return r.id !== recordId; });
+    saveAllRecords(records);
+    renderRecordsPanel();
+}
+
+function formatTimestamp(isoString) {
+    var d = new Date(isoString);
+    var month = d.getMonth() + 1;
+    var day = d.getDate();
+    var hours = String(d.getHours()).padStart(2, '0');
+    var minutes = String(d.getMinutes()).padStart(2, '0');
+    return month + '/' + day + ' ' + hours + ':' + minutes;
+}
+
+function openRecordsPanel() {
+    document.getElementById('recordsOverlay').style.display = 'flex';
+    renderRecordsPanel();
+}
+
+function closeRecordsPanel() {
+    document.getElementById('recordsOverlay').style.display = 'none';
+}
+
+function renderRecordsPanel() {
+    var records = getAllRecords();
+    var listEl = document.getElementById('recordsList');
+
+    if (records.length === 0) {
+        listEl.innerHTML = '<div class="records-empty">저장된 기록이 없습니다.</div>';
+        return;
+    }
+
+    records.sort(function(a, b) { return new Date(b.timestamp) - new Date(a.timestamp); });
+
+    listEl.innerHTML = records.map(function(r) {
+        var name = r.studentInfo.name || '이름 없음';
+        var classInfo = r.studentInfo.classGroup || '';
+        var num = r.studentInfo.number || '';
+        var dateStr = formatTimestamp(r.timestamp);
+        var score = r.gameState.matched || 0;
+        var detail = (classInfo ? classInfo + ' ' : '') + (num ? num + '번 ' : '') + name;
+
+        return '<div class="record-item">' +
+            '<div class="record-info">' +
+                '<div class="record-date">' + dateStr + '</div>' +
+                '<div class="record-detail">' + detail + ' · 매칭 ' + score + '쌍</div>' +
+            '</div>' +
+            '<div class="record-actions">' +
+                '<button class="record-btn load" data-record-id="' + r.id + '">불러오기</button>' +
+                '<button class="record-btn delete" data-record-id="' + r.id + '">삭제</button>' +
+            '</div>' +
+        '</div>';
+    }).join('');
+}
+
+function showToast(message) {
+    var toast = document.getElementById('saveToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'saveToast';
+        toast.className = 'save-toast';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(function() { toast.classList.remove('show'); }, 2000);
+}
+
+// ── 캔버스 필기 시스템 ──
+class WritingCanvas {
+    constructor(container) {
+        this.container = container;
+        this.canvas = container.querySelector('canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.drawing = false;
+        this.tool = 'pen';
+        this.penWidth = 2;
+        this.history = [];
+        this.historyIndex = -1;
+        this.baseHeight = parseInt(container.dataset.h) || 80;
+
+        this.setupCanvas();
+        this.setupToolbar();
+        this.bindEvents();
+    }
+
+    setupCanvas() {
+        const rect = this.container.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        const w = rect.width;
+        const h = this.baseHeight;
+
+        this.canvas.width = w * dpr;
+        this.canvas.height = h * dpr;
+        this.canvas.style.width = w + 'px';
+        this.canvas.style.height = h + 'px';
+        this.ctx.scale(dpr, dpr);
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+        this.saveState();
+    }
+
+    setupToolbar() {
+        const toolbar = this.container.querySelector('.canvas-toolbar');
+        toolbar.innerHTML = `
+            <button class="tool-btn active" data-tool="pen">&#9998; 펜</button>
+            <button class="tool-btn" data-tool="eraser">&#9634; 지우개</button>
+            <div class="pen-sizes">
+                <div class="pen-size" data-size="1"><div class="dot" style="width:3px;height:3px;"></div></div>
+                <div class="pen-size active" data-size="2"><div class="dot" style="width:5px;height:5px;"></div></div>
+                <div class="pen-size" data-size="4"><div class="dot" style="width:8px;height:8px;"></div></div>
+            </div>
+            <div class="spacer"></div>
+            <button class="undo-btn">&#8630;</button>
+            <button class="clear-btn">&#10005;</button>
+        `;
+
+        toolbar.querySelectorAll('.tool-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                toolbar.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.tool = btn.dataset.tool;
+            });
+        });
+
+        toolbar.querySelectorAll('.pen-size').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                toolbar.querySelectorAll('.pen-size').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.penWidth = parseInt(btn.dataset.size);
+            });
+        });
+
+        toolbar.querySelector('.undo-btn').addEventListener('click', (e) => { e.preventDefault(); this.undo(); });
+        toolbar.querySelector('.clear-btn').addEventListener('click', (e) => { e.preventDefault(); this.clear(); });
+    }
+
+    bindEvents() {
+        const opts = { passive: false };
+        // Pointer events with passive:false for iOS Safari preventDefault() support
+        this.canvas.addEventListener('pointerdown', (e) => this.startDraw(e), opts);
+        this.canvas.addEventListener('pointermove', (e) => this.draw(e), opts);
+        this.canvas.addEventListener('pointerup', (e) => this.endDraw(e));
+        this.canvas.addEventListener('pointerleave', (e) => this.endDraw(e));
+        this.canvas.addEventListener('pointercancel', (e) => this.endDraw(e));
+        // iOS Safari: 터치 기본 동작(스크롤) 차단
+        this.canvas.addEventListener('touchstart', (e) => { e.preventDefault(); }, opts);
+        this.canvas.addEventListener('touchmove', (e) => { e.preventDefault(); }, opts);
+    }
+
+    getPos(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+
+    startDraw(e) {
+        e.preventDefault();
+        this.canvas.setPointerCapture(e.pointerId);
+        this.drawing = true;
+        const pos = this.getPos(e);
+        this.ctx.beginPath();
+        this.ctx.moveTo(pos.x, pos.y);
+
+        if (this.tool === 'eraser') {
+            this.ctx.globalCompositeOperation = 'destination-out';
+            this.ctx.lineWidth = this.penWidth * 10;
+        } else {
+            this.ctx.globalCompositeOperation = 'source-over';
+            this.ctx.strokeStyle = '#1a1a1a';
+            this.ctx.lineWidth = this.penWidth;
+        }
+    }
+
+    draw(e) {
+        if (!this.drawing) return;
+        e.preventDefault();
+        const pos = this.getPos(e);
+        this.ctx.lineTo(pos.x, pos.y);
+        this.ctx.stroke();
+    }
+
+    endDraw(e) {
+        if (!this.drawing) return;
+        this.drawing = false;
+        this.ctx.globalCompositeOperation = 'source-over';
+        this.saveState();
+    }
+
+    saveState() {
+        this.historyIndex++;
+        this.history = this.history.slice(0, this.historyIndex);
+        this.history.push(this.canvas.toDataURL());
+    }
+
+    undo() {
+        if (this.historyIndex > 0) {
+            this.historyIndex--;
+            const img = new Image();
+            img.onload = () => {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.drawImage(img, 0, 0);
+            };
+            img.src = this.history[this.historyIndex];
+        }
+    }
+
+    clear() {
+        const dpr = window.devicePixelRatio || 1;
+        this.ctx.clearRect(0, 0, this.canvas.width / dpr, this.canvas.height / dpr);
+        this.saveState();
+    }
+
+    resize() {
+        const saved = this.canvas.toDataURL();
+        this.setupCanvas();
+        const img = new Image();
+        img.onload = () => { this.ctx.drawImage(img, 0, 0); };
+        img.src = saved;
+    }
+}
+
+// ── 카드 매칭 게임 (동류항 단항식 32쌍) ──
+const matchPairs = [
+    // A. 기본 단변수 (8쌍)
+    { card1: '5', card2: '&minus;8' },
+    { card1: '3<i>x</i>', card2: '&minus;7<i>x</i>' },
+    { card1: '2<i>x</i><sup>2</sup>', card2: '&minus;4<i>x</i><sup>2</sup>' },
+    { card1: '&minus;6<i>x</i><sup>3</sup>', card2: '9<i>x</i><sup>3</sup>' },
+    { card1: '4<i>y</i>', card2: '&minus;5<i>y</i>' },
+    { card1: '7<i>y</i><sup>2</sup>', card2: '&minus;2<i>y</i><sup>2</sup>' },
+    { card1: '&minus;<i>a</i>', card2: '8<i>a</i>' },
+    { card1: '6<i>b</i>', card2: '&minus;3<i>b</i>' },
+    // B. 단변수 고차 (8쌍)
+    { card1: '5<i>x</i><sup>4</sup>', card2: '&minus;9<i>x</i><sup>4</sup>' },
+    { card1: '3<i>y</i><sup>3</sup>', card2: '&minus;6<i>y</i><sup>3</sup>' },
+    { card1: '7<i>a</i><sup>2</sup>', card2: '&minus;4<i>a</i><sup>2</sup>' },
+    { card1: '&minus;2<i>a</i><sup>3</sup>', card2: '8<i>a</i><sup>3</sup>' },
+    { card1: '4<i>b</i><sup>2</sup>', card2: '&minus;7<i>b</i><sup>2</sup>' },
+    { card1: '6<i>b</i><sup>3</sup>', card2: '&minus;5<i>b</i><sup>3</sup>' },
+    { card1: '&minus;3<i>z</i>', card2: '9<i>z</i>' },
+    { card1: '2<i>z</i><sup>2</sup>', card2: '&minus;8<i>z</i><sup>2</sup>' },
+    // C. 이변수 기본 (8쌍)
+    { card1: '5<i>xy</i>', card2: '&minus;6<i>xy</i>' },
+    { card1: '3<i>ab</i>', card2: '&minus;7<i>ab</i>' },
+    { card1: '4<i>xz</i>', card2: '&minus;9<i>xz</i>' },
+    { card1: '&minus;2<i>yz</i>', card2: '8<i>yz</i>' },
+    { card1: '9<i>x</i><sup>2</sup><i>y</i>', card2: '&minus;3<i>x</i><sup>2</sup><i>y</i>' },
+    { card1: '&minus;<i>x</i><i>y</i><sup>2</sup>', card2: '7<i>x</i><i>y</i><sup>2</sup>' },
+    { card1: '5<i>a</i><sup>2</sup><i>b</i>', card2: '&minus;6<i>a</i><sup>2</sup><i>b</i>' },
+    { card1: '4<i>a</i><i>b</i><sup>2</sup>', card2: '&minus;7<i>a</i><i>b</i><sup>2</sup>' },
+    // D. 이변수 고차 (8쌍)
+    { card1: '2<i>x</i><sup>2</sup><i>y</i><sup>2</sup>', card2: '&minus;8<i>x</i><sup>2</sup><i>y</i><sup>2</sup>' },
+    { card1: '3<i>a</i><sup>2</sup><i>b</i><sup>2</sup>', card2: '&minus;9<i>a</i><sup>2</sup><i>b</i><sup>2</sup>' },
+    { card1: '&minus;5<i>xyz</i>', card2: '6<i>xyz</i>' },
+    { card1: '8<i>x</i><sup>3</sup><i>y</i>', card2: '&minus;2<i>x</i><sup>3</sup><i>y</i>' },
+    { card1: '7<i>x</i><i>y</i><sup>3</sup>', card2: '&minus;4<i>x</i><i>y</i><sup>3</sup>' },
+    { card1: '7<i>bc</i>', card2: '&minus;4<i>bc</i>' },
+    { card1: '6<i>ac</i>', card2: '&minus;5<i>ac</i>' },
+    { card1: '&minus;3<i>x</i><sup>4</sup><i>y</i>', card2: '9<i>x</i><sup>4</sup><i>y</i>' },
+];
+
+let matchState = {
+    flipped: [], matched: 0, lock: false,
+    pool: [], usedIndices: new Set(), pairIdCounter: 0,
+    timerInterval: null, timeLeft: 60, gameRunning: false
+};
+
+function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function pickNewPair() {
+    // 사용되지 않은 쌍 중에서 하나 선택
+    const available = [];
+    for (let i = 0; i < matchPairs.length; i++) {
+        if (!matchState.usedIndices.has(i)) available.push(i);
+    }
+    if (available.length === 0) {
+        // 모두 소진되면 리셋
+        matchState.usedIndices.clear();
+        for (let i = 0; i < matchPairs.length; i++) available.push(i);
+    }
+    const idx = available[Math.floor(Math.random() * available.length)];
+    matchState.usedIndices.add(idx);
+    return matchPairs[idx];
+}
+
+function createCardEl(pairId, html) {
+    const el = document.createElement('div');
+    el.className = 'match-card';
+    el.dataset.pairId = pairId;
+    el.innerHTML = html;
+    el.addEventListener('click', () => selectMatchCard(el));
+    return el;
+}
+
+function formatTime(sec) {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return m + ':' + String(s).padStart(2, '0');
+}
+
+function updateTimerDisplay() {
+    const el = document.getElementById('timerDisplay');
+    el.textContent = '⏱ ' + formatTime(matchState.timeLeft);
+    if (matchState.timeLeft <= 30) {
+        el.classList.add('warning');
+    } else {
+        el.classList.remove('warning');
+    }
+}
+
+function initMatchGame() {
+    const grid = document.getElementById('cardGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    document.getElementById('gameComplete').style.display = 'none';
+
+    // 타이머 정지
+    if (matchState.timerInterval) clearInterval(matchState.timerInterval);
+
+    matchState = {
+        flipped: [], matched: 0, lock: false,
+        pool: [], usedIndices: new Set(), pairIdCounter: 0,
+        timerInterval: null, timeLeft: 60, gameRunning: false
+    };
+
+    document.getElementById('gameMatched').textContent = '00';
+    updateTimerDisplay();
+    document.getElementById('timerDisplay').classList.remove('warning');
+
+    // 4쌍 선택 후 8장 카드 배치
+    const cards = [];
+    for (let i = 0; i < 4; i++) {
+        const pair = pickNewPair();
+        const pid = matchState.pairIdCounter++;
+        cards.push({ pairId: pid, html: pair.card1 });
+        cards.push({ pairId: pid, html: pair.card2 });
+    }
+    shuffleArray(cards);
+
+    cards.forEach(card => {
+        grid.appendChild(createCardEl(card.pairId, card.html));
+    });
+
+    // 게임시작 전이므로 카드 비활성
+    grid.querySelectorAll('.match-card').forEach(c => c.classList.add('disabled'));
+    document.getElementById('btnStartGame').disabled = false;
+}
+
+function startMatchGame() {
+    if (matchState.gameRunning) return;
+    matchState.gameRunning = true;
+
+    const grid = document.getElementById('cardGrid');
+    grid.querySelectorAll('.match-card').forEach(c => c.classList.remove('disabled'));
+    document.getElementById('btnStartGame').disabled = true;
+
+    // 1분 타이머 시작
+    matchState.timeLeft = 60;
+    updateTimerDisplay();
+    matchState.timerInterval = setInterval(() => {
+        matchState.timeLeft--;
+        updateTimerDisplay();
+        if (matchState.timeLeft <= 0) {
+            clearInterval(matchState.timerInterval);
+            endGame();
+        }
+    }, 1000);
+}
+
+function endGame() {
+    matchState.gameRunning = false;
+    matchState.lock = true;
+    const grid = document.getElementById('cardGrid');
+    grid.querySelectorAll('.match-card').forEach(c => c.classList.add('disabled'));
+
+    const comp = document.getElementById('gameComplete');
+    comp.innerHTML = '시간 종료! 총 <b>' + matchState.matched + '</b>쌍을 맞혔습니다!';
+    comp.style.display = 'block';
+}
+
+function replaceMatchedCards(cardA, cardB) {
+    const newPair = pickNewPair();
+    const pid = matchState.pairIdCounter++;
+
+    // 교체 애니메이션
+    cardA.classList.add('swap-out');
+    cardB.classList.add('swap-out');
+
+    setTimeout(() => {
+        // 새 내용으로 교체
+        cardA.className = 'match-card swap-in';
+        cardA.dataset.pairId = pid;
+        cardA.innerHTML = newPair.card1;
+
+        cardB.className = 'match-card swap-in';
+        cardB.dataset.pairId = pid;
+        cardB.innerHTML = newPair.card2;
+
+        setTimeout(() => {
+            cardA.classList.remove('swap-in');
+            cardB.classList.remove('swap-in');
+            shuffleGrid();
+            matchState.lock = false;
+        }, 300);
+    }, 300);
+}
+
+function shuffleGrid() {
+    const grid = document.getElementById('cardGrid');
+    const cards = Array.from(grid.children);
+    shuffleArray(cards);
+    cards.forEach(c => grid.appendChild(c));
+}
+
+function selectMatchCard(el) {
+    if (matchState.lock) return;
+    if (!matchState.gameRunning) return;
+    // iOS Safari: pointer-events:none이 불안정한 경우를 대비한 JS 가드
+    if (el.classList.contains('disabled') || el.classList.contains('matched')) return;
+
+    // 이미 선택된 카드를 다시 클릭하면 선택 해제
+    if (el.classList.contains('selected')) {
+        el.classList.remove('selected');
+        matchState.flipped = matchState.flipped.filter(c => c !== el);
+        return;
+    }
+
+    el.classList.add('selected');
+    matchState.flipped.push(el);
+
+    if (matchState.flipped.length === 2) {
+        matchState.lock = true;
+
+        const [a, b] = matchState.flipped;
+        if (a.dataset.pairId === b.dataset.pairId) {
+            // 매칭 성공 → 새 카드로 교체
+            setTimeout(() => {
+                a.classList.remove('selected');
+                b.classList.remove('selected');
+                a.classList.add('matched');
+                b.classList.add('matched');
+                matchState.matched++;
+                document.getElementById('gameMatched').textContent =
+                    String(matchState.matched).padStart(2, '0');
+                matchState.flipped = [];
+
+                // 0.5초 후 새 카드로 교체
+                setTimeout(() => {
+                    replaceMatchedCards(a, b);
+                }, 500);
+            }, 300);
+        } else {
+            // 매칭 실패
+            a.classList.add('wrong');
+            b.classList.add('wrong');
+            setTimeout(() => {
+                a.classList.remove('selected', 'wrong');
+                b.classList.remove('selected', 'wrong');
+                matchState.flipped = [];
+                matchState.lock = false;
+            }, 600);
+        }
+    }
+}
+
+function restartMatchGame() {
+    initMatchGame();
+}
+
+// ── 초기화 ──
+const canvases = [];
+document.querySelectorAll('.writing-area').forEach(area => {
+    canvases.push(new WritingCanvas(area));
+});
+initMatchGame();
+
+// 리사이즈 대응
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => { canvases.forEach(c => c.resize()); }, 300);
+});
+
+// ── iOS 호환 이벤트 위임 ──
+document.addEventListener('click', function(e) {
+    const toggle = e.target.closest('.answer-toggle');
+    if (toggle) { e.preventDefault(); toggleAnswer(toggle); }
+});
+document.getElementById('globalAnswerBtn').addEventListener('click', function(e) {
+    e.preventDefault(); toggleAllAnswers();
+});
+document.getElementById('btnStartGame').addEventListener('click', function(e) {
+    e.preventDefault(); startMatchGame();
+});
+document.getElementById('btnRestartGame').addEventListener('click', function(e) {
+    e.preventDefault(); restartMatchGame();
+});
+
+// 저장/불러오기 이벤트 바인딩
+document.getElementById('btnSave').addEventListener('click', function(e) {
+    e.preventDefault(); saveRecord();
+});
+document.getElementById('btnRecords').addEventListener('click', function(e) {
+    e.preventDefault(); openRecordsPanel();
+});
+document.getElementById('btnCloseRecords').addEventListener('click', function(e) {
+    e.preventDefault(); closeRecordsPanel();
+});
+document.getElementById('recordsOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeRecordsPanel();
+});
+// 기록 패널 내 불러오기/삭제 버튼 이벤트 위임
+document.getElementById('recordsList').addEventListener('click', function(e) {
+    var btn = e.target.closest('.record-btn');
+    if (!btn) return;
+    var id = btn.dataset.recordId;
+    if (btn.classList.contains('load')) {
+        loadRecord(id);
+    } else if (btn.classList.contains('delete')) {
+        if (confirm('이 기록을 삭제하시겠습니까?')) {
+            deleteRecord(id);
+        }
+    }
+});
+</script>
+
+</body>
+</html>
