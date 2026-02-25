@@ -647,164 +647,226 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* ── 카드 매칭 게임 ── */
-        .matching-game {
-            background: linear-gradient(135deg, #f0f5fa 0%, #e8f0fe 100%);
-            border: 2px solid #6fa3d4;
+        /* ── 플립카드 (3D) ── */
+        .flip-card-single {
+            -webkit-perspective: 1000px;
+            perspective: 1000px;
+            cursor: pointer;
+            margin: 16px 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .flip-card-inner {
+            position: relative;
+            -webkit-transition: transform 0.6s;
+            transition: transform 0.6s;
+            -webkit-transform-style: preserve-3d;
+            transform-style: preserve-3d;
+        }
+        .flip-card-single.flipped .flip-card-inner {
+            -webkit-transform: rotateY(180deg);
+            transform: rotateY(180deg);
+        }
+        .flip-front, .flip-back {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
             border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 14px;
+            padding: 20px;
         }
-        .matching-game .game-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .flip-front {
+            background: #f0f7ff;
+            border: 2px solid #4a90d9;
         }
-        .matching-game .game-title .badge {
-            background: #e67e22;
-            color: #fff;
-            font-size: 11px;
-            padding: 2px 10px;
-            border-radius: 10px;
-            font-weight: 600;
+        .flip-back {
+            background: #fff8f0;
+            border: 2px solid #e67e22;
+            position: absolute;
+            top: 0; left: 0; width: 100%;
+            -webkit-transform: rotateY(180deg);
+            transform: rotateY(180deg);
         }
-        .matching-game .game-desc {
-            font-size: 13px;
-            color: #555;
-            margin-bottom: 10px;
-        }
-        .game-stats {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 10px;
-            font-size: 13px;
-            color: #444;
-        }
-        .game-stats span {
-            background: #fff;
-            padding: 3px 10px;
-            border-radius: 6px;
-            border: 1px solid #d0d8e0;
-        }
-        .timer-display {
-            font-variant-numeric: tabular-nums;
-            font-weight: 700;
-            min-width: 70px;
+        .flip-hint {
             text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 6px;
         }
-        .timer-display.warning { color: #e74c3c; border-color: #e74c3c; -webkit-animation: pulse 1s infinite; animation: pulse 1s infinite; }
-        @-webkit-keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
-        .card-grid {
+        .reference-box {
+            background: #f0f7ff;
+            border-left: 3px solid #4a90d9;
+            padding: 10px 14px;
+            margin-top: 12px;
+            border-radius: 0 8px 8px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ── 공식 미니 플립카드 ── */
+        .formula-flip-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 12px;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 14px 0;
         }
-        .match-card {
+        .formula-flip-grid .formula-flip:last-child:nth-child(odd) {
+            grid-column: 1 / -1;
+        }
+        .formula-flip {
+            -webkit-perspective: 800px;
+            perspective: 800px;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
+        }
+        .ff-inner {
+            position: relative;
+            -webkit-transition: transform 0.5s;
+            transition: transform 0.5s;
+            -webkit-transform-style: preserve-3d;
+            transform-style: preserve-3d;
+        }
+        .formula-flip.flipped .ff-inner {
+            -webkit-transform: rotateY(180deg);
+            transform: rotateY(180deg);
+        }
+        .ff-front, .ff-back {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            padding: 14px 10px;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.5;
             min-height: 60px;
-            aspect-ratio: 3/2;
-            background: #fff;
-            border: 2.5px solid #d0d8e0;
-            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            padding: 6px;
+        }
+        .ff-front {
+            background: #f5f9ff;
+            border: 1.5px solid #b0c9e8;
+        }
+        .ff-back {
+            background: #fef9f3;
+            border: 1.5px solid #e6a756;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            -webkit-transform: rotateY(180deg);
+            transform: rotateY(180deg);
             font-size: 13px;
-            line-height: 1.4;
-            font-weight: 600;
-            color: #2c3e50;
-            -webkit-transition: all 0.2s ease;
-            transition: all 0.2s ease;
-            user-select: none;
-            -webkit-user-select: none;
+            color: #8B6914;
         }
-        @supports not (aspect-ratio: 1) {
-            .match-card { min-height: 70px; }
+
+        /* ── 스텝 시뮬레이션 ── */
+        .step-simulation {
+            background: #fafbfc;
+            border: 2px solid #d0d8e0;
+            border-radius: 12px;
+            padding: 18px 16px;
+            margin: 14px 0;
         }
-        .match-card:active { transform: scale(0.97); }
-        .match-card.selected {
-            border-color: #e67e22;
-            background: #fef5ec;
-            box-shadow: 0 0 0 3px rgba(230,126,34,0.25);
+        .step-simulation h3 { font-size: 14px; color: #2c3e50; margin-bottom: 12px; }
+        .sim-steps { position: relative; min-height: 100px; }
+        .sim-step {
+            display: none;
+            padding: 8px 0;
+            line-height: 2;
+            font-size: 15px;
         }
-        .match-card.matched {
-            border-color: #27ae60;
-            background: #eafaf1;
-            cursor: default;
+        .sim-step.active { display: block; }
+        .sim-step .step-line {
+            margin: 4px 0;
+            padding: 4px 8px;
+            border-radius: 6px;
+            -webkit-transition: background 0.3s, opacity 0.3s;
+            transition: background 0.3s, opacity 0.3s;
         }
-        .match-card.wrong {
-            border-color: #e74c3c;
-            background: #fdf0ef;
-        }
-        .match-card.disabled {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        .match-card.swap-out {
-            -webkit-animation: swapOut 0.3s ease forwards;
-            animation: swapOut 0.3s ease forwards;
-        }
-        .match-card.swap-in {
-            -webkit-animation: swapIn 0.3s ease forwards;
-            animation: swapIn 0.3s ease forwards;
-        }
-        @-webkit-keyframes swapOut { to { opacity:0; -webkit-transform:scale(0.8); transform:scale(0.8); } }
-        @keyframes swapOut { to { opacity:0; transform:scale(0.8); } }
-        @-webkit-keyframes swapIn { from { opacity:0; -webkit-transform:scale(0.8); transform:scale(0.8); } to { opacity:1; -webkit-transform:scale(1); transform:scale(1); } }
-        @keyframes swapIn { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
-        .game-controls {
+        .sim-step .step-line.highlight { background: #fff3cd; }
+        .sim-arrow { font-weight: 700; margin: 0 2px; }
+        .sim-controls {
             display: flex;
+            align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 16px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e8e8e8;
         }
-        .game-controls button {
-            background: #e67e22;
+        .sim-btn {
+            background: #4a90d9;
             color: #fff;
             border: none;
             border-radius: 8px;
-            padding: 8px 20px;
+            padding: 8px 18px;
             font-size: 14px;
             font-weight: 600;
             font-family: inherit;
             cursor: pointer;
+            -webkit-transition: all 0.2s;
             transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
         }
-        .game-controls button:active {
-            transform: scale(0.96);
-            background: #d35400;
+        .sim-btn:active { -webkit-transform: scale(0.96); transform: scale(0.96); }
+        .sim-btn:disabled { opacity: 0.4; cursor: default; }
+        .sim-progress { font-size: 13px; color: #888; font-weight: 600; min-width: 40px; text-align: center; }
+
+        /* ── SVG 식탁보 ── */
+        .tablecloth-svg {
+            max-width: 380px;
+            margin: 16px auto;
         }
-        .game-controls button.btn-start {
-            background: #27ae60;
+        .tablecloth-svg svg { width: 100%; height: auto; }
+
+        /* ── 대수 타일 ── */
+        .algebra-tiles {
+            background: #fafbfc;
+            border: 2px solid #d0d8e0;
+            border-radius: 12px;
+            padding: 18px 16px;
+            margin: 14px 0;
         }
-        .game-controls button.btn-start:active {
-            background: #1e8449;
+        .algebra-tiles h3 { font-size: 14px; color: #2c3e50; margin-bottom: 12px; }
+        .tiles-container { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .tiles-container svg { max-width: 340px; width: 100%; height: auto; }
+        .tile-rect {
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-transition: opacity 0.2s;
+            transition: opacity 0.2s;
+            stroke: #fff;
+            stroke-width: 2;
         }
-        .game-controls button:disabled {
-            opacity: 0.5;
-            cursor: default;
+        #tilesSvg text { pointer-events: none; }
+        .tile-rect.dim { opacity: 0.3; }
+        .tile-rect.glow { stroke: #333; stroke-width: 3; filter: brightness(1.1); }
+        .tiles-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            font-size: 13px;
         }
-        .game-complete {
+        .tiles-legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .legend-dot {
+            width: 12px; height: 12px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+        .tiles-interaction {
             text-align: center;
-            padding: 12px;
-            background: #eafaf1;
-            border: 1.5px solid #27ae60;
-            border-radius: 8px;
             margin-top: 10px;
-            font-size: 14px;
-            color: #1e8449;
-            font-weight: 600;
-            -webkit-animation: fadeIn 0.4s ease;
-            animation: fadeIn 0.4s ease;
         }
+        .tiles-prompt { font-size: 12px; color: #999; }
+        .tiles-result {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2c3e50;
+            min-height: 28px;
+            margin-top: 6px;
+        }
+
         @-webkit-keyframes fadeIn { from { opacity: 0; -webkit-transform: translateY(-8px); transform: translateY(-8px); } to { opacity: 1; -webkit-transform: translateY(0); transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -812,8 +874,7 @@
             .container { padding: 8px; }
             .header-title h1 { font-size: 14px; }
             .two-col { flex-direction: column; gap: 0; }
-            .card-grid { grid-template-columns: repeat(2, 1fr); }
-            .match-card-back { font-size: 11px; }
+            .formula-flip-grid { grid-template-columns: 1fr; }
             .canvas-toolbar { gap: 3px; padding: 5px 6px; }
             .canvas-toolbar button { padding: 4px 6px; font-size: 11px; white-space: nowrap; }
             .canvas-toolbar .btn-toggle { padding: 4px 7px; }
@@ -873,10 +934,50 @@
             <h2>다항식의 곱셈</h2>
         </div>
 
+        <!-- 탐구 열기 + SVG 식탁보 -->
         <div class="inquiry-box">
             <h3>탐구 열기</h3>
             <p>넓이가 \((2x + y)(x + y)\)인 직사각형 모양의 식탁보가 있다. 물음에 답해 보자.</p>
-            <div class="sub-problem"><span class="num">⑴</span> 가로 \(2x\), 세로 \((x + y)\)인 부분과 가로 \(y\), 세로 \((x + y)\)인 부분의 넓이를 각각 구하고 전개하시오.</div>
+            <div class="tablecloth-svg">
+                <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 세로 치수선 -->
+                    <line x1="15" y1="50" x2="15" y2="260" stroke="#555" stroke-width="1.2"/>
+                    <line x1="10" y1="50" x2="20" y2="50" stroke="#555" stroke-width="1.2"/>
+                    <line x1="10" y1="260" x2="20" y2="260" stroke="#555" stroke-width="1.2"/>
+                    <text x="8" y="160" font-size="16" fill="#333" text-anchor="middle" transform="rotate(-90,8,160)" font-style="italic">x + y</text>
+                    <!-- 왼쪽 직사각형 (빨간 무늬) -->
+                    <rect x="35" y="50" width="220" height="210" rx="4" fill="#FDECEA" stroke="#E74C3C" stroke-width="2.5"/>
+                    <line x1="35" y1="50" x2="255" y2="260" stroke="#E74C3C" stroke-width="0.8" opacity="0.3"/>
+                    <line x1="35" y1="130" x2="175" y2="260" stroke="#E74C3C" stroke-width="0.8" opacity="0.3"/>
+                    <line x1="115" y1="50" x2="255" y2="180" stroke="#E74C3C" stroke-width="0.8" opacity="0.3"/>
+                    <text x="145" y="165" font-size="18" fill="#C0392B" text-anchor="middle" font-weight="600" font-style="italic">2x(x+y)</text>
+                    <!-- 오른쪽 직사각형 (초록 무늬) -->
+                    <rect x="255" y="50" width="130" height="210" rx="4" fill="#E8F8F5" stroke="#27AE60" stroke-width="2.5"/>
+                    <line x1="265" y1="60" x2="275" y2="60" stroke="#27AE60" stroke-width="1.2" opacity="0.4"/>
+                    <line x1="285" y1="60" x2="295" y2="60" stroke="#27AE60" stroke-width="1.2" opacity="0.4"/>
+                    <line x1="305" y1="60" x2="315" y2="60" stroke="#27AE60" stroke-width="1.2" opacity="0.4"/>
+                    <line x1="335" y1="60" x2="345" y2="60" stroke="#27AE60" stroke-width="1.2" opacity="0.4"/>
+                    <line x1="265" y1="80" x2="275" y2="80" stroke="#27AE60" stroke-width="1.2" opacity="0.4"/>
+                    <line x1="285" y1="80" x2="295" y2="80" stroke="#27AE60" stroke-width="1.2" opacity="0.4"/>
+                    <line x1="305" y1="80" x2="315" y2="80" stroke="#27AE60" stroke-width="1.2" opacity="0.4"/>
+                    <line x1="335" y1="80" x2="345" y2="80" stroke="#27AE60" stroke-width="1.2" opacity="0.4"/>
+                    <text x="320" y="165" font-size="18" fill="#1E8449" text-anchor="middle" font-weight="600" font-style="italic">y(x+y)</text>
+                    <!-- 가로 치수선 (위) -->
+                    <line x1="35" y1="30" x2="255" y2="30" stroke="#E74C3C" stroke-width="1.2"/>
+                    <line x1="35" y1="25" x2="35" y2="35" stroke="#E74C3C" stroke-width="1.2"/>
+                    <line x1="255" y1="25" x2="255" y2="35" stroke="#E74C3C" stroke-width="1.2"/>
+                    <text x="145" y="22" font-size="16" fill="#C0392B" text-anchor="middle" font-weight="600" font-style="italic">2x</text>
+                    <line x1="255" y1="30" x2="385" y2="30" stroke="#27AE60" stroke-width="1.2"/>
+                    <line x1="385" y1="25" x2="385" y2="35" stroke="#27AE60" stroke-width="1.2"/>
+                    <text x="320" y="22" font-size="16" fill="#1E8449" text-anchor="middle" font-weight="600" font-style="italic">y</text>
+                    <!-- 전체 가로 치수 (아래) -->
+                    <line x1="35" y1="280" x2="385" y2="280" stroke="#555" stroke-width="1.2"/>
+                    <line x1="35" y1="275" x2="35" y2="285" stroke="#555" stroke-width="1.2"/>
+                    <line x1="385" y1="275" x2="385" y2="285" stroke="#555" stroke-width="1.2"/>
+                    <text x="210" y="296" font-size="16" fill="#333" text-anchor="middle" font-style="italic">2x + y</text>
+                </svg>
+            </div>
+            <div class="sub-problem"><span class="num">⑴</span> 각 천 조각의 넓이를 구하고 전개하시오.</div>
             <div class="writing-area" data-h="130"><canvas></canvas><div class="canvas-toolbar"></div></div>
             <div class="sub-problem"><span class="num">⑵</span> ⑴의 결과를 이용하여 \((2x + y)(x + y) = 2x^2 + 3xy + y^2\)이 성립함을 설명하시오.</div>
             <div class="writing-area" data-h="100"><canvas></canvas><div class="canvas-toolbar"></div></div>
@@ -898,7 +999,7 @@
             <div class="tip-box">\((a + b)(x + y + z) = ax + ay + az + bx + by + bz\)와 같이 각 항을 빠짐없이 곱한다.</div>
         </div>
 
-        <!-- 예제 -->
+        <!-- 예제 — 비주얼 스텝 시뮬레이션 -->
         <div class="example-box">
             <div class="example-header">예제 &mdash; 다항식의 곱셈</div>
             <div class="example-content">
@@ -906,78 +1007,67 @@
             </div>
         </div>
 
-        <div class="solution">
-            <div class="label">풀이</div>
-            <div class="step">\((x - 2y)(3x + y)\)</div>
-            <div class="step" style="margin-left:36px;">\(= (x - 2y) \cdot 3x + (x - 2y) \cdot y\)</div>
-            <div class="step" style="margin-left:36px;">\(= (3x^2 - 6xy) + (xy - 2y^2)\)</div>
-            <div class="step" style="margin-left:36px;">\(= 3x^2 + (-6xy + xy) - 2y^2\)</div>
-            <div class="step" style="margin-left:36px;">\(= \boldsymbol{3x^2 - 5xy - 2y^2}\)</div>
+        <div class="step-simulation" id="simMultiply">
+            <div class="sim-steps">
+                <div class="sim-step active" data-step="0">
+                    <div class="step-line">\((x - 2y)(3x + y)\)</div>
+                    <div class="step-line" style="color:#888; font-size:13px;">분배법칙을 이용하여 전개해 봅시다.</div>
+                </div>
+                <div class="sim-step" data-step="1">
+                    <div class="step-line">\((\textcolor{#E74C3C}{x} \textcolor{#2980B9}{- 2y})(3x + y)\)</div>
+                    <div class="step-line highlight">\(= \textcolor{#E74C3C}{(x - 2y) \cdot 3x} + \textcolor{#2980B9}{(x - 2y) \cdot y}\)</div>
+                    <div class="step-line" style="color:#888; font-size:13px;">← 분배법칙: 뒤 다항식의 각 항을 앞 다항식에 곱한다</div>
+                </div>
+                <div class="sim-step" data-step="2">
+                    <div class="step-line">\(= (\textcolor{#E67E22}{x \cdot 3x} \textcolor{#8E44AD}{+ (-2y) \cdot 3x}) + (\textcolor{#27AE60}{x \cdot y} \textcolor{#16A085}{+ (-2y) \cdot y})\)</div>
+                    <div class="step-line highlight">\(= \textcolor{#E67E22}{3x^2} \textcolor{#8E44AD}{- 6xy} + \textcolor{#27AE60}{xy} \textcolor{#16A085}{- 2y^2}\)</div>
+                    <div class="step-line" style="color:#888; font-size:13px;">← 각 항의 곱을 계산</div>
+                </div>
+                <div class="sim-step" data-step="3">
+                    <div class="step-line">\(= 3x^2 + (\textcolor{#8E44AD}{-6xy} + \textcolor{#27AE60}{xy}) - 2y^2\)</div>
+                    <div class="step-line highlight">\(= \boldsymbol{3x^2 - 5xy - 2y^2}\)</div>
+                    <div class="step-line" style="color:#888; font-size:13px;">← 동류항 정리: \(-6xy + xy = -5xy\)</div>
+                </div>
+            </div>
+            <div class="sim-controls">
+                <button class="sim-btn" data-sim="simMultiply" data-dir="prev" disabled>◀ 이전</button>
+                <span class="sim-progress" id="simMultiply-progress">1 / 4</span>
+                <button class="sim-btn" data-sim="simMultiply" data-dir="next">다음 ▶</button>
+            </div>
         </div>
 
-        <div class="self-practice">
-            <div class="self-practice-header">스스로 하기 &mdash; 다항식의 곱셈</div>
-            <div class="self-practice-content">
-                <p>다음 식을 전개하시오.</p>
-                <div class="sub-problem" style="margin-top:8px;"><span class="num">⑴</span> \((2x - 3)(x^2 + 4x - 2)\)</div>
-                <div class="writing-area" data-h="130"><canvas></canvas><div class="canvas-toolbar"></div></div>
-                <div class="sub-problem"><span class="num">⑵</span> \((x^2 - x + 1)(x^2 + x - 1)\)</div>
-                <div class="writing-area" data-h="130"><canvas></canvas><div class="canvas-toolbar"></div></div>
-                <div class="answer-reveal">
-                    <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
-                    <div class="answer-content">
-                        <div class="ans-label">정답</div>
-                        ⑴ \(2x^3 + 5x^2 - 16x + 6\)<br>
-                        ⑵ \(x^4 - x^2 + 2x - 1\)
+        <!-- 곱셈에 대한 성질 — 플립카드 -->
+        <div class="flip-card-single" id="flipProperty">
+            <div class="flip-card-inner">
+                <div class="flip-front">
+                    <h3><span class="badge">개념</span> 다항식의 곱셈에 대한 성질</h3>
+                    <p style="margin:8px 0 4px;">세 다항식 A, B, C에 대하여</p>
+                    <div class="formula">
+                        <div class="formula-row">
+                            <div class="formula-item"><span class="formula-label">&#10102; 교환법칙</span> \(AB = BA\)</div>
+                            <div class="formula-item"><span class="formula-label">&#10103; 결합법칙</span> \((AB)C = A(BC)\)</div>
+                        </div>
+                    </div>
+                    <div class="formula">
+                        <div class="formula-row">
+                            <div class="formula-item"><span class="formula-label">&#10104; 분배법칙</span> \(A(B + C) = AB + AC\), &nbsp; \((A + B)C = AC + BC\)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flip-back">
+                    <div class="tip-box" style="margin-bottom:12px;">
+                        <b>TIP</b> &nbsp; 세 다항식의 곱을 계산할 때, 교환법칙과 결합법칙을 이용하여 곱셈이 편리한 두 다항식을 먼저 계산한다.
+                    </div>
+                    <div class="reference-box">
+                        <b>참고</b> &nbsp; 덧셈에 대한 교환법칙, 결합법칙, 분배법칙도 성립한다.<br>
+                        \(A + B = B + A\), &nbsp; \((A + B) + C = A + (B + C)\)
                     </div>
                 </div>
             </div>
+            <div class="flip-hint">카드를 탭하여 TIP 확인</div>
         </div>
 
-        <hr class="divider">
-
-        <!-- 문제 1 -->
-        <div class="problem">
-            <div class="problem-label"><span class="p-num">문제 1</span> 다음 식을 전개하시오.</div>
-            <div class="sub-problem"><span class="num">⑴</span> \((x + 1)(x^2 - 3x + 5)\)</div>
-            <div class="writing-area" data-h="143"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="sub-problem"><span class="num">⑵</span> \((2x^2 - 3x + 1)(x - 4)\)</div>
-            <div class="writing-area" data-h="143"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="answer-reveal">
-                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
-                <div class="answer-content">
-                    <div class="ans-label">정답</div>
-                    ⑴ \(\boldsymbol{x^3 - 2x^2 + 2x + 5}\)<br>
-                    ⑵ \(\boldsymbol{2x^3 - 11x^2 + 13x - 4}\)
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============ 섹션 2: 다항식의 곱셈에 대한 성질 ============ -->
-    <div class="card">
-        <div class="section-title">
-            <div class="section-number">2</div>
-            <h2>다항식의 곱셈에 대한 성질</h2>
-        </div>
-
-        <div class="concept-box highlight">
-            <h3><span class="badge">개념</span> 다항식의 곱셈에 대한 성질</h3>
-            <p>세 다항식 A, B, C에 대하여</p>
-            <div class="formula">
-                <div class="formula-row">
-                    <div class="formula-item"><span class="formula-label">&#10102; 교환법칙</span> \(AB = BA\)</div>
-                    <div class="formula-item"><span class="formula-label">&#10103; 결합법칙</span> \((AB)C = A(BC)\)</div>
-                </div>
-            </div>
-            <div class="formula">
-                <div class="formula-row">
-                    <div class="formula-item"><span class="formula-label">&#10104; 분배법칙</span> \(A(B + C) = AB + AC\), &nbsp; \((A + B)C = AC + BC\)</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 예제 -->
+        <!-- 예제 — 곱셈에 대한 성질 -->
         <div class="example-box">
             <div class="example-header">예제 &mdash; 다항식의 곱셈에 대한 성질 이해하기</div>
             <div class="example-content">
@@ -997,58 +1087,106 @@
 
         <hr class="divider">
 
-        <!-- 문제 2 -->
+        <!-- 문제 1 -->
         <div class="problem">
-            <div class="problem-label"><span class="p-num">문제 2</span> 다음 식을 전개하시오.</div>
+            <div class="problem-label"><span class="p-num">문제 1</span> 다음 식을 전개하시오.</div>
             <div class="sub-problem"><span class="num">⑴</span> \((2x - 1)(x + 1)(2x + 1)\)</div>
-            <div class="writing-area" data-h="156"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="sub-problem"><span class="num">⑵</span> \((a - b + c)^2\)</div>
             <div class="writing-area" data-h="156"><canvas></canvas><div class="canvas-toolbar"></div></div>
             <div class="answer-reveal">
                 <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
                 <div class="answer-content">
                     <div class="ans-label">정답</div>
-                    ⑴ \(\boldsymbol{4x^3 + 4x^2 - x - 1}\)<br>
-                    ⑵ \(\boldsymbol{a^2 + b^2 + c^2 - 2ab - 2bc + 2ca}\)
+                    ⑴ \(\boldsymbol{4x^3 + 4x^2 - x - 1}\)
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ============ 섹션 3: 곱셈 공식 (1) ============ -->
+    <!-- ============ 섹션 2: 곱셈 공식 ============ -->
     <div class="card">
         <div class="section-title">
-            <div class="section-number">3</div>
-            <h2>곱셈 공식 (1)</h2>
+            <div class="section-number">2</div>
+            <h2>곱셈 공식</h2>
         </div>
 
+        <!-- 곱셈 공식 ⑴ 개념 + 미니 플립카드 -->
         <div class="concept-box blue">
-            <h3><span class="badge">개념</span> 곱셈 공식</h3>
-            <div class="formula">\((a + b)^2 = a^2 + 2ab + b^2\)</div>
-            <div class="formula">\((a - b)^2 = a^2 - 2ab + b^2\)</div>
-            <div class="formula">\((a + b)(a - b) = a^2 - b^2\)</div>
-            <div class="formula">\((x + a)(x + b) = x^2 + (a + b)x + ab\)</div>
-            <div class="formula">\((ax + b)(cx + d) = acx^2 + (ad + bc)x + bd\)</div>
-            <div class="tip-box">곱셈 공식을 활용하면 복잡한 전개를 빠르게 계산할 수 있다.</div>
+            <h3><span class="badge">개념</span> 곱셈 공식 ⑴</h3>
+            <div class="tip-box" style="margin-bottom:10px;">중학교에서 배운 곱셈 공식을 다시 확인합시다. 카드를 탭하면 구체적인 예시를 볼 수 있습니다.</div>
+        </div>
+        <div class="formula-flip-grid">
+            <div class="formula-flip"><div class="ff-inner">
+                <div class="ff-front">\((a + b)^2 = a^2 + 2ab + b^2\)</div>
+                <div class="ff-back">예: \((x + 3)^2 = x^2 + 6x + 9\)</div>
+            </div></div>
+            <div class="formula-flip"><div class="ff-inner">
+                <div class="ff-front">\((a - b)^2 = a^2 - 2ab + b^2\)</div>
+                <div class="ff-back">예: \((x - 5)^2 = x^2 - 10x + 25\)</div>
+            </div></div>
+            <div class="formula-flip"><div class="ff-inner">
+                <div class="ff-front">\((a + b)(a - b) = a^2 - b^2\)</div>
+                <div class="ff-back">예: \((x + 4)(x - 4) = x^2 - 16\)</div>
+            </div></div>
+            <div class="formula-flip"><div class="ff-inner">
+                <div class="ff-front">\((x + a)(x + b) = x^2 + (a+b)x + ab\)</div>
+                <div class="ff-back">예: \((x + 2)(x + 5) = x^2 + 7x + 10\)</div>
+            </div></div>
+            <div class="formula-flip"><div class="ff-inner">
+                <div class="ff-front">\((ax + b)(cx + d) = acx^2 + (ad+bc)x + bd\)</div>
+                <div class="ff-back">예: \((2x + 1)(3x + 4) = 6x^2 + 11x + 4\)</div>
+            </div></div>
         </div>
 
-        <!-- 곱셈 공식 카드 매칭 미니게임 -->
-        <div class="matching-game">
-            <div class="game-title"><span class="badge">게임</span> 곱셈 공식 카드 매칭</div>
-            <div class="game-desc">곱셈 공식과 전개 결과를 짝지어 보세요! 제한시간 1분 안에 최대한 많은 쌍을 찾으세요.</div>
-            <div class="game-stats">
-                <span class="timer-display" id="timerDisplay">⏱ 1:00</span>
-                <span>매칭 <b id="gameMatched">00</b></span>
+        <!-- 대수 타일: (a+b+c)² 인터랙티브 -->
+        <div class="algebra-tiles" id="algebraTiles">
+            <h3><span class="badge">비주얼 개념</span> 대수 타일로 이해하는 \((a+b+c)^2\)</h3>
+            <div class="tiles-container">
+                <svg viewBox="0 0 340 340" id="tilesSvg" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 축 라벨 -->
+                    <text x="75" y="15" font-size="15" fill="#C0392B" text-anchor="middle" font-weight="600" font-style="italic">a</text>
+                    <text x="190" y="15" font-size="15" fill="#2980B9" text-anchor="middle" font-weight="600" font-style="italic">b</text>
+                    <text x="290" y="15" font-size="15" fill="#27AE60" text-anchor="middle" font-weight="600" font-style="italic">c</text>
+                    <text x="12" y="85" font-size="15" fill="#C0392B" text-anchor="middle" font-weight="600" font-style="italic">a</text>
+                    <text x="12" y="195" font-size="15" fill="#2980B9" text-anchor="middle" font-weight="600" font-style="italic">b</text>
+                    <text x="12" y="295" font-size="15" fill="#27AE60" text-anchor="middle" font-weight="600" font-style="italic">c</text>
+                    <!-- Row 1: a × a, a × b, a × c -->
+                    <rect class="tile-rect" data-group="a2" x="25" y="25" width="100" height="100" rx="4" fill="#E74C3C" opacity="0.7"/>
+                    <text x="75" y="82" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">a²</text>
+                    <rect class="tile-rect" data-group="ab" x="130" y="25" width="100" height="100" rx="4" fill="#E67E22" opacity="0.7"/>
+                    <text x="180" y="82" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">ab</text>
+                    <rect class="tile-rect" data-group="ac" x="235" y="25" width="100" height="100" rx="4" fill="#16A085" opacity="0.7"/>
+                    <text x="285" y="82" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">ac</text>
+                    <!-- Row 2: b × a, b × b, b × c -->
+                    <rect class="tile-rect" data-group="ab" x="25" y="130" width="100" height="100" rx="4" fill="#E67E22" opacity="0.7"/>
+                    <text x="75" y="187" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">ba</text>
+                    <rect class="tile-rect" data-group="b2" x="130" y="130" width="100" height="100" rx="4" fill="#2980B9" opacity="0.7"/>
+                    <text x="180" y="187" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">b²</text>
+                    <rect class="tile-rect" data-group="bc" x="235" y="130" width="100" height="100" rx="4" fill="#8E44AD" opacity="0.7"/>
+                    <text x="285" y="187" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">bc</text>
+                    <!-- Row 3: c × a, c × b, c × c -->
+                    <rect class="tile-rect" data-group="ac" x="25" y="235" width="100" height="100" rx="4" fill="#16A085" opacity="0.7"/>
+                    <text x="75" y="292" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">ca</text>
+                    <rect class="tile-rect" data-group="bc" x="130" y="235" width="100" height="100" rx="4" fill="#8E44AD" opacity="0.7"/>
+                    <text x="180" y="292" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">cb</text>
+                    <rect class="tile-rect" data-group="c2" x="235" y="235" width="100" height="100" rx="4" fill="#27AE60" opacity="0.7"/>
+                    <text x="285" y="292" font-size="16" fill="#fff" text-anchor="middle" font-weight="700">c²</text>
+                </svg>
+                <div class="tiles-legend">
+                    <span><span class="legend-dot" style="background:#E74C3C;"></span> a²</span>
+                    <span><span class="legend-dot" style="background:#2980B9;"></span> b²</span>
+                    <span><span class="legend-dot" style="background:#27AE60;"></span> c²</span>
+                    <span><span class="legend-dot" style="background:#E67E22;"></span> 2ab</span>
+                    <span><span class="legend-dot" style="background:#8E44AD;"></span> 2bc</span>
+                    <span><span class="legend-dot" style="background:#16A085;"></span> 2ca</span>
+                </div>
             </div>
-            <div class="card-grid" id="cardGrid"></div>
-            <div id="gameComplete" class="game-complete" style="display:none"></div>
-            <div class="game-controls">
-                <button class="btn-start" id="btnStartGame">게임시작</button>
-                <button id="btnRestartGame">다시하기</button>
+            <div class="tiles-interaction">
+                <p class="tiles-prompt">타일을 탭하여 해당 항을 확인하세요</p>
+                <div class="tiles-result" id="tilesResult"></div>
             </div>
         </div>
 
-        <!-- 예제 -->
+        <!-- 예제 — (a+b+c)² -->
         <div class="example-box">
             <div class="example-header">예제 &mdash; 곱셈 공식을 이용하여 전개하기</div>
             <div class="example-content">
@@ -1066,45 +1204,69 @@
 
         <hr class="divider">
 
-        <!-- 문제 3 -->
-        <div class="problem">
-            <div class="problem-label"><span class="p-num">문제 3</span> 곱셈 공식을 이용하여 다음 식을 전개하시오.</div>
-            <div class="sub-problem"><span class="num">⑴</span> \((2x + 3y)^2\)</div>
-            <div class="writing-area" data-h="91"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="sub-problem"><span class="num">⑵</span> \((3x + 2)(3x - 2)\)</div>
-            <div class="writing-area" data-h="91"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="sub-problem"><span class="num">⑶</span> \((x + 3)(x - 7)\)</div>
-            <div class="writing-area" data-h="91"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="answer-reveal">
-                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
-                <div class="answer-content">
-                    <div class="ans-label">정답</div>
-                    ⑴ \(\boldsymbol{4x^2 + 12xy + 9y^2}\)<br>
-                    ⑵ \(\boldsymbol{9x^2 - 4}\)<br>
-                    ⑶ \(\boldsymbol{x^2 - 4x - 21}\)
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============ 섹션 4: 곱셈 공식 ⑵ ============ -->
-    <div class="card">
-        <div class="section-title">
-            <div class="section-number">4</div>
-            <h2>곱셈 공식 ⑵</h2>
-        </div>
-
+        <!-- 곱셈 공식 ⑵ 개념 + 미니 플립카드 -->
         <div class="concept-box blue">
             <h3><span class="badge">개념</span> 곱셈 공식 ⑵</h3>
-            <div class="formula">\((a + b + c)^2 = a^2 + b^2 + c^2 + 2ab + 2bc + 2ca\)</div>
-            <div class="formula">\((a + b)^3 = a^3 + 3a^2 b + 3ab^2 + b^3\)</div>
-            <div class="formula">\((a - b)^3 = a^3 - 3a^2 b + 3ab^2 - b^3\)</div>
-            <div class="formula">\((a + b)(a^2 - ab + b^2) = a^3 + b^3\)</div>
-            <div class="formula">\((a - b)(a^2 + ab + b^2) = a^3 - b^3\)</div>
-            <div class="tip-box">이 공식을 이용하면 다항식의 곱셈을 더 편리하게 전개할 수 있다.</div>
+            <div class="tip-box" style="margin-bottom:10px;">세 문자 이상의 완전제곱식, 세제곱 공식, 인수분해와 연결되는 곱셈 공식입니다.</div>
+        </div>
+        <div class="formula-flip-grid">
+            <div class="formula-flip"><div class="ff-inner">
+                <div class="ff-front">\((a+b+c)^2\)<br>\(= a^2+b^2+c^2+2ab+2bc+2ca\)</div>
+                <div class="ff-back">예: \((x+y+1)^2\)<br>\(= x^2+y^2+1+2xy+2y+2x\)</div>
+            </div></div>
+            <div class="formula-flip"><div class="ff-inner">
+                <div class="ff-front">\((a+b)^3 = a^3+3a^2b+3ab^2+b^3\)</div>
+                <div class="ff-back">예: \((x+2)^3 = x^3+6x^2+12x+8\)</div>
+            </div></div>
+            <div class="formula-flip"><div class="ff-inner">
+                <div class="ff-front">\((a-b)^3 = a^3-3a^2b+3ab^2-b^3\)</div>
+                <div class="ff-back">예: \((x-1)^3 = x^3-3x^2+3x-1\)</div>
+            </div></div>
+            <div class="formula-flip"><div class="ff-inner">
+                <div class="ff-front">\((a+b)(a^2-ab+b^2) = a^3+b^3\)</div>
+                <div class="ff-back">예: \((x+2)(x^2-2x+4) = x^3+8\)</div>
+            </div></div>
+            <div class="formula-flip"><div class="ff-inner">
+                <div class="ff-front">\((a-b)(a^2+ab+b^2) = a^3-b^3\)</div>
+                <div class="ff-back">예: \((x-3)(x^2+3x+9) = x^3-27\)</div>
+            </div></div>
         </div>
 
-        <!-- 예제 -->
+        <!-- 비주얼개념: (a-2b)³ 스텝 시뮬레이션 -->
+        <div class="step-simulation" id="simCube">
+            <h3><span class="badge">비주얼 개념</span> \((a - 2b)^3\) 전개 과정</h3>
+            <div class="sim-steps">
+                <div class="sim-step active" data-step="0">
+                    <div class="step-line">\((a - 2b)^3\)</div>
+                    <div class="step-line" style="color:#888; font-size:13px;">세제곱을 단계별로 전개해 봅시다.</div>
+                </div>
+                <div class="sim-step" data-step="1">
+                    <div class="step-line">\((a - 2b)^3 = (a - 2b)(a - 2b)^2\)</div>
+                    <div class="step-line highlight">\(= (a - 2b)(a^2 - 4ab + 4b^2)\)</div>
+                    <div class="step-line" style="color:#888; font-size:13px;">← \((a-2b)^2\)을 먼저 전개</div>
+                </div>
+                <div class="sim-step" data-step="2">
+                    <div class="step-line">\(= \textcolor{#E74C3C}{a} \cdot (a^2 - 4ab + 4b^2) + \textcolor{#2980B9}{(-2b)} \cdot (a^2 - 4ab + 4b^2)\)</div>
+                    <div class="step-line" style="color:#888; font-size:13px;">← 분배법칙</div>
+                </div>
+                <div class="sim-step" data-step="3">
+                    <div class="step-line">\(= \textcolor{#E74C3C}{a^3 - 4a^2b + 4ab^2} \textcolor{#2980B9}{- 2a^2b + 8ab^2 - 8b^3}\)</div>
+                    <div class="step-line" style="color:#888; font-size:13px;">← 각 항 계산</div>
+                </div>
+                <div class="sim-step" data-step="4">
+                    <div class="step-line">\(= a^3 + (-4a^2b - 2a^2b) + (4ab^2 + 8ab^2) - 8b^3\)</div>
+                    <div class="step-line highlight">\(= \boldsymbol{a^3 - 6a^2b + 12ab^2 - 8b^3}\)</div>
+                    <div class="step-line" style="color:#888; font-size:13px;">← 동류항 정리</div>
+                </div>
+            </div>
+            <div class="sim-controls">
+                <button class="sim-btn" data-sim="simCube" data-dir="prev" disabled>◀ 이전</button>
+                <span class="sim-progress" id="simCube-progress">1 / 5</span>
+                <button class="sim-btn" data-sim="simCube" data-dir="next">다음 ▶</button>
+            </div>
+        </div>
+
+        <!-- 예제 — 세제곱 공식 -->
         <div class="example-box">
             <div class="example-header">예제 &mdash; 특수한 형태의 다항식의 곱셈 전개하기</div>
             <div class="example-content">
@@ -1128,9 +1290,9 @@
 
         <hr class="divider">
 
-        <!-- 문제 4 -->
+        <!-- 문제 2 -->
         <div class="problem">
-            <div class="problem-label"><span class="p-num">문제 4</span> 다음 식을 전개하시오.</div>
+            <div class="problem-label"><span class="p-num">문제 2</span> 다음 식을 전개하시오.</div>
             <div class="sub-problem"><span class="num">⑴</span> \((a - b)^3\)</div>
             <div class="writing-area" data-h="156"><canvas></canvas><div class="canvas-toolbar"></div></div>
             <div class="sub-problem"><span class="num">⑵</span> \((a - b)(a^2 + ab + b^2)\)</div>
@@ -1147,9 +1309,9 @@
 
         <hr class="divider">
 
-        <!-- 문제 5 -->
+        <!-- 문제 3 -->
         <div class="problem">
-            <div class="problem-label"><span class="p-num">문제 5</span> 곱셈 공식을 이용하여 다음 식을 전개하시오.</div>
+            <div class="problem-label"><span class="p-num">문제 3</span> 곱셈 공식을 이용하여 다음 식을 전개하시오.</div>
             <div class="sub-problem"><span class="num">⑴</span> \((x - y + 2z)^2\)</div>
             <div class="writing-area" data-h="143"><canvas></canvas><div class="canvas-toolbar"></div></div>
             <div class="sub-problem"><span class="num">⑵</span> \((a + 2b)^3\)</div>
@@ -1171,67 +1333,71 @@
         </div>
     </div>
 
-    <!-- ============ 섹션 5: 계산력 강화하기 ============ -->
+    <!-- ============ 섹션 3: 계산력 강화하기 ============ -->
     <div class="card">
         <div class="section-title">
-            <div class="section-number">5</div>
+            <div class="section-number">3</div>
             <h2>계산력 강화하기</h2>
         </div>
 
+        <!-- 문제 4 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 4</span> 다음 식을 전개하시오.</div>
+            <div class="sub-problem"><span class="num">⑴</span> \((x - 3y)(2x + y - 1)\)</div>
+            <div class="writing-area" data-h="143"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="sub-problem"><span class="num">⑵</span> \((x^2 - 2x + 1)(x^2 + x - 7)\)</div>
+            <div class="writing-area" data-h="143"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    ⑴ \(\boldsymbol{2x^2 - 5xy - x + 3y - 3y^2}\)<br>
+                    ⑵ \(\boldsymbol{x^4 - x^3 - 8x^2 + 15x - 7}\)
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 문제 5 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 5</span> 곱셈 공식을 이용하여 다음 식을 전개하시오.</div>
+            <div class="sub-problem"><span class="num">⑴</span> \((a + b - 3)^2\)</div>
+            <div class="sub-problem"><span class="num">⑵</span> \((x + 2y)^3\)</div>
+            <div class="sub-problem"><span class="num">⑶</span> \((2x - 5y)^3\)</div>
+            <div class="sub-problem"><span class="num">⑷</span> \((x + 2y)(x^2 - 2xy + 4y^2)\)</div>
+            <div class="sub-problem"><span class="num">⑸</span> \((a - 4b)(a^2 + 4ab + 16b^2)\)</div>
+            <div class="sub-problem"><span class="num">⑹</span> \((4x - 3y)(16x^2 + 12xy + 9y^2)\)</div>
+            <div class="writing-area" data-h="300"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    ⑴ \(\boldsymbol{a^2 + b^2 + 9 + 2ab - 6b - 6a}\)<br>
+                    ⑵ \(\boldsymbol{x^3 + 6x^2 y + 12xy^2 + 8y^3}\)<br>
+                    ⑶ \(\boldsymbol{8x^3 - 60x^2 y + 150xy^2 - 125y^3}\)<br>
+                    ⑷ \(\boldsymbol{x^3 + 8y^3}\)<br>
+                    ⑸ \(\boldsymbol{a^3 - 64b^3}\)<br>
+                    ⑹ \(\boldsymbol{64x^3 - 27y^3}\)
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
         <!-- 문제 6 -->
         <div class="problem">
-            <div class="problem-label"><span class="p-num">문제 6</span> 다음 식을 전개하시오.</div>
-            <div class="sub-problem"><span class="num">⑴</span> \((x - 3)(x^2 + 2x - 5)\)</div>
-            <div class="writing-area" data-h="130"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="sub-problem"><span class="num">⑵</span> \((x^2 + x + 1)(x^2 - x + 1)\)</div>
-            <div class="writing-area" data-h="130"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="problem-label"><span class="p-num">문제 6</span> 다음 값을 구하시오.</div>
+            <div class="sub-problem"><span class="num">⑴</span> \(x + y = 2\), \(xy = -3\)일 때, \(x^3 + y^3\)의 값</div>
+            <div class="writing-area" data-h="156"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="sub-problem"><span class="num">⑵</span> \(x - y = 3\), \(xy = 4\)일 때, \(x^3 - y^3\)의 값</div>
+            <div class="writing-area" data-h="156"><canvas></canvas><div class="canvas-toolbar"></div></div>
             <div class="answer-reveal">
                 <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
                 <div class="answer-content">
                     <div class="ans-label">정답</div>
-                    ⑴ \(\boldsymbol{x^3 - x^2 - 11x + 15}\)<br>
-                    ⑵ \(\boldsymbol{x^4 + x^2 + 1}\)
-                </div>
-            </div>
-        </div>
-
-        <hr class="divider">
-
-        <!-- 문제 7 -->
-        <div class="problem">
-            <div class="problem-label"><span class="p-num">문제 7</span> 다음 식을 전개하시오.</div>
-            <div class="sub-problem"><span class="num">⑴</span> \((x - 6)^2\)</div>
-            <div class="writing-area" data-h="91"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="sub-problem"><span class="num">⑵</span> \((5a + 3b)(5a - 3b)\)</div>
-            <div class="writing-area" data-h="91"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="answer-reveal">
-                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
-                <div class="answer-content">
-                    <div class="ans-label">정답</div>
-                    ⑴ \(\boldsymbol{x^2 - 12x + 36}\)<br>
-                    ⑵ \(\boldsymbol{25a^2 - 9b^2}\)
-                </div>
-            </div>
-        </div>
-
-        <hr class="divider">
-
-        <!-- 문제 8 -->
-        <div class="problem">
-            <div class="problem-label"><span class="p-num">문제 8</span> 다음 식을 전개하시오.</div>
-            <div class="sub-problem"><span class="num">⑴</span> \((3x + 1)(2x - 5)\)</div>
-            <div class="writing-area" data-h="117"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="sub-problem"><span class="num">⑵</span> \((a - 2b)^3\)</div>
-            <div class="writing-area" data-h="143"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="sub-problem"><span class="num">⑶</span> \((x - 2)(x^2 + 2x + 4)\)</div>
-            <div class="writing-area" data-h="130"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="answer-reveal">
-                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
-                <div class="answer-content">
-                    <div class="ans-label">정답</div>
-                    ⑴ \(\boldsymbol{6x^2 - 13x - 5}\)<br>
-                    ⑵ \(\boldsymbol{a^3 - 6a^2 b + 12ab^2 - 8b^3}\)<br>
-                    ⑶ \(\boldsymbol{x^3 - 8}\)
+                    ⑴ \(\boldsymbol{26}\)<br>
+                    ⑵ \(\boldsymbol{63}\)
                 </div>
             </div>
         </div>
@@ -1358,18 +1524,11 @@ function captureCurrentState() {
         return canvasToJpeg(wc);
     });
 
-    const gameState = {
-        matched: matchState.matched,
-        timeLeft: matchState.timeLeft,
-        gameRunning: false
-    };
-
     return {
         id: String(Date.now()),
         timestamp: new Date().toISOString(),
         studentInfo: studentInfo,
-        canvasData: canvasData,
-        gameState: gameState
+        canvasData: canvasData
     };
 }
 
@@ -1429,21 +1588,6 @@ function loadRecord(recordId) {
         wc.ctx.restore();
     });
 
-    // 게임 상태 복원 (표시만)
-    if (matchState.timerInterval) clearInterval(matchState.timerInterval);
-    matchState.matched = record.gameState.matched || 0;
-    matchState.timeLeft = record.gameState.timeLeft || 0;
-    matchState.gameRunning = false;
-    document.getElementById('gameMatched').textContent =
-        String(matchState.matched).padStart(2, '0');
-    updateTimerDisplay();
-
-    if (record.gameState.matched > 0) {
-        var comp = document.getElementById('gameComplete');
-        comp.innerHTML = '불러온 기록: 총 <b>' + matchState.matched + '</b>쌍 매칭';
-        comp.style.display = 'block';
-    }
-
     closeRecordsPanel();
     showToast('불러왔습니다.');
 }
@@ -1489,13 +1633,12 @@ function renderRecordsPanel() {
         var classInfo = r.studentInfo.classGroup || '';
         var num = r.studentInfo.number || '';
         var dateStr = formatTimestamp(r.timestamp);
-        var score = r.gameState.matched || 0;
         var detail = (classInfo ? classInfo + ' ' : '') + (num ? num + '번 ' : '') + name;
 
         return '<div class="record-item">' +
             '<div class="record-info">' +
                 '<div class="record-date">' + dateStr + '</div>' +
-                '<div class="record-detail">' + detail + ' · 매칭 ' + score + '쌍</div>' +
+                '<div class="record-detail">' + detail + '</div>' +
             '</div>' +
             '<div class="record-actions">' +
                 '<button class="record-btn load" data-record-id="' + r.id + '">불러오기</button>' +
@@ -1690,259 +1833,103 @@ class WritingCanvas {
     }
 }
 
-// ── 카드 매칭 게임 (곱셈 공식 ↔ 전개 결과 32쌍) ──
-const matchPairs = [
-    // A. 완전제곱식 (a+b)², (a-b)² — 정수 (8쌍)
-    { card1: '\\((x+1)^2\\)', card2: '\\(x^2+2x+1\\)' },
-    { card1: '\\((x-1)^2\\)', card2: '\\(x^2-2x+1\\)' },
-    { card1: '\\((x+2)^2\\)', card2: '\\(x^2+4x+4\\)' },
-    { card1: '\\((x-3)^2\\)', card2: '\\(x^2-6x+9\\)' },
-    { card1: '\\((x+5)^2\\)', card2: '\\(x^2+10x+25\\)' },
-    { card1: '\\((x-4)^2\\)', card2: '\\(x^2-8x+16\\)' },
-    { card1: '\\((2x+1)^2\\)', card2: '\\(4x^2+4x+1\\)' },
-    { card1: '\\((3x-1)^2\\)', card2: '\\(9x^2-6x+1\\)' },
-    // B. 합차공식 (a+b)(a-b) (8쌍)
-    { card1: '\\((x+1)(x-1)\\)', card2: '\\(x^2-1\\)' },
-    { card1: '\\((x+3)(x-3)\\)', card2: '\\(x^2-9\\)' },
-    { card1: '\\((x+5)(x-5)\\)', card2: '\\(x^2-25\\)' },
-    { card1: '\\((x+7)(x-7)\\)', card2: '\\(x^2-49\\)' },
-    { card1: '\\((2x+1)(2x-1)\\)', card2: '\\(4x^2-1\\)' },
-    { card1: '\\((3x+2)(3x-2)\\)', card2: '\\(9x^2-4\\)' },
-    { card1: '\\((x+2y)(x-2y)\\)', card2: '\\(x^2-4y^2\\)' },
-    { card1: '\\((5a+b)(5a-b)\\)', card2: '\\(25a^2-b^2\\)' },
-    // C. 세제곱 공식 (a+b)³, (a-b)³ (8쌍)
-    { card1: '\\((a+b)^3\\)', card2: '\\(a^3+3a^2b+3ab^2+b^3\\)' },
-    { card1: '\\((a-b)^3\\)', card2: '\\(a^3-3a^2b+3ab^2-b^3\\)' },
-    { card1: '\\((x+1)^3\\)', card2: '\\(x^3+3x^2+3x+1\\)' },
-    { card1: '\\((x-1)^3\\)', card2: '\\(x^3-3x^2+3x-1\\)' },
-    { card1: '\\((x+2)^3\\)', card2: '\\(x^3+6x^2+12x+8\\)' },
-    { card1: '\\((x-2)^3\\)', card2: '\\(x^3-6x^2+12x-8\\)' },
-    { card1: '\\((a+2b)^3\\)', card2: '\\(a^3+6a^2b+12ab^2+8b^3\\)' },
-    { card1: '\\((2a-b)^3\\)', card2: '\\(8a^3-12a^2b+6ab^2-b^3\\)' },
-    // D. 곱의 합·차 공식 a³±b³ (8쌍)
-    { card1: '\\((a+b)(a^2-ab+b^2)\\)', card2: '\\(a^3+b^3\\)' },
-    { card1: '\\((a-b)(a^2+ab+b^2)\\)', card2: '\\(a^3-b^3\\)' },
-    { card1: '\\((x+1)(x^2-x+1)\\)', card2: '\\(x^3+1\\)' },
-    { card1: '\\((x-1)(x^2+x+1)\\)', card2: '\\(x^3-1\\)' },
-    { card1: '\\((x+2)(x^2-2x+4)\\)', card2: '\\(x^3+8\\)' },
-    { card1: '\\((x-3)(x^2+3x+9)\\)', card2: '\\(x^3-27\\)' },
-    { card1: '\\((2a+b)(4a^2-2ab+b^2)\\)', card2: '\\(8a^3+b^3\\)' },
-    { card1: '\\((2a-b)(4a^2+2ab+b^2)\\)', card2: '\\(8a^3-b^3\\)' },
-];
-
-let matchState = {
-    flipped: [], matched: 0, lock: false,
-    pool: [], usedIndices: new Set(), pairIdCounter: 0,
-    timerInterval: null, timeLeft: 60, gameRunning: false
-};
-
-function shuffleArray(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
+// ── 스텝 시뮬레이션 ──
+class StepSimulation {
+    constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        if (!this.container) return;
+        this.steps = this.container.querySelectorAll('.sim-step');
+        this.total = this.steps.length;
+        this.current = 0;
+        this.progressEl = document.getElementById(containerId + '-progress');
+        this.updateUI();
     }
-    return arr;
-}
-
-function pickNewPair() {
-    // 사용되지 않은 쌍 중에서 하나 선택
-    const available = [];
-    for (let i = 0; i < matchPairs.length; i++) {
-        if (!matchState.usedIndices.has(i)) available.push(i);
-    }
-    if (available.length === 0) {
-        // 모두 소진되면 리셋
-        matchState.usedIndices.clear();
-        for (let i = 0; i < matchPairs.length; i++) available.push(i);
-    }
-    const idx = available[Math.floor(Math.random() * available.length)];
-    matchState.usedIndices.add(idx);
-    return matchPairs[idx];
-}
-
-function createCardEl(pairId, html) {
-    const el = document.createElement('div');
-    el.className = 'match-card';
-    el.dataset.pairId = pairId;
-    el.innerHTML = html;
-    if (typeof renderMathInElement === "function") { renderMathInElement(el, {delimiters: [{left: "\\(", right: "\\)", display: false}], throwOnError: false}); }
-    el.addEventListener('click', () => selectMatchCard(el));
-    return el;
-}
-
-function formatTime(sec) {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return m + ':' + String(s).padStart(2, '0');
-}
-
-function updateTimerDisplay() {
-    const el = document.getElementById('timerDisplay');
-    el.textContent = '⏱ ' + formatTime(matchState.timeLeft);
-    if (matchState.timeLeft <= 30) {
-        el.classList.add('warning');
-    } else {
-        el.classList.remove('warning');
-    }
-}
-
-function initMatchGame() {
-    const grid = document.getElementById('cardGrid');
-    if (!grid) return;
-    grid.innerHTML = '';
-    document.getElementById('gameComplete').style.display = 'none';
-
-    // 타이머 정지
-    if (matchState.timerInterval) clearInterval(matchState.timerInterval);
-
-    matchState = {
-        flipped: [], matched: 0, lock: false,
-        pool: [], usedIndices: new Set(), pairIdCounter: 0,
-        timerInterval: null, timeLeft: 60, gameRunning: false
-    };
-
-    document.getElementById('gameMatched').textContent = '00';
-    updateTimerDisplay();
-    document.getElementById('timerDisplay').classList.remove('warning');
-
-    // 4쌍 선택 후 8장 카드 배치
-    const cards = [];
-    for (let i = 0; i < 4; i++) {
-        const pair = pickNewPair();
-        const pid = matchState.pairIdCounter++;
-        cards.push({ pairId: pid, html: pair.card1 });
-        cards.push({ pairId: pid, html: pair.card2 });
-    }
-    shuffleArray(cards);
-
-    cards.forEach(card => {
-        grid.appendChild(createCardEl(card.pairId, card.html));
-    });
-
-    // 게임시작 전이므로 카드 비활성
-    grid.querySelectorAll('.match-card').forEach(c => c.classList.add('disabled'));
-    document.getElementById('btnStartGame').disabled = false;
-}
-
-function startMatchGame() {
-    if (matchState.gameRunning) return;
-    matchState.gameRunning = true;
-
-    const grid = document.getElementById('cardGrid');
-    grid.querySelectorAll('.match-card').forEach(c => c.classList.remove('disabled'));
-    document.getElementById('btnStartGame').disabled = true;
-
-    // 1분 타이머 시작
-    matchState.timeLeft = 60;
-    updateTimerDisplay();
-    matchState.timerInterval = setInterval(() => {
-        matchState.timeLeft--;
-        updateTimerDisplay();
-        if (matchState.timeLeft <= 0) {
-            clearInterval(matchState.timerInterval);
-            endGame();
-        }
-    }, 1000);
-}
-
-function endGame() {
-    matchState.gameRunning = false;
-    matchState.lock = true;
-    const grid = document.getElementById('cardGrid');
-    grid.querySelectorAll('.match-card').forEach(c => c.classList.add('disabled'));
-
-    const comp = document.getElementById('gameComplete');
-    comp.innerHTML = '시간 종료! 총 <b>' + matchState.matched + '</b>쌍을 맞혔습니다!';
-    comp.style.display = 'block';
-}
-
-function replaceMatchedCards(cardA, cardB) {
-    const newPair = pickNewPair();
-    const pid = matchState.pairIdCounter++;
-
-    // 교체 애니메이션
-    cardA.classList.add('swap-out');
-    cardB.classList.add('swap-out');
-
-    setTimeout(() => {
-        // 새 내용으로 교체
-        cardA.className = 'match-card swap-in';
-        cardA.dataset.pairId = pid;
-        cardA.innerHTML = newPair.card1;
-
-        cardB.className = 'match-card swap-in';
-        cardB.dataset.pairId = pid;
-        cardB.innerHTML = newPair.card2;
-
-        setTimeout(() => {
-            cardA.classList.remove('swap-in');
-            cardB.classList.remove('swap-in');
-            shuffleGrid();
-            matchState.lock = false;
-        }, 300);
-    }, 300);
-}
-
-function shuffleGrid() {
-    const grid = document.getElementById('cardGrid');
-    const cards = Array.from(grid.children);
-    shuffleArray(cards);
-    cards.forEach(c => grid.appendChild(c));
-}
-
-function selectMatchCard(el) {
-    if (matchState.lock) return;
-    if (!matchState.gameRunning) return;
-    // iOS Safari: pointer-events:none이 불안정한 경우를 대비한 JS 가드
-    if (el.classList.contains('disabled') || el.classList.contains('matched')) return;
-
-    // 이미 선택된 카드를 다시 클릭하면 선택 해제
-    if (el.classList.contains('selected')) {
-        el.classList.remove('selected');
-        matchState.flipped = matchState.flipped.filter(c => c !== el);
-        return;
-    }
-
-    el.classList.add('selected');
-    matchState.flipped.push(el);
-
-    if (matchState.flipped.length === 2) {
-        matchState.lock = true;
-
-        const [a, b] = matchState.flipped;
-        if (a.dataset.pairId === b.dataset.pairId) {
-            // 매칭 성공 → 새 카드로 교체
-            setTimeout(() => {
-                a.classList.remove('selected');
-                b.classList.remove('selected');
-                a.classList.add('matched');
-                b.classList.add('matched');
-                matchState.matched++;
-                document.getElementById('gameMatched').textContent =
-                    String(matchState.matched).padStart(2, '0');
-                matchState.flipped = [];
-
-                // 0.5초 후 새 카드로 교체
-                setTimeout(() => {
-                    replaceMatchedCards(a, b);
-                }, 500);
-            }, 300);
-        } else {
-            // 매칭 실패
-            a.classList.add('wrong');
-            b.classList.add('wrong');
-            setTimeout(() => {
-                a.classList.remove('selected', 'wrong');
-                b.classList.remove('selected', 'wrong');
-                matchState.flipped = [];
-                matchState.lock = false;
-            }, 600);
+    showStep(n) {
+        if (n < 0 || n >= this.total) return;
+        this.steps.forEach(s => s.classList.remove('active'));
+        this.steps[n].classList.add('active');
+        this.current = n;
+        this.updateUI();
+        // KaTeX re-render for dynamic content
+        if (typeof renderMathInElement === 'function') {
+            renderMathInElement(this.steps[n], {delimiters: [{left: '\\(', right: '\\)', display: false}], throwOnError: false});
         }
     }
+    next() { this.showStep(this.current + 1); }
+    prev() { this.showStep(this.current - 1); }
+    updateUI() {
+        if (this.progressEl) this.progressEl.textContent = (this.current + 1) + ' / ' + this.total;
+        // Update button states via data attributes
+        const btns = this.container.querySelectorAll('.sim-btn');
+        btns.forEach(btn => {
+            if (btn.dataset.dir === 'prev') btn.disabled = (this.current === 0);
+            if (btn.dataset.dir === 'next') btn.disabled = (this.current === this.total - 1);
+        });
+    }
 }
 
-function restartMatchGame() {
-    initMatchGame();
+// ── 대수 타일 인터랙션 ──
+class AlgebraTiles {
+    constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        if (!this.container) return;
+        this.resultEl = document.getElementById('tilesResult');
+        this.tiles = this.container.querySelectorAll('.tile-rect');
+        this.activeGroup = null;
+        this.groupInfo = {
+            'a2': { label: 'a² (1개)', formula: '\\(a \\times a = a^2\\)' },
+            'b2': { label: 'b² (1개)', formula: '\\(b \\times b = b^2\\)' },
+            'c2': { label: 'c² (1개)', formula: '\\(c \\times c = c^2\\)' },
+            'ab': { label: 'ab (2개)', formula: '\\(a \\times b + b \\times a = 2ab\\)' },
+            'bc': { label: 'bc (2개)', formula: '\\(b \\times c + c \\times b = 2bc\\)' },
+            'ac': { label: 'ac (2개)', formula: '\\(a \\times c + c \\times a = 2ca\\)' }
+        };
+        this.bindEvents();
+    }
+    bindEvents() {
+        const opts = { passive: false };
+        this.tiles.forEach(tile => {
+            tile.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                this.handleTap(tile.dataset.group);
+            }, opts);
+            // click fallback for non-touch environments
+            tile.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.handleTap(tile.dataset.group);
+            });
+        });
+        // iOS Safari touch fallback
+        this.tiles.forEach(tile => {
+            tile.addEventListener('touchstart', (e) => { e.preventDefault(); }, opts);
+        });
+    }
+    handleTap(group) {
+        if (this.activeGroup === group) {
+            // deselect
+            this.activeGroup = null;
+            this.tiles.forEach(t => t.classList.remove('dim', 'glow'));
+            if (this.resultEl) this.resultEl.innerHTML = '';
+            return;
+        }
+        this.activeGroup = group;
+        this.tiles.forEach(t => {
+            if (t.dataset.group === group) {
+                t.classList.remove('dim');
+                t.classList.add('glow');
+            } else {
+                t.classList.remove('glow');
+                t.classList.add('dim');
+            }
+        });
+        const info = this.groupInfo[group];
+        if (this.resultEl && info) {
+            this.resultEl.innerHTML = info.label + ' &rarr; ' + info.formula;
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(this.resultEl, {delimiters: [{left: '\\(', right: '\\)', display: false}], throwOnError: false});
+            }
+        }
+    }
 }
 
 // ── 초기화 ──
@@ -1950,11 +1937,15 @@ const canvases = [];
 document.querySelectorAll('.writing-area').forEach(area => {
     canvases.push(new WritingCanvas(area));
 });
-// 초기화 완료 후 모든 작성란 접기 (캔버스는 이미 정상 초기화됨)
+// 초기화 완료 후 모든 작성란 접기
 document.querySelectorAll('.writing-area').forEach(area => {
     area.classList.add('collapsed');
 });
-initMatchGame();
+
+// 시뮬레이션 초기화
+const simMultiply = new StepSimulation('simMultiply');
+const simCube = new StepSimulation('simCube');
+const algebraTiles = new AlgebraTiles('algebraTiles');
 
 // 리사이즈 대응
 let resizeTimer;
@@ -1965,17 +1956,45 @@ window.addEventListener('resize', () => {
 
 // ── iOS 호환 이벤트 위임 ──
 document.addEventListener('click', function(e) {
+    // 정답 토글
     const toggle = e.target.closest('.answer-toggle');
     if (toggle) { e.preventDefault(); toggleAnswer(toggle); }
+
+    // 플립카드 (큰 카드)
+    const flipSingle = e.target.closest('.flip-card-single');
+    if (flipSingle && !e.target.closest('.flip-back a')) {
+        e.preventDefault();
+        flipSingle.classList.toggle('flipped');
+    }
+
+    // 공식 미니 플립카드
+    const formulaFlip = e.target.closest('.formula-flip');
+    if (formulaFlip) {
+        e.preventDefault();
+        formulaFlip.classList.toggle('flipped');
+        // KaTeX re-render for back face
+        if (typeof renderMathInElement === 'function') {
+            renderMathInElement(formulaFlip, {delimiters: [{left: '\\(', right: '\\)', display: false}], throwOnError: false});
+        }
+    }
+
+    // 스텝 시뮬레이션 버튼
+    const simBtn = e.target.closest('.sim-btn');
+    if (simBtn) {
+        e.preventDefault();
+        const simId = simBtn.dataset.sim;
+        const dir = simBtn.dataset.dir;
+        let sim = null;
+        if (simId === 'simMultiply') sim = simMultiply;
+        else if (simId === 'simCube') sim = simCube;
+        if (sim) {
+            if (dir === 'next') sim.next();
+            else if (dir === 'prev') sim.prev();
+        }
+    }
 });
 document.getElementById('globalAnswerBtn').addEventListener('click', function(e) {
     e.preventDefault(); toggleAllAnswers();
-});
-document.getElementById('btnStartGame').addEventListener('click', function(e) {
-    e.preventDefault(); startMatchGame();
-});
-document.getElementById('btnRestartGame').addEventListener('click', function(e) {
-    e.preventDefault(); restartMatchGame();
 });
 
 // 저장/불러오기 이벤트 바인딩
