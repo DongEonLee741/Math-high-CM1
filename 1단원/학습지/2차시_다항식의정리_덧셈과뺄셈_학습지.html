@@ -917,21 +917,60 @@
             </div>
         </div>
 
-        <div class="self-practice">
-            <div class="self-practice-header">예제 스스로 하기 &mdash; 다항식의 덧셈과 뺄셈하기</div>
-            <div class="self-practice-content">
+        <div class="example-box">
+            <div class="example-header">예제 &mdash; 다항식의 덧셈과 뺄셈하기</div>
+            <div class="example-content">
                 <p>두 다항식 \(A = x^3 - 2x^2 + 1\), \(B = -2x^3 - 3x + 5\) 일 때, 다음을 계산하시오.</p>
-                <div class="sub-problem" style="margin-top:8px;"><span class="num">⑴</span> A + B</div>
+                <div class="sub-problem" style="margin-top:8px;"><span class="num">⑴</span> \(A + B\)</div>
+                <div class="sub-problem"><span class="num">⑵</span> \(A - B\)</div>
+            </div>
+        </div>
+
+        <div class="solution">
+            <div class="label">풀이</div>
+            <div class="step">⑴ \(A + B = (x^3 - 2x^2 + 1) + (-2x^3 - 3x + 5)\)</div>
+            <div class="step" style="margin-left:36px;">\(= (1-2)x^3 - 2x^2 - 3x + (1+5)\)</div>
+            <div class="step" style="margin-left:36px;">\(= \boldsymbol{-x^3 - 2x^2 - 3x + 6}\)</div>
+            <div class="step" style="margin-top:8px;">⑵ \(A - B = (x^3 - 2x^2 + 1) - (-2x^3 - 3x + 5)\)</div>
+            <div class="step" style="margin-left:36px;">\(= (x^3 - 2x^2 + 1) + (2x^3 + 3x - 5)\)</div>
+            <div class="step" style="margin-left:36px;">\(= (1+2)x^3 - 2x^2 + 3x + (1-5)\)</div>
+            <div class="step" style="margin-left:36px;">\(= \boldsymbol{3x^3 - 2x^2 + 3x - 4}\)</div>
+        </div>
+
+        <div class="self-practice">
+            <div class="self-practice-header">스스로 하기 &mdash; 다항식의 덧셈과 뺄셈</div>
+            <div class="self-practice-content">
+                <p>두 다항식 \(A = x^2 - 4x - 3\), \(B = 3x^3 + x - 2\) 일 때, 다음을 계산하시오.</p>
+                <div class="sub-problem" style="margin-top:8px;"><span class="num">⑴</span> \(A + B\)</div>
                 <div class="writing-area" data-h="117"><canvas></canvas><div class="canvas-toolbar"></div></div>
-                <div class="sub-problem"><span class="num">⑵</span> A - B</div>
+                <div class="sub-problem"><span class="num">⑵</span> \(A - B\)</div>
                 <div class="writing-area" data-h="117"><canvas></canvas><div class="canvas-toolbar"></div></div>
                 <div class="answer-reveal">
                     <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
                     <div class="answer-content">
                         <div class="ans-label">정답</div>
-                        ⑴ \(-x^3 - 2x^2 - 3x + 6\)<br>
-                        ⑵ \(3x^3 - 2x^2 + 3x - 4\)
+                        ⑴ \(3x^3 + x^2 - 3x - 5\)<br>
+                        ⑵ \(-3x^3 + x^2 - 5x - 1\)
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 문제 2 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 2</span> 두 다항식 A, B가 다음과 같을 때, A + B와 A - B를 계산하시오.</div>
+            <div class="sub-problem"><span class="num">⑴</span> \(A = x^3 + 3x^2 - 2x + 1,  \quad  B = 2x^3 + 5x\)</div>
+            <div class="writing-area" data-h="143"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="sub-problem"><span class="num">⑵</span> \(A = 2x^2 - xy + 2y^2,  \quad  B = x^2 - 3xy - 2y^2\)</div>
+            <div class="writing-area" data-h="143"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    ⑴ \(A+B = 3x^3 + 3x^2 + 3x + 1,  \quad  A-B = -x^3 + 3x^2 - 7x + 1\)<br>
+                    ⑵ \(A+B = 3x^2 - 4xy,  \quad  A-B = x^2 + 2xy + 4y^2\)
                 </div>
             </div>
         </div>
@@ -977,26 +1016,7 @@
             <div class="step"><span class="label">STEP 2</span> &nbsp; A, B를 대입하여 계산한다.</div>
             <div class="step" style="margin-left:12px;">\(= 3(x^3 + x^2 + 1) - (3x^3 - x^2 + 2x + 4)\)</div>
             <div class="step" style="margin-left:12px;">\(= (3x^3 + 3x^2 + 3) + (-3x^3 + x^2 - 2x - 4)\)</div>
-            <div class="step" style="margin-left:12px;">\(= (3-3)x^3 + (3+1)x^2 - 2x + (3-4) = \mathbf{4x^2 - 2x - 1}\)</div>
-        </div>
-
-        <hr class="divider">
-
-        <!-- 문제 2 -->
-        <div class="problem">
-            <div class="problem-label"><span class="p-num">문제 2</span> 두 다항식 A, B가 다음과 같을 때, A + B와 A - B를 계산하시오.</div>
-            <div class="sub-problem"><span class="num">⑴</span> \(A = x^3 + 3x^2 - 2x + 1,  \quad  B = 2x^3 + 5x\)</div>
-            <div class="writing-area" data-h="143"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="sub-problem"><span class="num">⑵</span> \(A = 2x^2 - xy + 2y^2,  \quad  B = x^2 - 3xy - 2y^2\)</div>
-            <div class="writing-area" data-h="143"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="answer-reveal">
-                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
-                <div class="answer-content">
-                    <div class="ans-label">정답</div>
-                    ⑴ \(A+B = 3x^3 + 3x^2 + 3x + 1,  \quad  A-B = -x^3 + 3x^2 - 7x + 1\)<br>
-                    ⑵ \(A+B = 3x^2 - 4xy,  \quad  A-B = x^2 + 2xy + 4y^2\)
-                </div>
-            </div>
+            <div class="step" style="margin-left:12px;">\(= (3-3)x^3 + (3+1)x^2 - 2x + (3-4) = \boldsymbol{4x^2 - 2x - 1}\)</div>
         </div>
 
         <hr class="divider">
@@ -1083,8 +1103,8 @@
                 <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
                 <div class="answer-content">
                     <div class="ans-label">정답</div>
-                    ⑴ \(\mathbf{3x^3 + 3x^2 - 7x + 8}\)<br>
-                    ⑵ \(\mathbf{x^3 + 5x^2 + 5}\)
+                    ⑴ \(\boldsymbol{3x^3 + 3x^2 - 7x + 8}\)<br>
+                    ⑵ \(\boldsymbol{x^3 + 5x^2 + 5}\)
                 </div>
             </div>
         </div>
@@ -1108,8 +1128,8 @@
                 <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
                 <div class="answer-content">
                     <div class="ans-label">정답</div>
-                    ⑵ \(\mathbf{2x^3 - 12x^2 + 13x + 42}\)<br>
-                    ⑷ \(\mathbf{-20x^3 - 24x^2 - 4x - 18}\)
+                    ⑵ \(\boldsymbol{2x^3 - 12x^2 + 13x + 42}\)<br>
+                    ⑷ \(\boldsymbol{-20x^3 - 24x^2 - 4x - 18}\)
                 </div>
             </div>
         </div>
