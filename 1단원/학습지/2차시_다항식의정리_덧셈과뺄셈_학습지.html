@@ -237,6 +237,11 @@
             background: #fff;
             touch-action: none;
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column-reverse;
+        }
+        .writing-area.collapsed canvas {
+            display: none;
         }
         .writing-area canvas {
             display: block;
@@ -253,7 +258,7 @@
             gap: 5px;
             padding: 5px 10px;
             background: linear-gradient(to bottom, #f8f9fb, #eef1f5);
-            border-top: 1px solid #dde3ea;
+            border-bottom: 1px solid #dde3ea;
         }
         .canvas-toolbar button {
             border: 1.5px solid #c8d0d8;
@@ -275,6 +280,26 @@
             color: #fff;
             border-color: #2c3e50;
             box-shadow: none;
+        }
+        .canvas-toolbar .btn-toggle {
+            margin-left: auto;
+            border: 1.5px solid #c8d0d8;
+            background: #fff;
+            border-radius: 7px;
+            padding: 5px 11px;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            -webkit-transition: all 0.15s;
+            transition: all 0.15s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .canvas-toolbar .btn-toggle:active {
+            background: #eef1f5;
         }
         .canvas-toolbar .spacer { flex: 1; }
         .canvas-toolbar .pen-sizes {
@@ -789,6 +814,12 @@
             .two-col { flex-direction: column; gap: 0; }
             .card-grid { grid-template-columns: repeat(2, 1fr); }
             .match-card-back { font-size: 11px; }
+            .canvas-toolbar { gap: 3px; padding: 5px 6px; }
+            .canvas-toolbar button { padding: 4px 6px; font-size: 11px; white-space: nowrap; }
+            .canvas-toolbar .btn-toggle { padding: 4px 7px; }
+            .btn-toggle .toggle-text { display: none; }
+            .canvas-toolbar .pen-sizes { gap: 3px; }
+            .canvas-toolbar .pen-size { width: 20px; height: 20px; }
         }
     </style>
 <!-- KaTeX v0.16.33 (inline with base64 fonts) -->
@@ -1438,7 +1469,7 @@ class WritingCanvas {
         const rect = this.container.getBoundingClientRect();
         const dpr = window.devicePixelRatio || 1;
         const w = rect.width;
-        const h = this.baseHeight;
+        const h = this.baseHeight * 2;
 
         this.canvas.width = w * dpr;
         this.canvas.height = h * dpr;
@@ -1485,6 +1516,23 @@ class WritingCanvas {
 
         toolbar.querySelector('.undo-btn').addEventListener('click', (e) => { e.preventDefault(); this.undo(); });
         toolbar.querySelector('.clear-btn').addEventListener('click', (e) => { e.preventDefault(); this.clear(); });
+
+        // 펼치기/접기 토글 버튼
+        var toggleBtn = document.createElement('button');
+        toggleBtn.className = 'btn-toggle';
+        toggleBtn.type = 'button';
+        toggleBtn.innerHTML = '<span class="toggle-arrow">&#9660;</span><span class="toggle-text"> 펼치기</span>';
+        toolbar.appendChild(toggleBtn);
+        var self = this;
+        toggleBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            self.container.classList.toggle('collapsed');
+            if (self.container.classList.contains('collapsed')) {
+                toggleBtn.innerHTML = '<span class="toggle-arrow">&#9660;</span><span class="toggle-text"> 펼치기</span>';
+            } else {
+                toggleBtn.innerHTML = '<span class="toggle-arrow">&#9650;</span><span class="toggle-text"> 접기</span>';
+            }
+        });
     }
 
     bindEvents() {
@@ -1830,6 +1878,10 @@ function restartMatchGame() {
 const canvases = [];
 document.querySelectorAll('.writing-area').forEach(area => {
     canvases.push(new WritingCanvas(area));
+});
+// 초기화 완료 후 모든 작성란 접기 (캔버스는 이미 정상 초기화됨)
+document.querySelectorAll('.writing-area').forEach(area => {
+    area.classList.add('collapsed');
 });
 initMatchGame();
 
