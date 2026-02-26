@@ -830,8 +830,10 @@
         /* ── 조립제법 테이블 ── */
         .sd-table { margin: 8px auto; border-collapse: collapse; font-size: 16px; line-height: 2.2; }
         .sd-table td { padding: 2px 14px; text-align: center; white-space: nowrap; }
-        .sd-divisor { font-weight: 700; border-right: 2px solid #2c3e50; padding-right: 10px !important; }
+        .sd-table td:first-child { border-right: 2px solid #2c3e50; padding-right: 10px !important; }
+        .sd-divisor { font-weight: 700; }
         .sd-bottom td { border-top: 2px solid #2c3e50; }
+        .sd-bottom td:first-child { border-right: none; border-top: none; }
         .sd-result { font-weight: 600; }
         .sd-remainder { font-weight: 700; }
 
@@ -1218,12 +1220,21 @@
             <div class="label">풀이</div>
             <div class="step">조립제법을 이용하여 \(x^3 - 3x^2 + \textcolor{#E74C3C}{0 \cdot x} + 1\)을 \(x - 1\)로 나누면</div>
             <div class="step" style="color:#888; font-size:13px;">← \(x\) 항이 없으므로 계수 자리에 <b>0</b>을 넣는다!</div>
-            <div style="text-align:center; margin:12px 0; font-family:monospace; font-size:16px; line-height:2;">
-                <span style="color:#E74C3C; font-weight:700;">1</span> &nbsp;│&nbsp; 1 &nbsp;&nbsp; -3 &nbsp;&nbsp;&nbsp; 0 &nbsp;&nbsp;&nbsp; 1<br>
-                &nbsp; &nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 &nbsp;&nbsp; -2 &nbsp;&nbsp; -2<br>
-                ──┼────────────────<br>
-                &nbsp; &nbsp;│&nbsp; 1 &nbsp;&nbsp; -2 &nbsp;&nbsp; -2 &nbsp;&nbsp; <b>-1</b>
-            </div>
+            <table class="sd-table">
+                <tr class="sd-top">
+                    <td class="sd-divisor">\(\textcolor{#E74C3C}{1}\)</td>
+                    <td>1</td><td>\(-3\)</td><td>0</td><td>1</td>
+                </tr>
+                <tr class="sd-mid">
+                    <td></td><td></td>
+                    <td>1</td><td>\(-2\)</td><td>\(-2\)</td>
+                </tr>
+                <tr class="sd-bottom">
+                    <td></td>
+                    <td>1</td><td>\(-2\)</td><td>\(-2\)</td>
+                    <td style="font-weight:700;">\(\textcolor{#E74C3C}{-1}\)</td>
+                </tr>
+            </table>
             <div class="step">\(\therefore\) 몫: \(\boldsymbol{x^2 - 2x - 2}\), &nbsp; 나머지: \(\boldsymbol{-1}\)</div>
         </div>
 
