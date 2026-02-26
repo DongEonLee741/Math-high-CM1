@@ -813,6 +813,19 @@
         .sim-btn:disabled { opacity: 0.4; cursor: default; }
         .sim-progress { font-size: 13px; color: #888; font-weight: 600; min-width: 40px; text-align: center; }
 
+        /* ── Visual Mode: 공통 ── */
+        .visual-sim [data-show] { visibility: hidden; }
+        .sim-desc { margin-top: 12px; padding: 10px 12px; background: #f0f4ff; border-radius: 8px; min-height: 48px; }
+        .sim-desc-step { display: none; font-size: 14px; line-height: 1.8; color: #2c3e50; }
+
+        /* ── 조립제법 테이블 ── */
+        .sd-table { margin: 8px auto; border-collapse: collapse; font-size: 16px; line-height: 2.2; }
+        .sd-table td { padding: 2px 14px; text-align: center; white-space: nowrap; }
+        .sd-divisor { font-weight: 700; border-right: 2px solid #2c3e50; padding-right: 10px !important; }
+        .sd-bottom td { border-top: 2px solid #2c3e50; }
+        .sd-result { font-weight: 600; }
+        .sd-remainder { font-weight: 700; }
+
         /* SVG 다이어그램 */
         .tablecloth-svg {
             max-width: 380px;
@@ -964,72 +977,73 @@
             </div>
         </div>
 
-        <!-- 스텝 시뮬레이션: ax+b 조립제법 -->
-        <div class="step-simulation" id="simAdvanced">
+        <!-- 스텝 시뮬레이션: ax+b 조립제법 (Visual Mode) -->
+        <div class="step-simulation visual-sim" id="simAdvanced" data-mode="visual">
             <h3 style="font-size:14px; color:#2c3e50; margin-bottom:10px;"><span class="badge">비주얼 개념</span> 조립제법: \((2x^3 + 3x^2 - x + 2) \div (2x + 1)\)</h3>
-            <div class="sim-steps">
-                <div class="sim-step" data-step="0">
-                    <div class="step-line" style="font-size:14px; text-align:center;">
-                        나누는 식의 일차항의 계수가 1이 아닌 경우!<br>
-                        \(2x + 1 = 2\!\left(x + \dfrac{1}{2}\right)\)이므로 먼저 \(x + \dfrac{1}{2}\)로 나눕니다.
-                    </div>
-                    <div class="step-line" style="color:#888; font-size:13px; text-align:center; margin-top:6px;">
-                        \(x + \dfrac{1}{2} = 0\)에서 \(x = \textcolor{#E74C3C}{-\dfrac{1}{2}}\)
-                    </div>
+
+            <table class="sd-table">
+                <tr class="sd-top">
+                    <td class="sd-divisor">\(\textcolor{#E74C3C}{-\frac{1}{2}}\)</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>\(-1\)</td>
+                    <td>2</td>
+                </tr>
+                <tr class="sd-mid">
+                    <td></td>
+                    <td></td>
+                    <td data-show="2">\(\textcolor{#E67E22}{-1}\)</td>
+                    <td data-show="2">\(\textcolor{#E67E22}{-1}\)</td>
+                    <td data-show="2">\(\textcolor{#E67E22}{1}\)</td>
+                </tr>
+                <tr class="sd-bottom">
+                    <td></td>
+                    <td data-show="1" class="sd-result">\(\textcolor{#2980B9}{2}\)</td>
+                    <td data-show="2" class="sd-result">\(\textcolor{#2980B9}{2}\)</td>
+                    <td data-show="2" class="sd-result">\(\textcolor{#2980B9}{-2}\)</td>
+                    <td data-show="2" class="sd-remainder">\(\textcolor{#E74C3C}{3}\)</td>
+                </tr>
+            </table>
+            <!-- VERIFY: (2x+1)(x²+x-1)+3 = 2x³+2x²-2x+x²+x-1+3 = 2x³+3x²-x+2 ✓ -->
+
+            <!-- 식 변환 (Step 3에서 등장) -->
+            <div data-show="3" style="text-align:center; margin-top:10px; font-size:14px; line-height:2;">
+                <b>❶</b> \(\left(x + \dfrac{1}{2}\right)(2x^2 + 2x - 2) + 3\)<br>
+                \(= \left(x + \dfrac{1}{2}\right) \cdot 2(x^2 + x - 1) + 3\)<br>
+                <b>❷</b> \(= (2x + 1)(\textcolor{#27AE60}{x^2 + x - 1}) + 3\)
+            </div>
+
+            <!-- 최종 결과 (Step 4에서 등장) -->
+            <div data-show="4" style="text-align:center; margin-top:10px; padding:10px; background:#fff3cd; border-radius:8px;">
+                \(\therefore\) <b>몫:</b> \(\boldsymbol{x^2 + x - 1}\), &nbsp; <b>나머지:</b> \(\boldsymbol{3}\)
+            </div>
+
+            <div class="sim-desc">
+                <div class="sim-desc-step" data-desc="0">
+                    나누는 식의 일차항의 계수가 1이 아닌 경우!<br>
+                    \(2x + 1 = 2\!\left(x + \dfrac{1}{2}\right)\)이므로 \(x = \textcolor{#E74C3C}{-\dfrac{1}{2}}\)
                 </div>
-                <div class="sim-step" data-step="1">
-                    <div class="step-line" style="font-size:13px; color:#888; margin-bottom:4px;">Step 1: 계수 배치 및 첫째 계수 내림</div>
-                    <div style="text-align:center; margin:12px 0; font-family:monospace; font-size:16px; line-height:2;">
-                        <span style="color:#E74C3C; font-weight:700;">-&#189;</span> &nbsp;│&nbsp; 2 &nbsp;&nbsp;&nbsp; 3 &nbsp;&nbsp; -1 &nbsp;&nbsp;&nbsp; 2<br>
-                        &nbsp; &nbsp;&nbsp; │<br>
-                        ───┼─────────────────<br>
-                        &nbsp; &nbsp;&nbsp; │&nbsp; <span style="color:#2980B9; font-weight:700;">2</span>
-                    </div>
-                    <div class="step-line" style="color:#888; font-size:13px; text-align:center;">← 첫째 계수 \(2\)를 그대로 내린다</div>
+                <div class="sim-desc-step" data-desc="1">
+                    <b>Step 1: 첫째 계수 내림</b><br>
+                    첫째 계수 \(\textcolor{#2980B9}{2}\)를 그대로 내린다.
                 </div>
-                <div class="sim-step" data-step="2">
-                    <div class="step-line" style="font-size:13px; color:#888; margin-bottom:4px;">Step 2: 곱하고 더하기 반복</div>
-                    <div style="text-align:center; margin:12px 0; font-family:monospace; font-size:16px; line-height:2;">
-                        <span style="color:#E74C3C; font-weight:700;">-&#189;</span> &nbsp;│&nbsp; 2 &nbsp;&nbsp;&nbsp; 3 &nbsp;&nbsp; -1 &nbsp;&nbsp;&nbsp; 2<br>
-                        &nbsp; &nbsp;&nbsp; │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:#E67E22; font-weight:700;">-1</span> &nbsp;&nbsp; <span style="color:#E67E22; font-weight:700;">-1</span> &nbsp;&nbsp;&nbsp; <span style="color:#E67E22; font-weight:700;">1</span><br>
-                        ───┼─────────────────<br>
-                        &nbsp; &nbsp;&nbsp; │&nbsp; <span style="color:#2980B9; font-weight:700;">2</span> &nbsp;&nbsp;&nbsp; <span style="color:#2980B9; font-weight:700;">2</span> &nbsp;&nbsp; <span style="color:#2980B9; font-weight:700;">-2</span> &nbsp;&nbsp;&nbsp; <span style="color:#E74C3C; font-weight:700;">3</span>
-                    </div>
-                    <div class="step-line" style="color:#888; font-size:13px; text-align:center;">
-                        \(-\frac{1}{2} \times 2 = -1\), &nbsp; \(3 + (-1) = 2\)<br>
-                        \(-\frac{1}{2} \times 2 = -1\), &nbsp; \(-1 + (-1) = -2\)<br>
-                        \(-\frac{1}{2} \times (-2) = 1\), &nbsp; \(2 + 1 = \textcolor{#E74C3C}{3}\) ← 나머지
-                    </div>
+                <div class="sim-desc-step" data-desc="2">
+                    <b>Step 2: 곱하고 더하기 반복</b><br>
+                    \(-\frac{1}{2} \times 2 = -1\), &nbsp; \(3 + (-1) = 2\)<br>
+                    \(-\frac{1}{2} \times 2 = -1\), &nbsp; \(-1 + (-1) = -2\)<br>
+                    \(-\frac{1}{2} \times (-2) = 1\), &nbsp; \(2 + 1 = \textcolor{#E74C3C}{3}\) ← 나머지
                 </div>
-                <div class="sim-step" data-step="3">
-                    <div class="step-line" style="font-size:13px; color:#888; margin-bottom:4px;">Step 3: 식 변환 (❶ → ❷)</div>
-                    <div class="step-line" style="text-align:center; margin:6px 0;">
-                        <b>❶</b> \(x + \dfrac{1}{2}\)로 나눈 몫: \(\textcolor{#2980B9}{2x^2 + 2x - 2}\)
-                    </div>
-                    <div class="step-line" style="text-align:center; margin:6px 0;">
-                        \(2x^3 + 3x^2 - x + 2 = \left(x + \dfrac{1}{2}\right)(2x^2 + 2x - 2) + 3\)
-                    </div>
-                    <div class="step-line" style="text-align:center; margin:6px 0;">
-                        \(= \left(x + \dfrac{1}{2}\right) \cdot 2(x^2 + x - 1) + 3\)
-                    </div>
-                    <div class="step-line" style="text-align:center; margin:6px 0;">
-                        <b>❷</b> \(= (2x + 1)(\textcolor{#27AE60}{x^2 + x - 1}) + 3\)
-                    </div>
+                <div class="sim-desc-step" data-desc="3">
+                    <b>Step 3: 식 변환 (❶ → ❷)</b><br>
+                    ❶ \(x + \frac{1}{2}\)로 나눈 몫: \(2x^2 + 2x - 2\)<br>
+                    ❷ \(2x + 1\)로 나눈 몫: \(\textcolor{#27AE60}{x^2 + x - 1}\) (÷2)
                 </div>
-                <div class="sim-step" data-step="4">
-                    <div class="step-line" style="font-size:13px; color:#888; margin-bottom:4px;">Step 4: 최종 결과</div>
-                    <div class="step-line highlight" style="text-align:center; margin:10px 0; font-size:15px;">
-                        \(2x + 1\)로 나눈 몫: \(\boldsymbol{x^2 + x - 1}\)<br>
-                        나머지: \(\boldsymbol{3}\)
-                    </div>
-                    <div class="step-line" style="text-align:center; margin:8px 0;">
-                        \(\therefore\; 2x^3 + 3x^2 - x + 2 = (2x + 1)(x^2 + x - 1) + 3\)
-                    </div>
-                    <div class="tip-box" style="margin-top:8px;">
-                        <b>핵심</b> &nbsp; 나누는 식의 일차항의 계수가 1이 아니면, 조립제법으로 구한 몫을 <b>일차항의 계수로 나누어야</b> 실제 몫이 된다!
-                    </div>
+                <div class="sim-desc-step" data-desc="4">
+                    \(\therefore\) <b>몫:</b> \(\boldsymbol{x^2 + x - 1}\), &nbsp; <b>나머지:</b> \(\boldsymbol{3}\)<br>
+                    <span style="color:#888; font-size:13px;">TIP: 일차항 계수가 1이 아니면, 조립제법 몫을 일차항 계수로 나누어야 실제 몫!</span>
                 </div>
             </div>
+
             <div class="sim-controls">
                 <button class="sim-btn" data-sim="simAdvanced" data-dir="prev" disabled>◀ 이전</button>
                 <span class="sim-progress" id="simAdvanced-progress">1 / 5</span>
@@ -1635,45 +1649,68 @@ class WritingCanvas {
 
 // ── 인터랙티브 요소 엔진 ──
 
-// StepSimulation 클래스 — 단계별 수식 전개 시각화 (cumulative revealed 패턴)
+// StepSimulation 클래스 — visual mode + legacy mode 지원
 class StepSimulation {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
         if (!this.container) return;
-        this.steps = this.container.querySelectorAll('.sim-step');
-        this.total = this.steps.length;
+        this.isVisual = this.container.dataset.mode === 'visual';
         this.current = 0;
         this.progressEl = document.getElementById(containerId + '-progress');
-        if (this.steps.length > 0) {
-            this.steps[0].classList.add('revealed');
-            this.steps[0].dataset.rendered = 'true';
+
+        if (this.isVisual) {
+            this.showEls = this.container.querySelectorAll('[data-show]');
+            this.descEls = this.container.querySelectorAll('.sim-desc-step');
+            this.total = this.descEls.length;
+        } else {
+            this.steps = this.container.querySelectorAll('.sim-step');
+            this.total = this.steps.length;
+            if (this.steps.length > 0) {
+                this.steps[0].classList.add('revealed');
+                this.steps[0].dataset.rendered = 'true';
+            }
         }
+        this.applyStep(0);
         this.updateUI();
+    }
+    applyStep(n) {
+        if (this.isVisual) {
+            this.showEls.forEach(function(el) {
+                el.style.visibility = parseInt(el.dataset.show) <= n ? 'visible' : 'hidden';
+            });
+            this.descEls.forEach(function(el, i) {
+                el.style.display = i === n ? 'block' : 'none';
+            });
+            if (typeof renderMathInElement === 'function' && !this.container.dataset.rendered) {
+                renderMathInElement(this.container, {delimiters: [{left: '\\(', right: '\\)', display: false}], throwOnError: false});
+                this.container.dataset.rendered = 'true';
+            }
+        } else {
+            this.steps.forEach(function(s, i) {
+                if (i <= n) {
+                    s.classList.add('revealed');
+                    if (!s.dataset.rendered && typeof renderMathInElement === 'function') {
+                        renderMathInElement(s, {delimiters: [{left: '\\(', right: '\\)', display: false}], throwOnError: false});
+                        s.dataset.rendered = 'true';
+                    }
+                } else { s.classList.remove('revealed'); }
+            });
+        }
     }
     showStep(n) {
         if (n < 0 || n >= this.total) return;
         this.current = n;
-        this.steps.forEach((s, i) => {
-            if (i <= n) {
-                s.classList.add('revealed');
-                if (!s.dataset.rendered) {
-                    if (typeof renderMathInElement === 'function') {
-                        renderMathInElement(s, {delimiters: [{left: '\\(', right: '\\)', display: false}], throwOnError: false});
-                    }
-                    s.dataset.rendered = 'true';
-                }
-            } else { s.classList.remove('revealed'); }
-        });
+        this.applyStep(n);
         this.updateUI();
     }
     next() { this.showStep(this.current + 1); }
     prev() { this.showStep(this.current - 1); }
     updateUI() {
         if (this.progressEl) this.progressEl.textContent = (this.current + 1) + ' / ' + this.total;
-        const btns = this.container.querySelectorAll('.sim-btn');
-        btns.forEach(btn => {
-            if (btn.dataset.dir === 'prev') btn.disabled = (this.current === 0);
-            if (btn.dataset.dir === 'next') btn.disabled = (this.current === this.total - 1);
+        var cur = this.current, tot = this.total;
+        this.container.querySelectorAll('.sim-btn').forEach(function(btn) {
+            if (btn.dataset.dir === 'prev') btn.disabled = (cur === 0);
+            if (btn.dataset.dir === 'next') btn.disabled = (cur === tot - 1);
         });
     }
 }
