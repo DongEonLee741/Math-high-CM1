@@ -908,6 +908,61 @@
             .canvas-toolbar .pen-sizes { gap: 3px; }
             .canvas-toolbar .pen-size { width: 20px; height: 20px; }
         }
+
+        /* ── 튜터 게임 공통 ── */
+        .tutor-game { margin: 16px 0; }
+        .tutor-phases { display:flex; gap:10px; margin-bottom:14px; justify-content:center; }
+        .phase-dot { padding:5px 14px; border-radius:18px; background:#ecf0f1; color:#95a5a6; font-size:13px; font-weight:600; transition:all .3s; }
+        .phase-dot.active { background:#3498db; color:#fff; }
+        .phase-dot.done { background:#27ae60; color:#fff; }
+        .tutor-panel { display:none; }
+        .tutor-panel.active { display:block; animation:fadeIn .3s ease; }
+        .tutor-hint { margin:12px 0; padding:10px 14px; background:#fff9e6; border-left:3px solid #f39c12; border-radius:6px; font-size:14px; color:#6b5900; line-height:1.6; }
+
+        /* ── 수식 타자기 ── */
+        .math-kb { margin:12px auto; max-width:260px; }
+        .kb-display { min-height:42px; border:2px solid #3498db; border-radius:8px; padding:8px 12px; margin-bottom:8px; text-align:center; font-size:20px; background:#fff; transition:all .3s; }
+        .kb-display.correct { border-color:#27ae60; background:#eafaf1; }
+        .kb-display.wrong { border-color:#e74c3c; background:#fef0ef; animation:shake .3s; }
+        .kb-row { display:flex; gap:6px; margin-bottom:6px; justify-content:center; }
+        .kb-key { width:52px; height:44px; border:1px solid #bdc3c7; border-radius:8px; font-size:18px; background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; user-select:none; -webkit-tap-highlight-color:transparent; transition:background .1s; }
+        .kb-key:active { background:#ecf0f1; }
+        .kb-key.submit { width:100%; background:#3498db; color:#fff; border:none; font-weight:600; font-size:16px; height:42px; }
+        .kb-key.submit:active { background:#2980b9; }
+        .kb-key.submit:disabled { background:#bdc3c7; cursor:default; }
+
+        /* ── 조립제법 입력 칸 ── */
+        .syn-cell { min-width:36px; min-height:28px; transition:all .2s; }
+        .syn-cell.active { background:#eaf2ff; outline:2px dashed #3498db; outline-offset:-2px; border-radius:4px; }
+        .syn-cell.filled { font-weight:600; }
+
+        /* ── 세로 나눗셈 입력 칸 ── */
+        .ld-input { min-width:48px; min-height:28px; transition:all .2s; }
+        .ld-input.active { background:#eaf2ff; outline:2px dashed #3498db; outline-offset:-2px; border-radius:4px; }
+        .ld-auto { color:#7f8c8d; }
+
+        /* ── A=BQ+R 드래그 ── */
+        .drag-area { margin:16px 0; padding:16px; background:#f8f9fa; border-radius:12px; }
+        .drag-cards { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:14px 0; }
+        .drag-card { padding:8px 14px; background:#fff; border:2px solid #3498db; border-radius:10px; cursor:grab; font-size:15px; touch-action:none; user-select:none; transition:all .2s; }
+        .drag-card.placed { opacity:.35; pointer-events:none; }
+        .drag-card.dragging { opacity:.7; position:fixed; z-index:1000; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+        .drag-eq-row { display:flex; align-items:center; gap:6px; justify-content:center; flex-wrap:wrap; margin:14px 0; }
+        .drop-slot { min-width:72px; min-height:38px; border:2px dashed #bdc3c7; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:15px; padding:4px 8px; transition:all .2s; }
+        .drop-slot.hover { border-color:#3498db; background:#eaf2ff; }
+        .drop-slot.filled { border-style:solid; border-color:#3498db; background:#eaf2ff; cursor:pointer; }
+        .drop-slot.correct { border-color:#27ae60; background:#eafaf1; }
+        .drop-slot.wrong { border-color:#e74c3c; background:#fef0ef; animation:shake .3s; }
+        .drag-label { font-size:11px; color:#95a5a6; text-align:center; font-weight:600; margin-bottom:2px; }
+        .drag-op { font-size:20px; font-weight:700; color:#95a5a6; line-height:38px; }
+
+        /* ── 결과 ── */
+        .tutor-result { padding:20px; background:linear-gradient(135deg,#eafaf1,#e8f8f5); border-radius:12px; text-align:center; line-height:2; }
+        .tutor-result h3 { color:#27ae60; margin-bottom:12px; font-size:18px; }
+
+        /* ── 애니메이션 ── */
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
     </style>
 <!-- KaTeX v0.16.33 (inline with base64 fonts) -->
 <style id="katex-css">
@@ -1110,13 +1165,54 @@
 
         <hr class="divider">
 
-        <!-- 문제 9 -->
+        <!-- 문제 9 — 세로 나눗셈 단계별 튜터 -->
         <div class="problem">
             <div class="problem-label"><span class="p-num">문제 9</span> 다항식 \(A\)를 다항식 \(B\)로 나누었을 때의 몫 \(Q\)와 나머지 \(R\)를 구하고, \(A = BQ + R\) 꼴로 나타내시오.</div>
-            <div class="sub-problem"><span class="num">⑴</span> \(A = 2x^3 - x^2 - 4x + 3\), &nbsp; \(B = x + 1\)</div>
-            <div class="writing-area" data-h="156"><canvas></canvas><div class="canvas-toolbar"></div></div>
-            <div class="sub-problem"><span class="num">⑵</span> \(A = 6x^3 - 3x^2 + 7x\), &nbsp; \(B = x^2 + x - 1\)</div>
-            <div class="writing-area" data-h="156"><canvas></canvas><div class="canvas-toolbar"></div></div>
+
+            <div id="divTutor" class="tutor-game">
+                <!-- 진행 표시 -->
+                <div class="tutor-phases">
+                    <span class="phase-dot active" data-phase="1">⑴</span>
+                    <span class="phase-dot" data-phase="2">⑵</span>
+                    <span class="phase-dot" data-phase="3">결과</span>
+                </div>
+
+                <!-- Phase 1a: 9-⑴ 세로 나눗셈 (가이드) -->
+                <div id="divP1" class="tutor-panel active">
+                    <div style="font-size:15px; font-weight:600; margin-bottom:10px;">⑴ \(A = 2x^3 - x^2 - 4x + 3\), &nbsp; \(B = x + 1\)</div>
+                    <div style="overflow-x:auto;">
+                        <table class="ld-table" id="ldTable1"></table>
+                    </div>
+                    <div class="tutor-hint" id="divHint1"></div>
+                    <div class="math-kb" id="divKb1"></div>
+                </div>
+
+                <!-- Phase 1b: A=BQ+R 드래그 -->
+                <div id="divDrag1" class="tutor-panel">
+                    <div class="drag-area" id="dragArea1"></div>
+                </div>
+
+                <!-- Phase 2a: 9-⑵ 세로 나눗셈 (수동) -->
+                <div id="divP2" class="tutor-panel">
+                    <div style="font-size:15px; font-weight:600; margin-bottom:10px;">⑵ \(A = 6x^3 - 3x^2 + 7x\), &nbsp; \(B = x^2 + x - 1\)</div>
+                    <div style="overflow-x:auto;">
+                        <table class="ld-table" id="ldTable2"></table>
+                    </div>
+                    <div class="tutor-hint" id="divHint2"></div>
+                    <div class="math-kb" id="divKb2"></div>
+                </div>
+
+                <!-- Phase 2b: A=BQ+R 드래그 -->
+                <div id="divDrag2" class="tutor-panel">
+                    <div class="drag-area" id="dragArea2"></div>
+                </div>
+
+                <!-- Phase 3: 전체 결과 -->
+                <div id="divResult" class="tutor-panel">
+                    <div class="tutor-result" id="divResultContent"></div>
+                </div>
+            </div>
+
             <div class="answer-reveal">
                 <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
                 <div class="answer-content">
@@ -1238,13 +1334,38 @@
             <div class="step">\(\therefore\) 몫: \(\boldsymbol{x^2 - 2x - 2}\), &nbsp; 나머지: \(\boldsymbol{-1}\)</div>
         </div>
 
-        <!-- 스스로 하기 -->
+        <!-- 스스로 하기 — 조립제법 단계별 튜터 -->
         <div class="self-practice">
             <div class="self-practice-header">스스로 하기 &mdash; 조립제법</div>
             <div class="self-practice-content">
                 <p>조립제법을 이용하여 다음 나눗셈의 몫과 나머지를 구하시오.</p>
                 <p style="text-align:center; font-size:16px; margin:8px 0;">\((2x^3 - x^2 + 3) \div (x + 1)\)</p>
-                <div class="writing-area" data-h="120"><canvas></canvas><div class="canvas-toolbar"></div></div>
+
+                <div id="synTutor" class="tutor-game">
+                    <table class="sd-table" id="synTable">
+                        <tr class="sd-top">
+                            <td class="sd-divisor">\(-1\)</td>
+                            <td>2</td><td>\(-1\)</td><td>0</td><td>3</td>
+                        </tr>
+                        <tr class="sd-mid">
+                            <td></td><td></td>
+                            <td id="syn-m1" class="syn-cell"></td>
+                            <td id="syn-m2" class="syn-cell"></td>
+                            <td id="syn-m3" class="syn-cell"></td>
+                        </tr>
+                        <tr class="sd-bottom">
+                            <td></td>
+                            <td id="syn-b0" class="syn-cell active"></td>
+                            <td id="syn-b1" class="syn-cell"></td>
+                            <td id="syn-b2" class="syn-cell"></td>
+                            <td id="syn-b3" class="syn-cell"></td>
+                        </tr>
+                    </table>
+                    <div class="tutor-hint" id="synHint"></div>
+                    <div class="math-kb" id="synKb"></div>
+                    <div id="synResult" style="display:none;"></div>
+                </div>
+
                 <div class="answer-reveal">
                     <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
                     <div class="answer-content">
@@ -1774,6 +1895,627 @@ class StepSimulation {
     }
 }
 
+// ────────── MathKeyboard 클래스 ──────────
+class MathKeyboard {
+    constructor(containerId, mode, onSubmit) {
+        this.container = document.getElementById(containerId);
+        if (!this.container) return;
+        this.mode = mode; // 'poly' or 'int'
+        this.onSubmit = onSubmit;
+        this.value = '';
+        this.enabled = true;
+        this.build();
+    }
+    build() {
+        var c = this.container;
+        c.innerHTML = '';
+        this.displayEl = document.createElement('div');
+        this.displayEl.className = 'kb-display';
+        this.displayEl.innerHTML = '&nbsp;';
+        c.appendChild(this.displayEl);
+        var keys = this.mode === 'poly'
+            ? [['7','8','9','x'],['4','5','6','²'],['1','2','3','³'],['0','+','-','⌫'],['확인']]
+            : [['7','8','9'],['4','5','6'],['1','2','3'],['-','0','⌫'],['확인']];
+        var self = this;
+        keys.forEach(function(row) {
+            var rowEl = document.createElement('div');
+            rowEl.className = 'kb-row';
+            row.forEach(function(k) {
+                var btn = document.createElement('div');
+                btn.className = 'kb-key' + (k === '확인' ? ' submit' : '');
+                btn.textContent = k;
+                btn.addEventListener('pointerdown', function(e) {
+                    e.preventDefault();
+                    if (!self.enabled) return;
+                    if (k === '확인') self.submit();
+                    else if (k === '⌫') self.backspace();
+                    else if (k === '²') self.appendChar('^2');
+                    else if (k === '³') self.appendChar('^3');
+                    else self.appendChar(k);
+                });
+                rowEl.appendChild(btn);
+            });
+            c.appendChild(rowEl);
+        });
+    }
+    appendChar(ch) { this.value += ch; this.render(); }
+    backspace() {
+        var v = this.value;
+        if (v.endsWith('^2') || v.endsWith('^3')) this.value = v.slice(0, -2);
+        else if (v.length > 0) this.value = v.slice(0, -1);
+        this.render();
+    }
+    clear() { this.value = ''; this.render(); }
+    submit() {
+        if (this.value.length === 0) return;
+        if (this.onSubmit) this.onSubmit(this.value);
+    }
+    getValue() { return this.value; }
+    setEnabled(b) { this.enabled = b; }
+    render() {
+        if (!this.displayEl) return;
+        if (this.value.length === 0) { this.displayEl.innerHTML = '&nbsp;'; return; }
+        var tex = this.value.replace(/\^2/g, '^{2}').replace(/\^3/g, '^{3}');
+        this.displayEl.innerHTML = '\\(' + tex + '\\)';
+        if (typeof renderMathInElement === 'function') {
+            renderMathInElement(this.displayEl, {delimiters:[{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+        }
+    }
+    flashCorrect() {
+        var d = this.displayEl;
+        d.classList.add('correct');
+        setTimeout(function() { d.classList.remove('correct'); }, 800);
+    }
+    flashWrong() {
+        var d = this.displayEl;
+        d.classList.add('wrong');
+        setTimeout(function() { d.classList.remove('wrong'); }, 600);
+    }
+}
+
+// ────────── DivisionTutor 클래스 ──────────
+class DivisionTutor {
+    constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        if (!this.container) return;
+        this.problems = [
+            {
+                mode: 'guided',
+                divisor: 'x + 1', dividendTerms: ['2x^3','-x^2','-4x','+3'],
+                steps: [
+                    {q:'2x^2', mul:['2x^3','+2x^2'], rem:['-3x^2','-4x','+3'], hint:'최고차항 \\(2x^3\\)를 \\(x\\)로 나누어 몫의 첫째 항을 구하세요!'},
+                    {q:'-3x', mul:['-3x^2','-3x'], rem:['-x','+3'], hint:'나머지의 최고차항 \\(-3x^2\\)를 \\(x\\)로 나누세요!'},
+                    {q:'-1', mul:['-x','-1'], rem:['4'], hint:'나머지의 최고차항 \\(-x\\)를 \\(x\\)로 나누세요!'}
+                ],
+                Astr:'2x^3-x^2-4x+3', Bstr:'x+1', Qstr:'2x^2-3x-1', Rstr:'4',
+                Atex:'2x^{3}-x^{2}-4x+3', Btex:'x+1', Qtex:'2x^{2}-3x-1', Rtex:'4'
+            },
+            {
+                mode: 'manual',
+                divisor: 'x^2 + x - 1', dividendTerms: ['6x^3','-3x^2','+7x',''],
+                steps: [
+                    {q:'6x', mul:['6x^3','+6x^2','-6x'], rem:['-9x^2','+13x'],
+                     hintQ:'최고차항 \\(6x^3\\)를 \\(x^2\\)로 나누세요!',
+                     hintMul:'\\(6x \\times (x^2+x-1)\\)을 전개하세요!',
+                     hintSub:'\\((6x^3-3x^2+7x)-(6x^3+6x^2-6x)\\)를 계산하세요!',
+                     mulAnswer:'6x^3+6x^2-6x', subAnswer:'-9x^2+13x'},
+                    {q:'-9', mul:['-9x^2','-9x','+9'], rem:['22x','-9'],
+                     hintQ:'나머지의 최고차항 \\(-9x^2\\)를 \\(x^2\\)로 나누세요!',
+                     hintMul:'\\(-9 \\times (x^2+x-1)\\)을 전개하세요!',
+                     hintSub:'\\((-9x^2+13x)-(-9x^2-9x+9)\\)를 계산하세요!',
+                     mulAnswer:'-9x^2-9x+9', subAnswer:'22x-9'}
+                ],
+                Astr:'6x^3-3x^2+7x', Bstr:'x^2+x-1', Qstr:'6x-9', Rstr:'22x-9',
+                Atex:'6x^{3}-3x^{2}+7x', Btex:'x^{2}+x-1', Qtex:'6x-9', Rtex:'22x-9'
+            }
+        ];
+        this.currentProblem = 0;
+        this.currentStep = 0;
+        this.subStep = 'q'; // 'q', 'mul', 'sub'
+        this.phases = this.container.querySelectorAll('.phase-dot');
+        this.initProblem(0);
+    }
+    initProblem(idx) {
+        var p = this.problems[idx];
+        var panelId = idx === 0 ? 'divP1' : 'divP2';
+        var tableId = idx === 0 ? 'ldTable1' : 'ldTable2';
+        var hintId = idx === 0 ? 'divHint1' : 'divHint2';
+        var kbId = idx === 0 ? 'divKb1' : 'divKb2';
+        this.currentStep = 0;
+        this.subStep = 'q';
+        // Build ld-table
+        var table = document.getElementById(tableId);
+        table.innerHTML = '';
+        var numCols = p.dividendTerms.length;
+        // Quotient row
+        var qRow = document.createElement('tr');
+        var emptyTd = document.createElement('td');
+        emptyTd.className = 'ld-divisor';
+        emptyTd.style.border = 'none';
+        qRow.appendChild(emptyTd);
+        this.qCells = [];
+        for (var i = 0; i < p.steps.length; i++) {
+            var td = document.createElement('td');
+            td.className = 'ld-input';
+            td.id = tableId + '-q' + i;
+            if (i === 0) td.classList.add('active');
+            this.qCells.push(td);
+            qRow.appendChild(td);
+        }
+        // Fill remaining cols
+        for (var i = p.steps.length; i < numCols; i++) {
+            qRow.appendChild(document.createElement('td'));
+        }
+        table.appendChild(qRow);
+        // Dividend row
+        var dRow = document.createElement('tr');
+        dRow.className = 'ld-dividend-row';
+        var divTd = document.createElement('td');
+        divTd.className = 'ld-divisor';
+        divTd.innerHTML = '\\(' + p.divisor.replace(/\^2/g,'^{2}').replace(/\^3/g,'^{3}') + '\\)';
+        dRow.appendChild(divTd);
+        p.dividendTerms.forEach(function(t) {
+            var td = document.createElement('td');
+            if (t) td.innerHTML = '\\(' + t.replace(/\^2/g,'^{2}').replace(/\^3/g,'^{3}') + '\\)';
+            dRow.appendChild(td);
+        });
+        table.appendChild(dRow);
+        this.tableEl = table;
+        // Store refs
+        this.currentTable = table;
+        this.currentHint = document.getElementById(hintId);
+        // Build keyboard
+        var self = this;
+        this.currentKb = new MathKeyboard(kbId, 'poly', function(val) { self.handleInput(val); });
+        // Set initial hint
+        if (p.mode === 'guided') {
+            this.currentHint.innerHTML = '💡 ' + p.steps[0].hint;
+        } else {
+            this.currentHint.innerHTML = '💡 ' + p.steps[0].hintQ;
+        }
+        // Render math
+        if (typeof renderMathInElement === 'function') {
+            renderMathInElement(table, {delimiters:[{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+            renderMathInElement(this.currentHint, {delimiters:[{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+        }
+    }
+    normalize(s) {
+        return s.replace(/\s+/g, '').replace(/^\+/, '');
+    }
+    handleInput(val) {
+        var p = this.problems[this.currentProblem];
+        var step = p.steps[this.currentStep];
+        var norm = this.normalize(val);
+        if (p.mode === 'guided') {
+            // Only quotient input
+            if (norm === this.normalize(step.q)) {
+                this.currentKb.flashCorrect();
+                this.fillQuotient(this.currentStep, step.q);
+                this.addAutoRows(step.mul, step.rem);
+                this.currentStep++;
+                var self = this;
+                setTimeout(function() {
+                    self.currentKb.clear();
+                    if (self.currentStep < p.steps.length) {
+                        self.qCells[self.currentStep].classList.add('active');
+                        self.currentHint.innerHTML = '💡 ' + p.steps[self.currentStep].hint;
+                        self.renderMath(self.currentHint);
+                    } else {
+                        self.completeDivision();
+                    }
+                }, 500);
+            } else {
+                this.currentKb.flashWrong();
+            }
+        } else {
+            // Manual mode: q -> mul -> sub
+            if (this.subStep === 'q') {
+                if (norm === this.normalize(step.q)) {
+                    this.currentKb.flashCorrect();
+                    this.fillQuotient(this.currentStep, step.q);
+                    this.subStep = 'mul';
+                    var self = this;
+                    setTimeout(function() {
+                        self.currentKb.clear();
+                        self.currentHint.innerHTML = '💡 ' + step.hintMul;
+                        self.renderMath(self.currentHint);
+                    }, 500);
+                } else { this.currentKb.flashWrong(); }
+            } else if (this.subStep === 'mul') {
+                if (norm === this.normalize(step.mulAnswer)) {
+                    this.currentKb.flashCorrect();
+                    this.addMulRow(step.mul);
+                    this.subStep = 'sub';
+                    var self = this;
+                    setTimeout(function() {
+                        self.currentKb.clear();
+                        self.currentHint.innerHTML = '💡 ' + step.hintSub;
+                        self.renderMath(self.currentHint);
+                    }, 500);
+                } else { this.currentKb.flashWrong(); }
+            } else if (this.subStep === 'sub') {
+                if (norm === this.normalize(step.subAnswer)) {
+                    this.currentKb.flashCorrect();
+                    this.addSubLine();
+                    this.addRemRow(step.rem);
+                    this.currentStep++;
+                    this.subStep = 'q';
+                    var self = this;
+                    setTimeout(function() {
+                        self.currentKb.clear();
+                        if (self.currentStep < p.steps.length) {
+                            self.qCells[self.currentStep].classList.add('active');
+                            self.currentHint.innerHTML = '💡 ' + p.steps[self.currentStep].hintQ;
+                            self.renderMath(self.currentHint);
+                        } else {
+                            self.completeDivision();
+                        }
+                    }, 500);
+                } else { this.currentKb.flashWrong(); }
+            }
+        }
+    }
+    fillQuotient(idx, val) {
+        var cell = this.qCells[idx];
+        cell.classList.remove('active');
+        cell.classList.add('filled');
+        cell.innerHTML = '\\(' + val.replace(/\^2/g,'^{2}').replace(/\^3/g,'^{3}') + '\\)';
+        cell.style.color = '#E74C3C';
+        cell.style.fontWeight = '600';
+        this.renderMath(cell);
+    }
+    addAutoRows(mul, rem) {
+        this.addMulRow(mul);
+        this.addSubLine();
+        this.addRemRow(rem);
+    }
+    addMulRow(terms) {
+        var tr = document.createElement('tr');
+        tr.className = 'fade-in';
+        var p = this.problems[this.currentProblem];
+        var cols = p.dividendTerms.length;
+        var offset = cols - terms.length;
+        tr.appendChild(document.createElement('td')); // divisor col
+        for (var i = 0; i < cols; i++) {
+            var td = document.createElement('td');
+            if (i >= offset && i < offset + terms.length) {
+                var t = terms[i - offset];
+                td.innerHTML = '\\(' + t.replace(/\^2/g,'^{2}').replace(/\^3/g,'^{3}') + '\\)';
+                td.className = p.mode === 'guided' ? 'ld-auto' : '';
+            }
+            tr.appendChild(td);
+        }
+        this.currentTable.appendChild(tr);
+        this.renderMath(tr);
+    }
+    addSubLine() {
+        var tr = document.createElement('tr');
+        tr.className = 'ld-sub-line fade-in';
+        tr.appendChild(document.createElement('td'));
+        var td = document.createElement('td');
+        td.colSpan = this.problems[this.currentProblem].dividendTerms.length;
+        td.innerHTML = '<hr>';
+        tr.appendChild(td);
+        this.currentTable.appendChild(tr);
+    }
+    addRemRow(terms) {
+        var tr = document.createElement('tr');
+        tr.className = 'fade-in';
+        var p = this.problems[this.currentProblem];
+        var cols = p.dividendTerms.length;
+        var offset = cols - terms.length;
+        tr.appendChild(document.createElement('td'));
+        for (var i = 0; i < cols; i++) {
+            var td = document.createElement('td');
+            if (i >= offset && i < offset + terms.length) {
+                var t = terms[i - offset];
+                td.innerHTML = '\\(' + t.replace(/\^2/g,'^{2}').replace(/\^3/g,'^{3}') + '\\)';
+                td.style.color = '#E67E22';
+                td.style.fontWeight = '600';
+            }
+            tr.appendChild(td);
+        }
+        this.currentTable.appendChild(tr);
+        this.renderMath(tr);
+    }
+    completeDivision() {
+        var p = this.problems[this.currentProblem];
+        this.currentKb.setEnabled(false);
+        this.currentHint.innerHTML = '✅ 나눗셈 완료! 몫: \\(' + p.Qtex + '\\), 나머지: \\(' + p.Rtex + '\\)';
+        this.renderMath(this.currentHint);
+        var self = this;
+        setTimeout(function() { self.showDragGame(); }, 1200);
+    }
+    showDragGame() {
+        var idx = this.currentProblem;
+        var p = this.problems[idx];
+        // Hide division panel, show drag panel
+        var divPanel = document.getElementById(idx === 0 ? 'divP1' : 'divP2');
+        var dragPanel = document.getElementById(idx === 0 ? 'divDrag1' : 'divDrag2');
+        divPanel.classList.remove('active');
+        dragPanel.classList.add('active');
+        var area = document.getElementById(idx === 0 ? 'dragArea1' : 'dragArea2');
+        area.innerHTML = '';
+        // Title
+        var title = document.createElement('p');
+        title.style.cssText = 'text-align:center;font-weight:600;margin-bottom:12px;font-size:15px;';
+        title.textContent = '완성된 수식을 드래그하여 A = BQ + R 꼴을 만드세요!';
+        area.appendChild(title);
+        // Cards
+        var cards = [
+            {role:'A', tex:p.Atex, str:p.Astr},
+            {role:'B', tex:p.Btex, str:p.Bstr},
+            {role:'Q', tex:p.Qtex, str:p.Qstr},
+            {role:'R', tex:p.Rtex, str:p.Rstr}
+        ];
+        // Shuffle cards
+        var shuffled = cards.slice();
+        for (var i = shuffled.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = tmp;
+        }
+        var cardsDiv = document.createElement('div');
+        cardsDiv.className = 'drag-cards';
+        var self = this;
+        this.dragCards = [];
+        this.dropSlots = {};
+        this.placements = {};
+        shuffled.forEach(function(card) {
+            var el = document.createElement('div');
+            el.className = 'drag-card';
+            el.innerHTML = '\\(' + card.tex + '\\)';
+            el.dataset.role = card.role;
+            self.dragCards.push(el);
+            self.setupDrag(el);
+            cardsDiv.appendChild(el);
+        });
+        area.appendChild(cardsDiv);
+        // Drop zone row
+        var eqRow = document.createElement('div');
+        eqRow.className = 'drag-eq-row';
+        var roles = ['A', 'B', 'Q', 'R'];
+        var ops = ['', '=', '\u00b7', '+', ''];
+        for (var i = 0; i < 4; i++) {
+            if (i > 0) {
+                var op = document.createElement('span');
+                op.className = 'drag-op';
+                op.textContent = ops[i];
+                eqRow.appendChild(op);
+            }
+            var slotWrap = document.createElement('div');
+            slotWrap.style.textAlign = 'center';
+            var label = document.createElement('div');
+            label.className = 'drag-label';
+            label.textContent = roles[i];
+            slotWrap.appendChild(label);
+            var slot = document.createElement('div');
+            slot.className = 'drop-slot';
+            slot.dataset.role = roles[i];
+            slot.innerHTML = '&nbsp;';
+            self.dropSlots[roles[i]] = slot;
+            // Click to remove
+            slot.addEventListener('click', function() {
+                var r = this.dataset.role;
+                if (self.placements[r]) {
+                    var cardEl = self.placements[r];
+                    cardEl.classList.remove('placed');
+                    delete self.placements[r];
+                    this.classList.remove('filled');
+                    this.innerHTML = '&nbsp;';
+                }
+            });
+            slotWrap.appendChild(slot);
+            eqRow.appendChild(slotWrap);
+        }
+        area.appendChild(eqRow);
+        // Check button
+        var checkBtn = document.createElement('div');
+        checkBtn.style.cssText = 'text-align:center;margin-top:12px;';
+        var btn = document.createElement('button');
+        btn.className = 'sim-btn';
+        btn.textContent = '확인';
+        btn.style.cssText = 'padding:8px 32px;font-size:15px;';
+        btn.addEventListener('click', function() { self.checkDrag(); });
+        checkBtn.appendChild(btn);
+        area.appendChild(checkBtn);
+        this.renderMath(area);
+    }
+    setupDrag(el) {
+        var self = this;
+        var startX, startY, origX, origY, dragging = false;
+        el.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            if (el.classList.contains('placed')) return;
+            dragging = true;
+            var rect = el.getBoundingClientRect();
+            origX = rect.left;
+            origY = rect.top;
+            startX = e.clientX;
+            startY = e.clientY;
+            el.classList.add('dragging');
+            el.style.left = origX + 'px';
+            el.style.top = origY + 'px';
+            el.style.width = rect.width + 'px';
+            el.setPointerCapture(e.pointerId);
+        });
+        el.addEventListener('pointermove', function(e) {
+            if (!dragging) return;
+            e.preventDefault();
+            var dx = e.clientX - startX;
+            var dy = e.clientY - startY;
+            el.style.left = (origX + dx) + 'px';
+            el.style.top = (origY + dy) + 'px';
+            // Highlight drop zones
+            Object.keys(self.dropSlots).forEach(function(r) {
+                var slot = self.dropSlots[r];
+                var sr = slot.getBoundingClientRect();
+                if (e.clientX > sr.left && e.clientX < sr.right && e.clientY > sr.top && e.clientY < sr.bottom) {
+                    slot.classList.add('hover');
+                } else {
+                    slot.classList.remove('hover');
+                }
+            });
+        });
+        el.addEventListener('pointerup', function(e) {
+            if (!dragging) return;
+            dragging = false;
+            el.classList.remove('dragging');
+            el.style.position = '';
+            el.style.left = '';
+            el.style.top = '';
+            el.style.width = '';
+            // Check which slot we're over
+            var dropped = false;
+            Object.keys(self.dropSlots).forEach(function(r) {
+                var slot = self.dropSlots[r];
+                slot.classList.remove('hover');
+                var sr = slot.getBoundingClientRect();
+                if (e.clientX > sr.left && e.clientX < sr.right && e.clientY > sr.top && e.clientY < sr.bottom) {
+                    // Remove existing card from this slot
+                    if (self.placements[r]) {
+                        self.placements[r].classList.remove('placed');
+                    }
+                    self.placements[r] = el;
+                    el.classList.add('placed');
+                    slot.classList.add('filled');
+                    slot.innerHTML = el.innerHTML;
+                    self.renderMath(slot);
+                    dropped = true;
+                }
+            });
+        });
+    }
+    checkDrag() {
+        var correct = true;
+        var self = this;
+        var roles = ['A','B','Q','R'];
+        roles.forEach(function(r) {
+            var slot = self.dropSlots[r];
+            if (!self.placements[r] || self.placements[r].dataset.role !== r) {
+                correct = false;
+                slot.classList.add('wrong');
+                setTimeout(function() { slot.classList.remove('wrong'); }, 600);
+            } else {
+                slot.classList.add('correct');
+            }
+        });
+        if (correct) {
+            var self = this;
+            setTimeout(function() { self.advancePhase(); }, 800);
+        }
+    }
+    advancePhase() {
+        var idx = this.currentProblem;
+        // Hide current drag panel
+        var dragPanel = document.getElementById(idx === 0 ? 'divDrag1' : 'divDrag2');
+        dragPanel.classList.remove('active');
+        // Update phase dots
+        this.phases[idx].classList.remove('active');
+        this.phases[idx].classList.add('done');
+        if (idx === 0) {
+            // Move to problem 2
+            this.currentProblem = 1;
+            this.phases[1].classList.add('active');
+            var panel2 = document.getElementById('divP2');
+            panel2.classList.add('active');
+            this.initProblem(1);
+        } else {
+            // Show results
+            this.phases[2].classList.add('active');
+            this.showResults();
+        }
+    }
+    showResults() {
+        var resultPanel = document.getElementById('divResult');
+        resultPanel.classList.add('active');
+        var content = document.getElementById('divResultContent');
+        var p1 = this.problems[0], p2 = this.problems[1];
+        content.innerHTML = '<h3>🎉 문제 9 완료!</h3>' +
+            '<p style="text-align:left;margin:8px 16px;">⑴ \\(Q = ' + p1.Qtex + '\\), \\(R = ' + p1.Rtex + '\\)<br>' +
+            '&nbsp;&nbsp;&nbsp; \\(' + p1.Atex + ' = (' + p1.Btex + ')(' + p1.Qtex + ') + ' + p1.Rtex + '\\)</p>' +
+            '<p style="text-align:left;margin:8px 16px;">⑵ \\(Q = ' + p2.Qtex + '\\), \\(R = ' + p2.Rtex + '\\)<br>' +
+            '&nbsp;&nbsp;&nbsp; \\(' + p2.Atex + ' = (' + p2.Btex + ')(' + p2.Qtex + ') + ' + p2.Rtex + '\\)</p>';
+        this.renderMath(content);
+    }
+    renderMath(el) {
+        if (typeof renderMathInElement === 'function') {
+            renderMathInElement(el, {delimiters:[{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+        }
+    }
+}
+
+// ────────── SyntheticTutor 클래스 ──────────
+class SyntheticTutor {
+    constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        if (!this.container) return;
+        this.steps = [
+            {id:'syn-b0', answer:'2', hint:'첫 번째 계수 2를 그대로 내려 적으세요!'},
+            {id:'syn-m1', answer:'-2', hint:'\\(-1 \\times 2\\)를 계산하세요!'},
+            {id:'syn-b1', answer:'-3', hint:'\\(-1 + (-2)\\)를 계산하세요!'},
+            {id:'syn-m2', answer:'3', hint:'\\(-1 \\times (-3)\\)을 계산하세요!'},
+            {id:'syn-b2', answer:'3', hint:'\\(0 + 3\\)을 계산하세요!'},
+            {id:'syn-m3', answer:'-3', hint:'\\(-1 \\times 3\\)을 계산하세요!'},
+            {id:'syn-b3', answer:'0', hint:'\\(3 + (-3)\\)을 계산하세요!'}
+        ];
+        this.currentStep = 0;
+        this.hintEl = document.getElementById('synHint');
+        this.resultEl = document.getElementById('synResult');
+        // Build keyboard
+        var self = this;
+        this.kb = new MathKeyboard('synKb', 'int', function(val) { self.handleInput(val); });
+        // Set initial hint
+        this.updateHint();
+    }
+    updateHint() {
+        if (this.currentStep < this.steps.length) {
+            this.hintEl.innerHTML = '💡 ' + this.steps[this.currentStep].hint;
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(this.hintEl, {delimiters:[{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+            }
+        }
+    }
+    handleInput(val) {
+        var step = this.steps[this.currentStep];
+        var norm = val.replace(/\s+/g, '');
+        if (norm === step.answer) {
+            this.kb.flashCorrect();
+            // Fill cell
+            var cell = document.getElementById(step.id);
+            cell.classList.remove('active');
+            cell.classList.add('filled');
+            cell.textContent = step.answer;
+            // Advance
+            this.currentStep++;
+            var self = this;
+            setTimeout(function() {
+                self.kb.clear();
+                if (self.currentStep < self.steps.length) {
+                    var nextCell = document.getElementById(self.steps[self.currentStep].id);
+                    nextCell.classList.add('active');
+                    self.updateHint();
+                } else {
+                    self.complete();
+                }
+            }, 400);
+        } else {
+            this.kb.flashWrong();
+        }
+    }
+    complete() {
+        this.kb.setEnabled(false);
+        this.hintEl.innerHTML = '✅ 완료!';
+        this.resultEl.style.display = 'block';
+        this.resultEl.className = 'tutor-result';
+        this.resultEl.innerHTML = '<h3>🎉 조립제법 완료!</h3>' +
+            '<p>몫: \\(\\boldsymbol{2x^{2} - 3x + 3}\\), &nbsp; 나머지: \\(\\boldsymbol{0}\\)</p>' +
+            '<p style="font-size:13px;color:#7f8c8d;margin-top:4px;">나머지가 0이므로 나누어떨어집니다!</p>';
+        if (typeof renderMathInElement === 'function') {
+            renderMathInElement(this.resultEl, {delimiters:[{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+        }
+    }
+}
+
 // AlgebraTiles 클래스 — SVG 터치 인터랙티브 타일
 class AlgebraTiles {
     constructor(containerId) {
@@ -1851,6 +2593,10 @@ document.querySelectorAll('.writing-area').forEach(area => {
 // 시뮬레이션 초기화
 const simDivision = new StepSimulation('simDivision');
 const simSynthetic = new StepSimulation('simSynthetic');
+
+// 튜터 게임 초기화
+const divisionTutor = new DivisionTutor('divTutor');
+const syntheticTutor = new SyntheticTutor('synTutor');
 
 // 리사이즈 대응
 let resizeTimer;
