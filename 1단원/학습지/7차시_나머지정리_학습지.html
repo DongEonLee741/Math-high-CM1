@@ -926,6 +926,97 @@
 !function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t(require("katex")):"function"==typeof define&&define.amd?define(["katex"],t):"object"==typeof exports?exports.renderMathInElement=t(require("katex")):e.renderMathInElement=t(e.katex)}("undefined"!=typeof self?self:this,function(e){return function(){"use strict";var t={757:function(t){t.exports=e}},n={};function r(e){var o=n[e];if(void 0!==o)return o.exports;var i=n[e]={exports:{}};return t[e](i,i.exports,r),i.exports}r.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return r.d(t,{a:t}),t},r.d=function(e,t){for(var n in t)r.o(t,n)&&!r.o(e,n)&&Object.defineProperty(e,n,{enumerable:!0,get:t[n]})},r.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)};var o={};r.d(o,{default:function(){return p}});var i=r(757),a=r.n(i);const l=function(e,t,n){let r=n,o=0;const i=e.length;for(;r<t.length;){const n=t[r];if(o<=0&&t.slice(r,r+i)===e)return r;"\\"===n?r++:"{"===n?o++:"}"===n&&o--,r++}return-1},s=/^\\begin{/;var d=function(e,t){let n;const r=[],o=new RegExp("("+t.map(e=>e.left.replace(/[-/\\^$*+?.()|[\]{}]/g,"\\$&")).join("|")+")");for(;n=e.search(o),-1!==n;){n>0&&(r.push({type:"text",data:e.slice(0,n)}),e=e.slice(n));const o=t.findIndex(t=>e.startsWith(t.left));if(n=l(t[o].right,e,t[o].left.length),-1===n)break;const i=e.slice(0,n+t[o].right.length),a=s.test(i)?i:e.slice(t[o].left.length,n);r.push({type:"math",data:a,rawData:i,display:t[o].display}),e=e.slice(n+t[o].right.length)}return""!==e&&r.push({type:"text",data:e}),r};const c=function(e,t){const n=d(e,t.delimiters);if(1===n.length&&"text"===n[0].type)return null;const r=document.createDocumentFragment();for(let e=0;e<n.length;e++)if("text"===n[e].type)r.appendChild(document.createTextNode(n[e].data));else{const o=document.createElement("span");let i=n[e].data;t.displayMode=n[e].display;try{t.preProcess&&(i=t.preProcess(i)),a().render(i,o,t)}catch(o){if(!(o instanceof a().ParseError))throw o;t.errorCallback("KaTeX auto-render: Failed to parse `"+n[e].data+"` with ",o),r.appendChild(document.createTextNode(n[e].rawData));continue}r.appendChild(o)}return r},f=function(e,t){for(let n=0;n<e.childNodes.length;n++){const r=e.childNodes[n];if(3===r.nodeType){let o=r.textContent,i=r.nextSibling,a=0;for(;i&&i.nodeType===Node.TEXT_NODE;)o+=i.textContent,i=i.nextSibling,a++;const l=c(o,t);if(l){for(let e=0;e<a;e++)r.nextSibling.remove();n+=l.childNodes.length-1,e.replaceChild(l,r)}else n+=a}else if(1===r.nodeType){const e=" "+r.className+" ";!t.ignoredTags.has(r.nodeName.toLowerCase())&&t.ignoredClasses.every(t=>!e.includes(" "+t+" "))&&f(r,t)}}};var p=function(e,t){if(!e)throw new Error("No element provided to render");const n={};for(const e in t)t.hasOwnProperty(e)&&(n[e]=t[e]);n.delimiters=n.delimiters||[{left:"$$",right:"$$",display:!0},{left:"\\(",right:"\\)",display:!1},{left:"\\begin{equation}",right:"\\end{equation}",display:!0},{left:"\\begin{align}",right:"\\end{align}",display:!0},{left:"\\begin{alignat}",right:"\\end{alignat}",display:!0},{left:"\\begin{gather}",right:"\\end{gather}",display:!0},{left:"\\begin{CD}",right:"\\end{CD}",display:!0},{left:"\\[",right:"\\]",display:!0}],n.ignoredTags=new Set(n.ignoredTags||["script","noscript","style","textarea","pre","code","option"]),n.ignoredClasses=n.ignoredClasses||[],n.errorCallback=n.errorCallback||console.error,n.macros=n.macros||{},f(e,n)};return o=o.default}()});
 </script>
 
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup }
+  from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCnNvdo3ozcv3HC1ilMQX_fiwn_fpB5KCM",
+  authDomain: "math-high-cm1.firebaseapp.com",
+  projectId: "math-high-cm1",
+  storageBucket: "math-high-cm1.firebasestorage.app",
+  messagingSenderId: "1097512338605",
+  appId: "1:1097512338605:web:c8572e37781be52e9a7224"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const urlParams = new URLSearchParams(window.location.search);
+const classId = urlParams.get('class') || 'default';
+window._firebase = { auth, db, classId };
+
+function createLoginUI() {
+  var o = document.createElement('div');
+  o.id = 'fb-login-overlay';
+  var h = '<div style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99998;display:flex;align-items:center;justify-content:center;">';
+  h += '<div style="background:#fff;border-radius:16px;padding:32px;max-width:360px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.2);">';
+  h += '<h2 style="margin-bottom:8px;font-size:20px;color:#2c3e50;">' + String.fromCodePoint(0x1F4DA) + ' 수업 참여</h2>';
+  h += '<p style="color:#666;font-size:14px;margin-bottom:20px;">학습지를 사용하려면 로그인하세요.</p>';
+  h += '<button id="fb-google-login" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;background:#fff;cursor:pointer;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;">';
+  h += '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20"> Google로 로그인</button>';
+  h += '</div></div>';
+  o.innerHTML = h;
+  document.body.appendChild(o);
+  document.getElementById('fb-google-login').addEventListener('click', async function() {
+    try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch(e) { console.error(e); }
+  });
+}
+
+function setupFocusListener() {
+  var classRef = doc(db, 'classrooms', classId);
+  var banner = null;
+  onSnapshot(classRef, function(snap) {
+    var data = snap.data();
+    if (!data || data.focusSection === undefined) return;
+    var idx = data.focusSection;
+    var cards = document.querySelectorAll('.card');
+    if (idx >= 0 && idx < cards.length) {
+      cards[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;text-align:center;padding:10px 16px;font-size:14px;font-weight:600;z-index:9999;transform:translateY(-100%);transition:transform .3s ease;box-shadow:0 2px 12px rgba(0,0,0,.2);';
+        document.body.appendChild(banner);
+      }
+      var h2 = cards[idx].querySelector('.section-title h2');
+      banner.textContent = String.fromCodePoint(0x1F4CC) + ' 선생님이 "' + (h2 ? h2.textContent : '섹션 ' + (idx+1)) + '" 으로 이동시켰습니다';
+      banner.style.transform = 'translateY(0)';
+      setTimeout(function() { banner.style.transform = 'translateY(-100%)'; }, 4000);
+    }
+  });
+}
+
+async function registerStudent(user) {
+  await setDoc(doc(db, 'classrooms', classId, 'students', user.uid),
+    { name: user.displayName || '학생', email: user.email || null, online: true, lastSeen: serverTimestamp() },
+    { merge: true });
+}
+
+function showStatusBadge(user) {
+  var b = document.createElement('div');
+  b.style.cssText = 'position:fixed;top:8px;right:8px;background:#48bb78;color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;z-index:9990;box-shadow:0 2px 8px rgba(0,0,0,.15);';
+  b.textContent = String.fromCodePoint(0x1F7E2) + ' ' + (user.displayName || user.email || '학생');
+  document.body.appendChild(b);
+}
+
+onAuthStateChanged(auth, async function(user) {
+  var ov = document.getElementById('fb-login-overlay');
+  if (user) {
+    if (ov) ov.remove();
+    await registerStudent(user);
+    showStatusBadge(user);
+    setupFocusListener();
+  } else {
+    if (!ov) createLoginUI();
+  }
+});
+</script>
+
 </head>
 <body>
 

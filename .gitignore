@@ -18,6 +18,15 @@ desktop.ini
 *.md
 !1단원/콘텐츠 라이브러리/*.md
 
+# Firebase (별도 배포)
+public/
+firebase.json
+.firebaserc
+.firebase/
+firestore.rules
+firestore.indexes.json
+database.rules.json
+
 # 2~4단원 (아직 미완성)
 2단원/
 3단원/
