@@ -931,46 +931,23 @@
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup }
-  from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp }
+import { getFirestore, doc, onSnapshot }
   from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-const firebaseConfig = {
+const app = initializeApp({
   apiKey: "AIzaSyCnNvdo3ozcv3HC1ilMQX_fiwn_fpB5KCM",
   authDomain: "math-high-cm1.web.app",
   projectId: "math-high-cm1",
   storageBucket: "math-high-cm1.firebasestorage.app",
   messagingSenderId: "1097512338605",
   appId: "1:1097512338605:web:c8572e37781be52e9a7224"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+});
 const db = getFirestore(app);
 
 const urlParams = new URLSearchParams(window.location.search);
 const classId = urlParams.get('class') || 'default';
-window._firebase = { auth, db, classId };
 
-function createLoginUI() {
-  var o = document.createElement('div');
-  o.id = 'fb-login-overlay';
-  var h = '<div style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99998;display:flex;align-items:center;justify-content:center;">';
-  h += '<div style="background:#fff;border-radius:16px;padding:32px;max-width:360px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.2);">';
-  h += '<h2 style="margin-bottom:8px;font-size:20px;color:#2c3e50;">' + String.fromCodePoint(0x1F4DA) + ' 수업 참여</h2>';
-  h += '<p style="color:#666;font-size:14px;margin-bottom:20px;">학습지를 사용하려면 로그인하세요.</p>';
-  h += '<button id="fb-google-login" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;background:#fff;cursor:pointer;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;">';
-  h += '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20"> Google로 로그인</button>';
-  h += '</div></div>';
-  o.innerHTML = h;
-  document.body.appendChild(o);
-  document.getElementById('fb-google-login').addEventListener('click', async function() {
-    try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch(e) { console.error(e); }
-  });
-}
-
-function setupFocusListener() {
+(function setupFocusListener() {
   var classRef = doc(db, 'classrooms', classId);
   var banner = null;
   onSnapshot(classRef, function(snap) {
@@ -986,38 +963,13 @@ function setupFocusListener() {
         document.body.appendChild(banner);
       }
       var h2 = cards[idx].querySelector('.section-title h2');
-      banner.textContent = String.fromCodePoint(0x1F4CC) + ' 선생님이 "' + (h2 ? h2.textContent : '섹션 ' + (idx+1)) + '" 으로 이동시켰습니다';
+      banner.textContent = '\uD83D\uDCCC \uC120\uC0DD\uB2D8\uC774 "' + (h2 ? h2.textContent : '\uC139\uC158 ' + (idx+1)) + '" \uC73C\uB85C \uC774\uB3D9\uC2DC\uCF30\uC2B5\uB2C8\uB2E4';
       banner.style.transform = 'translateY(0)';
       setTimeout(function() { banner.style.transform = 'translateY(-100%)'; }, 4000);
     }
   });
-}
-
-async function registerStudent(user) {
-  await setDoc(doc(db, 'classrooms', classId, 'students', user.uid),
-    { name: user.displayName || '학생', email: user.email || null, online: true, lastSeen: serverTimestamp() },
-    { merge: true });
-}
-
-function showStatusBadge(user) {
-  var b = document.createElement('div');
-  b.style.cssText = 'position:fixed;top:8px;right:8px;background:#48bb78;color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;z-index:9990;box-shadow:0 2px 8px rgba(0,0,0,.15);';
-  b.textContent = String.fromCodePoint(0x1F7E2) + ' ' + (user.displayName || user.email || '학생');
-  document.body.appendChild(b);
-}
-
-onAuthStateChanged(auth, async function(user) {
-  if (user) {
-    var ov = document.getElementById('fb-login-overlay');
-    if (ov) ov.remove();
-    await registerStudent(user);
-    showStatusBadge(user);
-    setupFocusListener();
-  }
-  // No login overlay if not logged in - worksheet works without login
-});
+})();
 </script>
-
 </head>
 <body>
 
