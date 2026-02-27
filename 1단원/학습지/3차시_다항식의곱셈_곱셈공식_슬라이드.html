@@ -1045,6 +1045,13 @@ const classId = urlParams.get('class') || 'default';
   btn.textContent = '\uD83D\uDCCC \uC9D1\uC911\uD558\uAE30';
   btn.style.cssText = 'position:fixed;top:12px;right:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:10px 18px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;z-index:99999;box-shadow:0 2px 12px rgba(102,126,234,.5);transition:all .3s ease;';
   document.body.appendChild(btn);
+  var monitorBtn = document.createElement('button');
+  monitorBtn.textContent = '\uD83D\uDCCA \uD604\uD669\uBCF4\uAE30';
+  monitorBtn.style.cssText = 'position:fixed;top:12px;right:150px;background:linear-gradient(135deg,#48bb78,#38a169);color:#fff;border:none;padding:10px 18px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;z-index:99999;box-shadow:0 2px 12px rgba(72,187,120,.5);transition:all .3s ease;';
+  monitorBtn.addEventListener('click', function() {
+    window.open('https://math-high-cm1.web.app/monitor.html?class=' + classId, '_blank');
+  });
+  document.body.appendChild(monitorBtn);
   function getCurrentSection() {
     var slides = document.querySelectorAll('.slide');
     var idx = 0;

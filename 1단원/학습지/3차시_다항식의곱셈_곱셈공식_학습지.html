@@ -927,7 +927,7 @@
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getFirestore, doc, onSnapshot }
+import { getFirestore, doc, onSnapshot, setDoc, deleteDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 const app = initializeApp({
   apiKey: "AIzaSyCnNvdo3ozcv3HC1ilMQX_fiwn_fpB5KCM",
@@ -1007,6 +1007,31 @@ const classId = urlParams.get('class') || 'default';
       showBanner(-1, false);
     }
   });
+})();
+(function setupHeartbeat() {
+  var params = new URLSearchParams(window.location.search);
+  var studentName = params.get('name') || localStorage.getItem('studentName') || '';
+  if (!studentName) { studentName = prompt('이름을 입력하세요') || '익명'; }
+  localStorage.setItem('studentName', studentName);
+  var visitorId = sessionStorage.getItem('visitorId');
+  if (!visitorId) { visitorId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9); sessionStorage.setItem('visitorId', visitorId); }
+  var currentSection = 0, currentSectionName = '';
+  var cards = document.querySelectorAll('.card');
+  if ('IntersectionObserver' in window && cards.length > 0) {
+    var visibleSections = {};
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { var i = Array.prototype.indexOf.call(cards, e.target); if (e.isIntersecting) visibleSections[i] = e.intersectionRatio; else delete visibleSections[i]; });
+      var bestIdx = -1, bestR = 0;
+      for (var k in visibleSections) { if (visibleSections[k] > bestR) { bestR = visibleSections[k]; bestIdx = parseInt(k); } }
+      if (bestIdx >= 0) { currentSection = bestIdx; var h2 = cards[bestIdx].querySelector('.section-title h2'); currentSectionName = h2 ? h2.textContent : ('섹션 ' + (bestIdx + 1)); }
+    }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+    cards.forEach(function(c) { obs.observe(c); });
+  }
+  var studentDocRef = doc(db, 'classrooms', classId, 'students', visitorId);
+  function sendHeartbeat() { setDoc(studentDocRef, { name: studentName, section: currentSection, sectionName: currentSectionName, lastSeen: serverTimestamp() }, { merge: true }).catch(function(e) { console.warn('Heartbeat error:', e); }); }
+  sendHeartbeat();
+  setInterval(sendHeartbeat, 10000);
+  window.addEventListener('beforeunload', function() { try { deleteDoc(studentDocRef); } catch(e) {} });
 })();
 </script>
 </head>
