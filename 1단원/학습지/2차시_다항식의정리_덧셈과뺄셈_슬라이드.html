@@ -938,7 +938,6 @@ body.slide-mode {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
 import { getFirestore, doc, setDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-
 const app = initializeApp({
   apiKey: "AIzaSyCnNvdo3ozcv3HC1ilMQX_fiwn_fpB5KCM",
   authDomain: "math-high-cm1.firebaseapp.com",
@@ -948,32 +947,59 @@ const app = initializeApp({
   appId: "1:1097512338605:web:c8572e37781be52e9a7224"
 });
 const db = getFirestore(app);
-
 const urlParams = new URLSearchParams(window.location.search);
 const classId = urlParams.get('class') || 'default';
-
-(function setupFocusButton() {
+(function setupFocusToggle() {
+  var focusActive = false, observer = null, syncTimer = null;
   var btn = document.createElement('button');
   btn.textContent = '\uD83D\uDCCC \uC9D1\uC911\uD558\uAE30';
-  btn.style.cssText = 'position:fixed;top:12px;right:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:8px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;z-index:99999;box-shadow:0 2px 12px rgba(102,126,234,.5);';
+  btn.style.cssText = 'position:fixed;top:12px;right:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:10px 18px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;z-index:99999;box-shadow:0 2px 12px rgba(102,126,234,.5);transition:all .3s ease;';
   document.body.appendChild(btn);
-
-  btn.addEventListener('click', async function() {
+  function getCurrentSection() {
     var slides = document.querySelectorAll('.slide');
-    var currentIdx = 0;
+    var idx = 0;
     if (slides.length) {
-      slides.forEach(function(s, i) { if (s.classList.contains('active')) currentIdx = i; });
-      var titleCount = document.querySelectorAll('.slide.title-slide').length;
-      currentIdx = Math.max(0, currentIdx - titleCount);
+      slides.forEach(function(s, i) { if (s.classList.contains('active')) idx = i; });
+      var tc = document.querySelectorAll('.slide.title-slide').length;
+      idx = Math.max(0, idx - tc);
     } else {
       var cards = document.querySelectorAll('.card');
-      cards.forEach(function(c, i) { if (c.classList.contains('slide-active') || c.style.display !== 'none') currentIdx = i; });
+      cards.forEach(function(c, i) { if (c.classList.contains('slide-active')) idx = i; });
     }
-
-    await setDoc(doc(db, 'classrooms', classId), { focusSection: currentIdx, updatedAt: serverTimestamp() }, { merge: true });
-    btn.textContent = '\u2705 \uC804\uC1A1\uB428';
-    btn.style.background = '#48bb78';
-    setTimeout(function() { btn.textContent = '\uD83D\uDCCC \uC9D1\uC911\uD558\uAE30'; btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)'; }, 2000);
+    return idx;
+  }
+  function syncSection() {
+    if (!focusActive) return;
+    setDoc(doc(db, 'classrooms', classId), {
+      focusActive: true, focusSection: getCurrentSection(), updatedAt: serverTimestamp()
+    }, { merge: true });
+  }
+  function debouncedSync() { if (syncTimer) clearTimeout(syncTimer); syncTimer = setTimeout(syncSection, 300); }
+  function startObserver() {
+    var t = document.querySelector('.container') || document.body;
+    observer = new MutationObserver(function() { debouncedSync(); });
+    observer.observe(t, { subtree: true, attributes: true, attributeFilter: ['class','style'] });
+  }
+  function stopObserver() { if (observer) { observer.disconnect(); observer = null; } }
+  btn.addEventListener('click', async function() {
+    focusActive = !focusActive;
+    if (focusActive) {
+      await setDoc(doc(db, 'classrooms', classId), {
+        focusActive: true, focusSection: getCurrentSection(), updatedAt: serverTimestamp()
+      }, { merge: true });
+      btn.textContent = '\uD83D\uDD13 \uC9D1\uC911 \uD574\uC81C';
+      btn.style.background = '#e53e3e';
+      btn.style.boxShadow = '0 2px 12px rgba(229,62,62,.5)';
+      startObserver();
+    } else {
+      stopObserver();
+      await setDoc(doc(db, 'classrooms', classId), {
+        focusActive: false, updatedAt: serverTimestamp()
+      }, { merge: true });
+      btn.textContent = '\uD83D\uDCCC \uC9D1\uC911\uD558\uAE30';
+      btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+      btn.style.boxShadow = '0 2px 12px rgba(102,126,234,.5)';
+    }
   });
 })();
 </script>

@@ -938,7 +938,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
 import { getFirestore, doc, onSnapshot }
   from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-
 const app = initializeApp({
   apiKey: "AIzaSyCnNvdo3ozcv3HC1ilMQX_fiwn_fpB5KCM",
   authDomain: "math-high-cm1.web.app",
@@ -948,29 +947,73 @@ const app = initializeApp({
   appId: "1:1097512338605:web:c8572e37781be52e9a7224"
 });
 const db = getFirestore(app);
-
 const urlParams = new URLSearchParams(window.location.search);
 const classId = urlParams.get('class') || 'default';
-
-(function setupFocusListener() {
+(function setupFocusLock() {
   var classRef = doc(db, 'classrooms', classId);
-  var banner = null;
-  onSnapshot(classRef, function(snap) {
-    var data = snap.data();
-    if (!data || data.focusSection === undefined) return;
-    var idx = data.focusSection;
+  var overlay = null, banner = null, locked = false;
+  var keyHandler = null, focusHandler = null, wheelHandler = null;
+  function scrollToSection(idx) {
     var cards = document.querySelectorAll('.card');
-    if (idx >= 0 && idx < cards.length) {
-      cards[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
-      if (!banner) {
-        banner = document.createElement('div');
-        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;text-align:center;padding:10px 16px;font-size:14px;font-weight:600;z-index:9999;transform:translateY(-100%);transition:transform .3s ease;box-shadow:0 2px 12px rgba(0,0,0,.2);';
-        document.body.appendChild(banner);
-      }
-      var h2 = cards[idx].querySelector('.section-title h2');
-      banner.textContent = '\uD83D\uDCCC \uC120\uC0DD\uB2D8\uC774 "' + (h2 ? h2.textContent : '\uC139\uC158 ' + (idx+1)) + '" \uC73C\uB85C \uC774\uB3D9\uC2DC\uCF30\uC2B5\uB2C8\uB2E4';
+    if (idx >= 0 && idx < cards.length) cards[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function showBanner(idx, persistent) {
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.style.cssText = 'position:fixed;top:0;left:0;right:0;color:#fff;text-align:center;padding:12px 16px;font-size:14px;font-weight:600;z-index:100000;transform:translateY(-100%);transition:transform .3s ease;box-shadow:0 2px 12px rgba(0,0,0,.2);';
+      document.body.appendChild(banner);
+    }
+    if (persistent) {
+      var cards = document.querySelectorAll('.card');
+      var h2 = (idx >= 0 && idx < cards.length) ? cards[idx].querySelector('.section-title h2') : null;
+      banner.textContent = '\uD83D\uDCCC \uC120\uC0DD\uB2D8\uC774 \uC9D1\uC911 \uBAA8\uB4DC\uB97C \uD65C\uC131\uD654\uD588\uC2B5\uB2C8\uB2E4 \u2014 ' + (h2 ? h2.textContent : '\uC139\uC158 ' + (idx+1));
+      banner.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+      banner.style.transform = 'translateY(0)';
+    } else {
+      banner.textContent = '\uD83D\uDD13 \uC9D1\uC911 \uBAA8\uB4DC\uAC00 \uD574\uC81C\uB418\uC5C8\uC2B5\uB2C8\uB2E4';
+      banner.style.background = '#48bb78';
       banner.style.transform = 'translateY(0)';
       setTimeout(function() { banner.style.transform = 'translateY(-100%)'; }, 4000);
+    }
+  }
+  function lockInteractions() {
+    if (locked) return;
+    locked = true;
+    if (document.activeElement) document.activeElement.blur();
+    overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(102,126,234,0.08);z-index:99999;touch-action:none;';
+    overlay.addEventListener('touchstart', function(e){e.preventDefault();}, {passive:false});
+    overlay.addEventListener('touchmove', function(e){e.preventDefault();}, {passive:false});
+    document.body.appendChild(overlay);
+    wheelHandler = function(e){e.preventDefault();};
+    document.addEventListener('wheel', wheelHandler, {passive:false,capture:true});
+    keyHandler = function(e) {
+      var b = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','PageUp','PageDown','Home','End','Tab'];
+      if (b.indexOf(e.code) !== -1 || b.indexOf(e.key) !== -1) e.preventDefault();
+    };
+    document.addEventListener('keydown', keyHandler, true);
+    focusHandler = function(e) { if (e.target !== document.body) e.target.blur(); };
+    document.addEventListener('focus', focusHandler, true);
+  }
+  function unlockInteractions() {
+    if (!locked) return;
+    locked = false;
+    if (overlay) { overlay.remove(); overlay = null; }
+    if (wheelHandler) { document.removeEventListener('wheel', wheelHandler, true); wheelHandler = null; }
+    if (keyHandler) { document.removeEventListener('keydown', keyHandler, true); keyHandler = null; }
+    if (focusHandler) { document.removeEventListener('focus', focusHandler, true); focusHandler = null; }
+  }
+  onSnapshot(classRef, function(snap) {
+    var data = snap.data();
+    if (!data) return;
+    if (data.focusActive === true) {
+      var idx = data.focusSection !== undefined ? data.focusSection : 0;
+      lockInteractions();
+      scrollToSection(idx);
+      showBanner(idx, true);
+    } else if (data.focusActive === false && locked) {
+      unlockInteractions();
+      showBanner(-1, false);
     }
   });
 })();
