@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>쌓기나무 체험</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Pretendard','Malgun Gothic',sans-serif;
+  background:#e8ecf1;
+  color:#1a1a1a;
+  -webkit-tap-highlight-color:transparent;
+  overscroll-behavior:none;
+  -webkit-overscroll-behavior:none;
+  overflow:hidden;
+  height:100dvh;
+  display:flex;
+  flex-direction:column;
+}
+/* ── 헤더 ── */
+header{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;background:#fff;
+  border-bottom:1px solid #d1d5db;
+  flex-shrink:0;
+}
+header h1{font-size:16px;font-weight:700;color:#2c3e50;flex:1;text-align:center}
+#btnBack{
+  font-size:13px;padding:6px 12px;border-radius:8px;
+  border:1.5px solid #94a3b8;background:#f8fafc;color:#475569;
+  font-weight:600;cursor:pointer;white-space:nowrap;
+  -webkit-tap-highlight-color:transparent;
+}
+/* ── 캔버스 ── */
+#canvasWrap{
+  flex:1;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#dfe6ed 0%,#c9d6e3 100%);
+}
+#isoCanvas{
+  display:block;width:100%;height:100%;
+  touch-action:none;
+  -webkit-user-select:none;user-select:none;
+}
+/* ── 블록 정보 패널 ── */
+#infoBar{
+  position:absolute;top:8px;left:8px;right:8px;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  pointer-events:none;
+}
+.block-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 10px;border-radius:14px;
+  font-size:12px;font-weight:600;color:#fff;
+  opacity:.85;transition:opacity .2s,transform .2s;
+  -webkit-transition:opacity .2s,transform .2s;
+  pointer-events:none;
+}
+.block-chip.placed{opacity:.4;text-decoration:line-through}
+.block-chip.selected{opacity:1;transform:scale(1.15);-webkit-transform:scale(1.15);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.chip-dot{width:10px;height:10px;border-radius:50%;border:1.5px solid rgba(255,255,255,.7)}
+/* ── 컨트롤 바 ── */
+#controls{
+  display:flex;align-items:center;gap:6px;
+  padding:10px 12px;background:#fff;
+  border-top:1px solid #d1d5db;
+  flex-shrink:0;flex-wrap:wrap;justify-content:center;
+}
+#controls button{
+  font-size:13px;padding:8px 14px;border-radius:8px;
+  border:1.5px solid #cbd5e0;background:#f8fafc;color:#334155;
+  font-weight:600;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  transition:background .15s;-webkit-transition:background .15s;
+}
+#controls button:active{background:#e2e8f0}
+#controls button.rot-btn{border-color:#6366f1;color:#6366f1;background:#eef2ff}
+#controls button.rot-btn:active{background:#c7d2fe}
+#controls button.rot-btn:disabled{opacity:.35;pointer-events:none}
+#controls button.map-btn{border-color:#0891b2;color:#0891b2;background:#ecfeff}
+#controls button.map-btn:active{background:#a5f3fc}
+.ctrl-sep{width:1px;height:24px;background:#d1d5db;margin:0 2px}
+/* ── 시점 회전 화살표 (캔버스 좌우) ── */
+.side-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  font-size:26px;padding:14px 10px;line-height:1;
+  background:rgba(255,255,255,.75);border:1.5px solid rgba(8,145,178,.35);
+  border-radius:12px;cursor:pointer;z-index:5;
+  color:#0891b2;font-weight:700;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  transition:background .15s;-webkit-transition:background .15s;
+  user-select:none;-webkit-user-select:none;
+}
+.side-arrow:active{background:rgba(165,243,252,.6)}
+#btnArrowLeft{left:10px}
+#btnArrowRight{right:10px}
+/* ── 완성 오버레이 ── */
+#overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.55);
+  display:none;align-items:center;justify-content:center;
+  z-index:10;
+}
+#overlay.show{display:flex}
+#overlayBox{
+  background:#fff;border-radius:16px;padding:24px 28px;
+  text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.3);
+  max-width:320px;
+}
+#overlayBox h2{font-size:22px;margin-bottom:8px;color:#16a34a}
+#overlayBox p{font-size:15px;color:#475569;line-height:1.6;margin-bottom:14px}
+#overlayBox button{
+  padding:10px 24px;border-radius:8px;border:none;
+  background:#16a34a;color:#fff;font-size:15px;font-weight:600;cursor:pointer;
+}
+/* ── 반응형 ── */
+@media(max-width:420px){
+  header h1{font-size:14px}
+  #controls button{font-size:12px;padding:7px 10px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <button id="btnBack">← 학습지</button>
+  <h1>쌓기나무 체험</h1>
+  <div style="width:70px"></div>
+</header>
+
+<div id="canvasWrap">
+  <canvas id="isoCanvas"></canvas>
+  <div id="infoBar"></div>
+  <button id="btnArrowLeft" class="side-arrow">◀</button>
+  <button id="btnArrowRight" class="side-arrow">▶</button>
+  <div id="hint" style="position:absolute;bottom:8px;left:0;right:0;text-align:center;
+    font-size:12px;color:rgba(60,80,100,.55);pointer-events:none;">
+    블록을 터치하여 선택 → 드래그로 이동 · 버튼으로 회전
+  </div>
+  <div id="overlay">
+    <div id="overlayBox">
+      <h2>🎉 완성!</h2>
+      <p>x³ + 3x² + 3x + 1 = (x+1)³<br>8개의 블록이 하나의 정육면체가 되었어요!</p>
+      <button id="btnOverlayClose">확인</button>
+    </div>
+  </div>
+</div>
+
+<div id="controls">
+  <button class="rot-btn" id="btnRotZ" disabled>⟳ 회전하기</button>
+  <div class="ctrl-sep"></div>
+  <button id="btnReset">🔁 초기화</button>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ══════════════════════════════════════════
+   상수
+   ══════════════════════════════════════════ */
+var X = 4;                 // x의 구현 길이
+var U = 1;                 // 단위 1
+var FULL = X + U;          // 완성 큐브 한 변 = 5
+var TW = 20;               // 등축투영 타일 반폭 (축소)
+var TH = 10;               // 등축투영 타일 반높이 (축소)
+var GRID_PAD = 14;         // 맵 격자 = (FULL + PAD) 영역
+
+/* ══════════════════════════════════════════
+   캔버스 세팅
+   ══════════════════════════════════════════ */
+var canvas = document.getElementById('isoCanvas');
+var ctx = canvas.getContext('2d');
+var W, H, originX, originY, dpr;
+
+function resizeCanvas(){
+  var wrap = document.getElementById('canvasWrap');
+  dpr = window.devicePixelRatio || 1;
+  W = wrap.clientWidth;
+  H = wrap.clientHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  originX = W * 0.48;
+  // 세로가 긴 화면(태블릿)에선 블록들이 중앙에, 짧은 화면에선 약간 높게
+  originY = H < 500 ? H * 0.46 : H * 0.38;
+}
+
+/* ══════════════════════════════════════════
+   등축투영 좌표 변환
+   ══════════════════════════════════════════ */
+function isoProject(gx, gy, gz){
+  return {
+    x: (gx - gy) * TW + originX,
+    y: (gx + gy) * TH - gz * (TH * 2) + originY
+  };
+}
+
+function isoUnproject(sx, sy, gz){
+  // gz 평면에서 화면좌표 → 그리드좌표
+  var adjY = sy - originY + gz * (TH * 2);
+  var adjX = sx - originX;
+  var gx = (adjX / TW + adjY / TH) / 2;
+  var gy = (adjY / TH - adjX / TW) / 2;
+  return { x: gx, y: gy };
+}
+
+/* ══════════════════════════════════════════
+   맵 회전 (0,1,2,3 = 0°,90°,180°,270°)
+   ══════════════════════════════════════════ */
+var mapRot = 0;
+
+function rotCoord(gx, gy, gz){
+  switch(mapRot){
+    case 0: return {x:gx, y:gy, z:gz};
+    case 1: return {x:GRID_PAD-1-gy, y:gx, z:gz};
+    case 2: return {x:GRID_PAD-1-gx, y:GRID_PAD-1-gy, z:gz};
+    case 3: return {x:gy, y:GRID_PAD-1-gx, z:gz};
+  }
+}
+
+function unrotCoord(rx, ry, rz){
+  switch(mapRot){
+    case 0: return {x:rx, y:ry, z:rz};
+    case 1: return {x:ry, y:GRID_PAD-1-rx, z:rz};
+    case 2: return {x:GRID_PAD-1-rx, y:GRID_PAD-1-ry, z:rz};
+    case 3: return {x:GRID_PAD-1-ry, y:rx, z:rz};
+  }
+}
+
+/* 델타(변위)용 회전 역변환 — 이동량만 변환, 좌표 오프셋 없음 */
+function unrotDelta(dx, dy){
+  switch(mapRot){
+    case 0: return {x:dx,  y:dy};
+    case 1: return {x:dy,  y:-dx};
+    case 2: return {x:-dx, y:-dy};
+    case 3: return {x:-dy, y:dx};
+  }
+}
+
+/* ══════════════════════════════════════════
+   색상 유틸
+   ══════════════════════════════════════════ */
+function hexToRgb(hex){
+  var v = parseInt(hex.slice(1),16);
+  return {r:(v>>16)&255, g:(v>>8)&255, b:v&255};
+}
+function rgbStr(r,g,b){ return 'rgb('+Math.round(r)+','+Math.round(g)+','+Math.round(b)+')'; }
+function shade(hex, factor){
+  var c = hexToRgb(hex);
+  return rgbStr(
+    Math.min(255, c.r * factor),
+    Math.min(255, c.g * factor),
+    Math.min(255, c.b * factor)
+  );
+}
+
+/* ══════════════════════════════════════════
+   블록 클래스
+   ══════════════════════════════════════════ */
+function Block(id, label, w, h, d, color, gx, gy, gz){
+  this.id = id;
+  this.label = label;   // 예: 'x³', 'x²', 'x', '1'
+  this.w = w; this.h = h; this.d = d;  // 크기 (그리드 단위)
+  this.color = color;
+  this.gx = gx; this.gy = gy; this.gz = gz;
+  this.origW = w; this.origH = h; this.origD = d;
+  this.origGx = gx; this.origGy = gy; this.origGz = gz;
+}
+
+Block.prototype.rotateH = function(){
+  // 가로 90°: x↔z 교환, 중심 보존
+  var oldW = this.w, oldD = this.d;
+  this.w = oldD; this.d = oldW;
+  this.gx = Math.round(this.gx + (oldW - oldD) / 2);
+  this.gz = Math.max(0, Math.round(this.gz + (oldD - oldW) / 2));
+};
+
+Block.prototype.rotateV = function(){
+  // 세로 90°: y↔z 교환, 중심 보존
+  var oldH = this.h, oldD = this.d;
+  this.h = oldD; this.d = oldH;
+  this.gy = Math.round(this.gy + (oldH - oldD) / 2);
+  this.gz = Math.max(0, Math.round(this.gz + (oldD - oldH) / 2));
+};
+
+Block.prototype.rotateZ = function(){
+  // 상하(바닥면) 90°: x↔y 교환, 중심 보존
+  var oldW = this.w, oldH = this.h;
+  this.w = oldH; this.h = oldW;
+  this.gx = Math.round(this.gx + (oldW - oldH) / 2);
+  this.gy = Math.round(this.gy + (oldH - oldW) / 2);
+};
+
+Block.prototype.tipCycle = function(){
+  // 세우기: (w,h,d) → (d,w,h) → (h,d,w) → 원래 순환
+  // 납작한 블록을 세우거나 눕히는 데 사용
+  var oldW = this.w, oldH = this.h, oldD = this.d;
+  this.w = oldD; this.h = oldW; this.d = oldH;
+  this.gx = Math.round(this.gx + (oldW - this.w) / 2);
+  this.gy = Math.round(this.gy + (oldH - this.h) / 2);
+  this.gz = Math.max(0, Math.round(this.gz + (oldD - this.d) / 2));
+};
+
+Block.prototype.reset = function(){
+  this.w = this.origW; this.h = this.origH; this.d = this.origD;
+  this.gx = this.origGx; this.gy = this.origGy; this.gz = this.origGz;
+};
+
+/* 블록의 회전된 화면 폴리곤 계산 */
+Block.prototype.getScreenPoly = function(){
+  var bx = this.gx, by = this.gy, bz = this.gz;
+  var bw = this.w, bh = this.h, bd = this.d;
+
+  // 회전 적용된 8 꼭짓점
+  var r0 = rotCoord(bx,      by,      bz);
+  var r1 = rotCoord(bx + bw, by,      bz);
+  var r2 = rotCoord(bx + bw, by + bh, bz);
+  var r3 = rotCoord(bx,      by + bh, bz);
+  var r4 = rotCoord(bx,      by,      bz + bd);
+  var r5 = rotCoord(bx + bw, by,      bz + bd);
+  var r6 = rotCoord(bx + bw, by + bh, bz + bd);
+  var r7 = rotCoord(bx,      by + bh, bz + bd);
+
+  // 화면 좌표
+  var s0 = isoProject(r0.x,r0.y,r0.z);
+  var s1 = isoProject(r1.x,r1.y,r1.z);
+  var s2 = isoProject(r2.x,r2.y,r2.z);
+  var s3 = isoProject(r3.x,r3.y,r3.z);
+  var s4 = isoProject(r4.x,r4.y,r4.z);
+  var s5 = isoProject(r5.x,r5.y,r5.z);
+  var s6 = isoProject(r6.x,r6.y,r6.z);
+  var s7 = isoProject(r7.x,r7.y,r7.z);
+
+  return {
+    top:    [s4, s5, s6, s7],   // z=max (윗면, 항상 보임)
+    xPlus:  [s1, s2, s6, s5],   // x=max 면
+    xMinus: [s0, s3, s7, s4],   // x=min 면
+    yPlus:  [s3, s2, s6, s7],   // y=max 면
+    yMinus: [s0, s1, s5, s4],   // y=min 면
+    all:    [s0,s1,s2,s3,s4,s5,s6,s7]
+  };
+};
+
+/* 정렬 키 */
+Block.prototype.sortKey = function(){
+  var r = rotCoord(this.gx + this.w/2, this.gy + this.h/2, this.gz + this.d/2);
+  return r.x + r.y + r.z * 0.01;
+};
+
+/* ══════════════════════════════════════════
+   씬 데이터
+   ══════════════════════════════════════════ */
+var blocks = [];
+var selected = null;
+var isDragging = false;
+var dragStartScreen = {x:0, y:0};
+var dragStartGrid = {x:0, y:0};
+var completed = false;
+
+function initBlocks(){
+  blocks = [
+    new Block('A1', 'x³',  X, X, X, '#F5C542', -5, -1, 0),
+    new Block('B1', 'x²',  X, X, U, '#C89FD6', 7, -2, 0),
+    new Block('B2', 'x²',  X, X, U, '#C89FD6', 7, -2, 2),
+    new Block('B3', 'x²',  X, X, U, '#C89FD6', 7, 5, 0),
+    new Block('C1', 'x',   X, U, U, '#7ECEC1', -3, 8, 0),
+    new Block('C2', 'x',   X, U, U, '#7ECEC1', -3, 10, 0),
+    new Block('C3', 'x',   X, U, U, '#7ECEC1', -3, 12, 0),
+    new Block('D1', '1',   U, U, U, '#F2A7B3', 8, 9, 0)
+  ];
+  selected = null;
+  isDragging = false;
+  completed = false;
+  mapRot = 0;
+  document.getElementById('overlay').classList.remove('show');
+  updateChips();
+  enableRotBtns();
+}
+
+/* ══════════════════════════════════════════
+   블록 칩 (정보 바)
+   ══════════════════════════════════════════ */
+function updateChips(){
+  var bar = document.getElementById('infoBar');
+  bar.innerHTML = '';
+  blocks.forEach(function(b){
+    var chip = document.createElement('span');
+    chip.className = 'block-chip' + (selected === b ? ' selected' : '');
+    chip.style.background = b.color;
+    chip.innerHTML = '<span class="chip-dot" style="background:'+shade(b.color,.6)+'"></span>' + b.label;
+    bar.appendChild(chip);
+  });
+}
+
+/* ══════════════════════════════════════════
+   그리드 그리기
+   ══════════════════════════════════════════ */
+function drawGrid(){
+  ctx.strokeStyle = 'rgba(100,120,140,.25)';
+  ctx.lineWidth = 0.5;
+
+  // 바닥 격자 (FULL × FULL 영역)
+  for(var i = 0; i <= FULL; i++){
+    var a = rotCoord(i, 0, 0);
+    var b = rotCoord(i, FULL, 0);
+    var sa = isoProject(a.x, a.y, a.z);
+    var sb = isoProject(b.x, b.y, b.z);
+    ctx.beginPath(); ctx.moveTo(sa.x, sa.y); ctx.lineTo(sb.x, sb.y); ctx.stroke();
+
+    var c = rotCoord(0, i, 0);
+    var d = rotCoord(FULL, i, 0);
+    var sc = isoProject(c.x, c.y, c.z);
+    var sd = isoProject(d.x, d.y, d.z);
+    ctx.beginPath(); ctx.moveTo(sc.x, sc.y); ctx.lineTo(sd.x, sd.y); ctx.stroke();
+  }
+
+  // 바닥 면 채우기 (살짝 밝은 톤)
+  ctx.fillStyle = 'rgba(200,210,220,.15)';
+  var p0 = isoProject(rotCoord(0,0,0).x, rotCoord(0,0,0).y, 0);
+  var p1 = isoProject(rotCoord(FULL,0,0).x, rotCoord(FULL,0,0).y, 0);
+  var p2 = isoProject(rotCoord(FULL,FULL,0).x, rotCoord(FULL,FULL,0).y, 0);
+  var p3 = isoProject(rotCoord(0,FULL,0).x, rotCoord(0,FULL,0).y, 0);
+  ctx.beginPath();
+  ctx.moveTo(p0.x,p0.y); ctx.lineTo(p1.x,p1.y);
+  ctx.lineTo(p2.x,p2.y); ctx.lineTo(p3.x,p3.y);
+  ctx.closePath(); ctx.fill();
+
+  // 목표 영역 윤곽 (5×5 점선)
+  ctx.strokeStyle = 'rgba(34,197,94,.4)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();
+  ctx.moveTo(p0.x,p0.y); ctx.lineTo(p1.x,p1.y);
+  ctx.lineTo(p2.x,p2.y); ctx.lineTo(p3.x,p3.y);
+  ctx.closePath(); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+/* ══════════════════════════════════════════
+   블록 그리기
+   ══════════════════════════════════════════ */
+function fillFace(pts, color){
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for(var i=1;i<pts.length;i++) ctx.lineTo(pts[i].x, pts[i].y);
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,.2)';
+  ctx.lineWidth = 0.8;
+  ctx.stroke();
+}
+
+function drawBlock(block, highlight){
+  var poly = block.getScreenPoly();
+  var c = block.color;
+
+  // mapRot에 따라 보이는 3면 선택
+  // 등축투영 시점에서: 화면 오른쪽 = 회전된 +x 방향, 화면 왼쪽 = 회전된 +y 방향
+  var rightFace, leftFace;
+  switch(mapRot){
+    case 0: rightFace = poly.xPlus;  leftFace = poly.yPlus;  break;
+    case 1: rightFace = poly.yMinus; leftFace = poly.xPlus;  break;
+    case 2: rightFace = poly.xMinus; leftFace = poly.yMinus; break;
+    case 3: rightFace = poly.yPlus;  leftFace = poly.xMinus; break;
+  }
+  // 뒤→앞 순서: 왼쪽면 → 오른쪽면 → 윗면
+  fillFace(leftFace,   shade(c, 0.65));
+  fillFace(rightFace,  shade(c, 0.85));
+  fillFace(poly.top,   shade(c, 1.15));
+
+  // 선택 하이라이트
+  if(highlight){
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2.5;
+    // 외곽선 그리기
+    var hull = getHull(poly);
+    ctx.beginPath();
+    ctx.moveTo(hull[0].x, hull[0].y);
+    for(var i=1;i<hull.length;i++) ctx.lineTo(hull[i].x, hull[i].y);
+    ctx.closePath(); ctx.stroke();
+
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(hull[0].x, hull[0].y);
+    for(var j=1;j<hull.length;j++) ctx.lineTo(hull[j].x, hull[j].y);
+    ctx.closePath(); ctx.stroke();
+  }
+
+  // 블록 라벨 (중심에)
+  var cx = 0, cy = 0;
+  poly.top.forEach(function(p){ cx += p.x; cy += p.y; });
+  cx /= 4; cy /= 4;
+  var fontSize = Math.max(10, Math.min(16, block.w * TW * 0.3));
+  ctx.font = 'bold ' + fontSize + 'px Pretendard,sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(0,0,0,.55)';
+  ctx.fillText(block.label, cx, cy);
+}
+
+/* 간단한 볼록 외곽선 (6면 꼭짓점 → 상하좌우 극점) */
+function getHull(poly){
+  // 직육면체 등축투영은 6각형 → 꼭짓점 8개에서 외곽 6개 추출
+  var all = poly.all;
+  // 가장 위, 아래, 왼쪽, 오른쪽 점 찾기
+  var top = all[0], bot = all[0], left = all[0], right = all[0];
+  all.forEach(function(p){
+    if(p.y < top.y) top = p;
+    if(p.y > bot.y) bot = p;
+    if(p.x < left.x) left = p;
+    if(p.x > right.x) right = p;
+  });
+  // 상단부터 시계방향 6개 점 (등축투영 직육면체 외곽)
+  // top → topRight → right → bottom → bottomLeft → left
+  var pts = [];
+  // 상단 중심에서 오른쪽/왼쪽 순회
+  all.sort(function(a,b){ return a.y - b.y || a.x - b.x; });
+  // 간단히: convex hull 필요 없이 직접 구성
+  // 등축투영 직육면체의 외곽은 항상 6각형
+  var sorted = all.slice().sort(function(a,b){
+    var angA = Math.atan2(a.y - (top.y+bot.y)/2, a.x - (left.x+right.x)/2);
+    var angB = Math.atan2(b.y - (top.y+bot.y)/2, b.x - (left.x+right.x)/2);
+    return angA - angB;
+  });
+  // 중복 제거 후 반환 (convex hull lite)
+  return convexHull(sorted);
+}
+
+function convexHull(points){
+  if(points.length <= 3) return points;
+  points.sort(function(a,b){ return a.x-b.x || a.y-b.y; });
+  var lower = [];
+  for(var i=0;i<points.length;i++){
+    while(lower.length>=2 && cross(lower[lower.length-2],lower[lower.length-1],points[i])<=0)
+      lower.pop();
+    lower.push(points[i]);
+  }
+  var upper = [];
+  for(var j=points.length-1;j>=0;j--){
+    while(upper.length>=2 && cross(upper[upper.length-2],upper[upper.length-1],points[j])<=0)
+      upper.pop();
+    upper.push(points[j]);
+  }
+  upper.pop(); lower.pop();
+  return lower.concat(upper);
+}
+
+function cross(o,a,b){
+  return (a.x-o.x)*(b.y-o.y)-(a.y-o.y)*(b.x-o.x);
+}
+
+/* ══════════════════════════════════════════
+   렌더링
+   ══════════════════════════════════════════ */
+function render(){
+  ctx.clearRect(0, 0, W, H);
+  drawGrid();
+
+  // 깊이 정렬
+  var sorted = blocks.slice().sort(function(a,b){
+    return a.sortKey() - b.sortKey();
+  });
+
+  sorted.forEach(function(b){
+    drawBlock(b, b === selected);
+  });
+}
+
+/* ══════════════════════════════════════════
+   히트테스트
+   ══════════════════════════════════════════ */
+function pointInPoly(px, py, pts){
+  var inside = false;
+  for(var i=0, j=pts.length-1; i<pts.length; j=i++){
+    var xi=pts[i].x, yi=pts[i].y, xj=pts[j].x, yj=pts[j].y;
+    if(((yi>py)!==(yj>py)) && (px < (xj-xi)*(py-yi)/(yj-yi)+xi))
+      inside = !inside;
+  }
+  return inside;
+}
+
+function hitTest(sx, sy){
+  // 앞→뒤 순서 (가장 위에 그려진 것 우선)
+  var sorted = blocks.slice().sort(function(a,b){
+    return b.sortKey() - a.sortKey();
+  });
+  for(var i=0; i<sorted.length; i++){
+    var poly = sorted[i].getScreenPoly();
+    var hull = convexHull(poly.all.slice());
+    if(pointInPoly(sx, sy, hull)) return sorted[i];
+  }
+  return null;
+}
+
+/* ══════════════════════════════════════════
+   포인터 이벤트 (드래그)
+   ══════════════════════════════════════════ */
+var pointerDown = false;
+var dragThreshold = 8;
+var hasMoved = false;
+
+canvas.addEventListener('pointerdown', function(e){
+  e.preventDefault();
+  canvas.setPointerCapture(e.pointerId);
+
+  var rect = canvas.getBoundingClientRect();
+  var sx = e.clientX - rect.left;
+  var sy = e.clientY - rect.top;
+
+  var hit = hitTest(sx, sy);
+  if(hit){
+    selected = hit;
+    isDragging = false;
+    hasMoved = false;
+    pointerDown = true;
+    dragStartScreen = {x: sx, y: sy};
+    dragStartGrid = {x: hit.gx, y: hit.gy};
+  } else {
+    selected = null;
+  }
+  updateChips();
+  enableRotBtns();
+  render();
+}, {passive: false});
+
+canvas.addEventListener('pointermove', function(e){
+  if(!pointerDown || !selected) return;
+  e.preventDefault();
+
+  var rect = canvas.getBoundingClientRect();
+  var sx = e.clientX - rect.left;
+  var sy = e.clientY - rect.top;
+
+  var dx = sx - dragStartScreen.x;
+  var dy = sy - dragStartScreen.y;
+
+  if(!hasMoved && Math.sqrt(dx*dx+dy*dy) < dragThreshold) return;
+  hasMoved = true;
+  isDragging = true;
+
+  // 화면 변위 → 그리드 변위 (등축투영 역변환)
+  var dgx = (dx / TW + dy / TH) / 2;
+  var dgy = (dy / TH - dx / TW) / 2;
+
+  // 맵 회전에 따른 역변환 (델타용 — 오프셋 없음)
+  var rawDelta = unrotDelta(dgx, dgy);
+
+  var newGx = Math.round(dragStartGrid.x + rawDelta.x);
+  var newGy = Math.round(dragStartGrid.y + rawDelta.y);
+
+  selected.gx = newGx;
+  selected.gy = newGy;
+  // 실시간 자동 쌓기 높이 미리보기
+  selected.gz = getStackHeight(selected);
+
+  render();
+}, {passive: false});
+
+canvas.addEventListener('pointerup', function(e){
+  if(pointerDown && selected){
+    // 스냅 (정수 위치)
+    selected.gx = Math.round(selected.gx);
+    selected.gy = Math.round(selected.gy);
+    // 자동 쌓기: 기존 블록 위에 올리기
+    if(hasMoved) selected.gz = getStackHeight(selected);
+  }
+  pointerDown = false;
+  isDragging = false;
+
+  if(!completed) checkCompletion();
+  render();
+}, {passive: false});
+
+/* ══════════════════════════════════════════
+   회전 버튼 활성화
+   ══════════════════════════════════════════ */
+function enableRotBtns(){
+  var en = !!selected;
+  document.getElementById('btnRotZ').disabled = !en;
+}
+
+/* ══════════════════════════════════════════
+   버튼 이벤트 (이벤트 위임)
+   ══════════════════════════════════════════ */
+document.addEventListener('click', function(e){
+  var btn = e.target.closest('button');
+  if(!btn) return;
+  var id = btn.id;
+
+  if(id === 'btnRotZ' && selected){
+    selected.tipCycle();
+    selected.gz = getStackHeight(selected);
+    render();
+  }
+  if(id === 'btnArrowLeft'){
+    mapRot = (mapRot + 3) % 4;   // 반시계 (왼쪽)
+    render();
+  }
+  if(id === 'btnArrowRight'){
+    mapRot = (mapRot + 1) % 4;   // 시계 (오른쪽)
+    render();
+  }
+  if(id === 'btnReset'){
+    initBlocks(); render();
+  }
+  if(id === 'btnBack'){
+    if(window.history.length > 1) window.history.back();
+    else window.close();
+  }
+  if(id === 'btnOverlayClose'){
+    document.getElementById('overlay').classList.remove('show');
+  }
+});
+
+/* ══════════════════════════════════════════
+   자동 쌓기 — 블록 드롭 시 기존 블록 위에 자동 배치
+   ══════════════════════════════════════════ */
+function getStackHeight(block){
+  var maxZ = 0;
+  for(var i = 0; i < blocks.length; i++){
+    var o = blocks[i];
+    if(o === block) continue;
+    // XY 풋프린트 겹침 확인
+    var ox = block.gx < o.gx + o.w && block.gx + block.w > o.gx;
+    var oy = block.gy < o.gy + o.h && block.gy + block.h > o.gy;
+    if(ox && oy){
+      var topZ = o.gz + o.d;
+      if(topZ > maxZ) maxZ = topZ;
+    }
+  }
+  return maxZ;
+}
+
+/* ══════════════════════════════════════════
+   완성 체크
+   ══════════════════════════════════════════ */
+function checkCompletion(){
+  // 5×5×5 = 125 셀 그리드
+  var grid = new Uint8Array(FULL * FULL * FULL);
+  var filledCount = 0;
+
+  for(var bi = 0; bi < blocks.length; bi++){
+    var b = blocks[bi];
+    for(var dx = 0; dx < b.w; dx++){
+      for(var dy = 0; dy < b.h; dy++){
+        for(var dz = 0; dz < b.d; dz++){
+          var cx = b.gx + dx;
+          var cy = b.gy + dy;
+          var cz = b.gz + dz;
+          if(cx < 0 || cx >= FULL || cy < 0 || cy >= FULL || cz < 0 || cz >= FULL){
+            return; // 범위 밖
+          }
+          var idx = cx * FULL * FULL + cy * FULL + cz;
+          if(grid[idx]){
+            return; // 겹침
+          }
+          grid[idx] = 1;
+          filledCount++;
+        }
+      }
+    }
+  }
+
+  if(filledCount === FULL * FULL * FULL){
+    completed = true;
+    document.getElementById('overlay').classList.add('show');
+  }
+}
+
+/* ══════════════════════════════════════════
+   리사이즈
+   ══════════════════════════════════════════ */
+var resizeTimer;
+window.addEventListener('resize', function(){
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function(){ resizeCanvas(); render(); }, 150);
+});
+
+/* ══════════════════════════════════════════
+   부트
+   ══════════════════════════════════════════ */
+// 부트: flex 레이아웃 계산 후 렌더링
+requestAnimationFrame(function(){
+  resizeCanvas();
+  initBlocks();
+  render();
+});
+
+})();
+</script>
+</body>
+</html>
