@@ -1020,7 +1020,7 @@ import { getFirestore, doc, setDoc, serverTimestamp }
 
 const app = initializeApp({
   apiKey: "AIzaSyCnNvdo3ozcv3HC1ilMQX_fiwn_fpB5KCM",
-  authDomain: "math-high-cm1.web.app",
+  authDomain: "math-high-cm1.firebaseapp.com",
   projectId: "math-high-cm1",
   storageBucket: "math-high-cm1.firebasestorage.app",
   messagingSenderId: "1097512338605",
@@ -1031,19 +1031,28 @@ const db = getFirestore(app);
 const urlParams = new URLSearchParams(window.location.search);
 const classId = urlParams.get('class') || 'default';
 
-(function setupTeacherControls() {
-  var cards = document.querySelectorAll('.card');
-  cards.forEach(function(card, idx) {
-    var btn = document.createElement('button');
-    btn.textContent = '📌 집중하기';
-    btn.style.cssText = 'position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;z-index:100;box-shadow:0 2px 8px rgba(102,126,234,.4);';
-    btn.addEventListener('click', async function() {
-      await setDoc(doc(db, 'classrooms', classId), { focusSection: idx, updatedAt: serverTimestamp() }, { merge: true });
-      btn.textContent = '✅ 전송됨';
-      setTimeout(function() { btn.textContent = '📌 집중하기'; }, 2000);
-    });
-    card.style.position = 'relative';
-    card.appendChild(btn);
+(function setupFocusButton() {
+  var btn = document.createElement('button');
+  btn.textContent = '\uD83D\uDCCC \uC9D1\uC911\uD558\uAE30';
+  btn.style.cssText = 'position:fixed;top:12px;right:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:8px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;z-index:99999;box-shadow:0 2px 12px rgba(102,126,234,.5);';
+  document.body.appendChild(btn);
+
+  btn.addEventListener('click', async function() {
+    var slides = document.querySelectorAll('.slide');
+    var currentIdx = 0;
+    if (slides.length) {
+      slides.forEach(function(s, i) { if (s.classList.contains('active')) currentIdx = i; });
+      var titleCount = document.querySelectorAll('.slide.title-slide').length;
+      currentIdx = Math.max(0, currentIdx - titleCount);
+    } else {
+      var cards = document.querySelectorAll('.card');
+      cards.forEach(function(c, i) { if (c.classList.contains('slide-active') || c.style.display !== 'none') currentIdx = i; });
+    }
+
+    await setDoc(doc(db, 'classrooms', classId), { focusSection: currentIdx, updatedAt: serverTimestamp() }, { merge: true });
+    btn.textContent = '\u2705 \uC804\uC1A1\uB428';
+    btn.style.background = '#48bb78';
+    setTimeout(function() { btn.textContent = '\uD83D\uDCCC \uC9D1\uC911\uD558\uAE30'; btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)'; }, 2000);
   });
 })();
 </script>
