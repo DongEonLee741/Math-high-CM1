@@ -1026,108 +1026,37 @@ body.slide-mode {
 <!-- Firebase SDK (Teacher) -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup }
-  from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, serverTimestamp }
+import { getFirestore, doc, setDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-const firebaseConfig = {
+const app = initializeApp({
   apiKey: "AIzaSyCnNvdo3ozcv3HC1ilMQX_fiwn_fpB5KCM",
   authDomain: "math-high-cm1.web.app",
   projectId: "math-high-cm1",
   storageBucket: "math-high-cm1.firebasestorage.app",
   messagingSenderId: "1097512338605",
   appId: "1:1097512338605:web:c8572e37781be52e9a7224"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+});
 const db = getFirestore(app);
 
 const urlParams = new URLSearchParams(window.location.search);
 const classId = urlParams.get('class') || 'default';
-window._firebase = { auth, db, classId };
 
-function createLoginUI() {
-  var o = document.createElement('div');
-  o.id = 'fb-login-overlay';
-  var h = '<div style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99998;display:flex;align-items:center;justify-content:center;">';
-  h += '<div style="background:#fff;border-radius:16px;padding:32px;max-width:360px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.2);">';
-  h += '<h2 style="margin-bottom:8px;font-size:20px;color:#2c3e50;">\uD83D\uDCDA \uAD50\uC0AC \uB85C\uADF8\uC778</h2>';
-  h += '<p style="color:#666;font-size:14px;margin-bottom:20px;">\uC2AC\uB77C\uC774\uB4DC\uB97C \uC0AC\uC6A9\uD558\uB824\uBA74 \uAD50\uC0AC \uACC4\uC815\uC73C\uB85C \uB85C\uADF8\uC778\uD558\uC138\uC694.</p>';
-  h += '<button id="fb-google-login" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;background:#fff;cursor:pointer;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;">';
-  h += '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20"> Google\uB85C \uB85C\uADF8\uC778</button>';
-  h += '</div></div>';
-  o.innerHTML = h;
-  document.body.appendChild(o);
-  document.getElementById('fb-google-login').addEventListener('click', async function() {
-    try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch(e) { console.error(e); }
-  });
-}
-
-async function checkTeacher(user) {
-  var snap = await getDoc(doc(db, 'config', 'teachers'));
-  if (snap.exists()) {
-    var data = snap.data();
-    if (data.emails && data.emails.includes(user.email)) return true;
-  }
-  return false;
-}
-
-function showAccessDenied() {
-  var o = document.createElement('div');
-  o.innerHTML = '<div style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99998;display:flex;align-items:center;justify-content:center;">' +
-    '<div style="background:#fff;border-radius:16px;padding:32px;max-width:400px;width:90%;text-align:center;">' +
-    '<h2 style="color:#e53e3e;margin-bottom:12px;">\u26D4 \uC811\uADFC \uAD8C\uD55C \uC5C6\uC74C</h2>' +
-    '<p style="color:#666;font-size:14px;">\uC774 \uC2AC\uB77C\uC774\uB4DC\uB294 \uAD50\uC0AC \uC804\uC6A9\uC785\uB2C8\uB2E4.<br>\uD559\uC0DD\uC740 \uD3EC\uD138\uC5D0\uC11C \uD559\uC2B5\uC9C0\uB97C \uC774\uC6A9\uD574 \uC8FC\uC138\uC694.</p>' +
-    '<button onclick="window.location.href=\'https://math-high-cm1.web.app\'" style="margin-top:16px;padding:10px 24px;background:#667eea;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;">\uD3EC\uD138\uB85C \uC774\uB3D9</button>' +
-    '</div></div>';
-  document.body.appendChild(o);
-}
-
-function setupTeacherControls(user) {
-  var badge = document.createElement('div');
-  badge.style.cssText = 'position:fixed;top:8px;right:8px;display:flex;gap:8px;z-index:9990;';
-  badge.innerHTML = '<div style="background:#3182ce;color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.15);">\uD83D\uDD35 \uAD50\uC0AC: ' + (user.displayName || user.email) + '</div>' +
-    '<div id="fb-student-count" style="background:#48bb78;color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.15);">\uD83D\uDC64 0\uBA85</div>';
-  document.body.appendChild(badge);
-
-  onSnapshot(collection(db, 'classrooms', classId, 'students'), function(snap) {
-    var el = document.getElementById('fb-student-count');
-    if (el) el.textContent = '\uD83D\uDC64 ' + snap.size + '\uBA85';
-  });
-
+(function setupTeacherControls() {
   var cards = document.querySelectorAll('.card');
   cards.forEach(function(card, idx) {
     var btn = document.createElement('button');
-    btn.textContent = '\uD83D\uDCCC \uC9D1\uC911\uD558\uAE30';
+    btn.textContent = '📌 집중하기';
     btn.style.cssText = 'position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;z-index:100;box-shadow:0 2px 8px rgba(102,126,234,.4);';
     btn.addEventListener('click', async function() {
       await setDoc(doc(db, 'classrooms', classId), { focusSection: idx, updatedAt: serverTimestamp() }, { merge: true });
-      btn.textContent = '\u2705 \uC804\uC1A1\uB428';
-      setTimeout(function() { btn.textContent = '\uD83D\uDCCC \uC9D1\uC911\uD558\uAE30'; }, 2000);
+      btn.textContent = '✅ 전송됨';
+      setTimeout(function() { btn.textContent = '📌 집중하기'; }, 2000);
     });
     card.style.position = 'relative';
     card.appendChild(btn);
   });
-
-  setDoc(doc(db, 'classrooms', classId), { teacherEmail: user.email, active: true, updatedAt: serverTimestamp() }, { merge: true });
-}
-
-onAuthStateChanged(auth, async function(user) {
-  var ov = document.getElementById('fb-login-overlay');
-  if (user) {
-    if (ov) ov.remove();
-    var isTeacher = await checkTeacher(user);
-    if (isTeacher) {
-      setupTeacherControls(user);
-    } else {
-      showAccessDenied();
-    }
-  } else {
-    if (!ov) createLoginUI();
-  }
-});
+})();
 </script>
 
 </head>
