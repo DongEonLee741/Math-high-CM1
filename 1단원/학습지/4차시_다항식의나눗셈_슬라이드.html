@@ -1302,7 +1302,7 @@ import { getFirestore, doc, setDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 const app = initializeApp({
   apiKey: "AIzaSyCnNvdo3ozcv3HC1ilMQX_fiwn_fpB5KCM",
-  authDomain: "math-high-cm1.firebaseapp.com",
+  authDomain: "math-class.it.kr",
   projectId: "math-high-cm1",
   storageBucket: "math-high-cm1.firebasestorage.app",
   messagingSenderId: "1097512338605",
@@ -1321,7 +1321,7 @@ const classId = urlParams.get('class') || 'default';
   monitorBtn.textContent = '\uD83D\uDCCA \uD604\uD669\uBCF4\uAE30';
   monitorBtn.style.cssText = 'position:fixed;top:12px;right:150px;background:#3b82f6;color:#fff;border:none;padding:12px 20px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;z-index:99999;box-shadow:0 2px 8px rgba(59,130,246,.3);transition:all .3s ease;';
   monitorBtn.addEventListener('click', function() {
-    window.open('https://math-high-cm1.web.app/monitor.html?class=' + classId, '_blank');
+    window.open('https://math-class.it.kr/monitor.html?class=' + classId, '_blank');
   });
   document.body.appendChild(monitorBtn);
   function getCurrentSection() {
