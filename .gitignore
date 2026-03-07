@@ -31,3 +31,6 @@ database.rules.json
 2단원/
 3단원/
 4단원/
+
+# Backup files
+*.bak
