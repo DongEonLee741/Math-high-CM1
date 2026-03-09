@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 교사 목록 — 인증된 사용자만 읽기, 쓰기 불가 (콘솔에서만)
+    match /config/{docId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // 과목 레지스트리 — 인증된 사용자만 읽기
+    match /subjects/{subjectId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+
+      match /{path=**} {
+        allow read: if request.auth != null;
+        allow write: if false;
+      }
+    }
+
+    // 학생 데이터 — 본인만 읽기/쓰기
+    match /students/{uid} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == uid;
+
+      match /worksheets/{worksheetId} {
+        allow read, write: if request.auth != null
+                           && request.auth.uid == uid;
+
+        match /records/{recordId} {
+          allow read, write: if request.auth != null
+                             && request.auth.uid == uid;
+        }
+      }
+    }
+
+    // 교실 — 집중 모드 신호는 누구나 읽기/쓰기 가능
+    match /classrooms/{classId} {
+      allow read, write: if true;
+
+      match /students/{uid} {
+        allow read, write: if true;
+      }
+
+      // 발표 요청 — 누구나 읽기/쓰기 가능
+      match /presentations/{presentationId} {
+        allow read, write: if true;
+      }
+    }
+  }
+}

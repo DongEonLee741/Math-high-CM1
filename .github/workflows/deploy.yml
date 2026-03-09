@@ -1,0 +1,53 @@
+name: Deploy to Firebase Hosting
+
+on:
+  push:
+    branches: [main]
+  repository_dispatch:
+    types: [ps-updated]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # CM1 저장소 체크아웃 (firebase.json + 공통 파일 포함)
+      - name: Checkout CM1 repository
+        uses: actions/checkout@v4
+
+      # PS 저장소 체크아웃
+      - name: Checkout PS repository
+        uses: actions/checkout@v4
+        with:
+          repository: DongEonLee741/Math-high-PS
+          token: ${{ secrets.GH_PAT }}
+          path: _ps_source
+
+      # Firebase Hosting public/ 디렉토리 빌드
+      # (공통 파일은 CM1 저장소의 public/에서, 학습지는 소스에서 복사)
+      - name: Build public directory
+        run: |
+          # CM1 학습지/슬라이드 → public/cm1/1단원/학습지/
+          mkdir -p public/cm1/1단원/학습지
+          cp 1단원/학습지/*.html public/cm1/1단원/학습지/ 2>/dev/null || true
+          find public/cm1/ -name "*.bak" -delete
+
+          # PS 학습지/슬라이드 → public/ps/1단원/학습지/
+          mkdir -p public/ps/1단원/학습지
+          cp _ps_source/1단원/학습지/*.html public/ps/1단원/학습지/ 2>/dev/null || true
+          find public/ps/ -name "*backup*" -delete
+          find public/ps/ -name "*.bak" -delete
+          # Python/PowerShell 스크립트 제거
+          find public/ps/ -name "*.py" -delete
+          find public/ps/ -name "*.ps1" -delete
+
+          echo "=== Built public/ structure ==="
+          find public -maxdepth 3 -type d | sort
+
+      # Firebase Hosting 배포 (firebase.json은 저장소 루트에 위치)
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: live
+          projectId: math-high-cm1

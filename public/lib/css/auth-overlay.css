@@ -1,0 +1,158 @@
+                /* ── Auth Overlay ── */
+        .auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(6px);
+        }
+        .auth-panel {
+            background: #fff;
+            border-radius: 14px;
+            padding: 0;
+            width: min(380px, 88vw);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        .auth-panel-header {
+            background: #2563eb;
+            padding: 20px 24px;
+            text-align: center;
+        }
+        .auth-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            margin: 0;
+        }
+        .auth-panel-body {
+            padding: 24px 28px 28px;
+        }
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1.5px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: color 0.2s;
+            font-family: inherit;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .auth-tab.active {
+            color: #2563eb;
+            border-bottom: 2px solid #2563eb;
+            margin-bottom: -1.5px;
+        }
+        .auth-row { margin-bottom: 14px; }
+        .auth-row label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+        .auth-row input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            color: #1e293b;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+        .auth-row input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+        }
+        .auth-row input::placeholder { color: #cbd5e1; }
+        .auth-submit {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            color: #fff;
+            background: #2563eb;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: background 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .auth-submit:active { transform: scale(0.97); background: #1d4ed8; }
+        .auth-submit:disabled { opacity: 0.5; pointer-events: none; }
+        .auth-error {
+            color: #ef4444;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 10px;
+            min-height: 18px;
+        }
+        .auth-hint {
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 12px;
+        }
+        .auth-welcome {
+            text-align: center;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 16px;
+        }
+        .auth-link {
+            display: block;
+            width: 100%;
+            background: none;
+            border: none;
+            color: #3b82f6;
+            font-size: 13px;
+            font-family: inherit;
+            text-align: center;
+            margin-top: 12px;
+            cursor: pointer;
+            padding: 6px;
+        }
+        .student-display {
+            font-size: 13px;
+            color: #555;
+            font-weight: 600;
+        }
+        .logout-btn {
+            padding: 5px 14px;
+            border: 1.5px solid #2563eb;
+            border-radius: 6px;
+            background: transparent;
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            margin-left: 8px;
+        }
+        .logout-btn:hover {
+            background: #2563eb;
+            color: #fff;
+        }
+        .logout-btn:active {
+            transform: scale(0.95);
+        }

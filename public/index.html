@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>수학 수업 포털</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Pretendard','Malgun Gothic',sans-serif;background:#f8fafc;color:#1e293b;min-height:100dvh;-webkit-tap-highlight-color:transparent;}
+.portal{max-width:480px;margin:0 auto;padding:24px 16px;}
+.logo{text-align:center;margin:40px 0 24px;}
+.logo h1{font-size:28px;font-weight:800;color:#1e293b;}
+.logo p{font-size:14px;color:#888;margin-top:4px;}
+.card{background:#fff;border-radius:14px;box-shadow:0 1px 2px rgba(0,0,0,0.03);border:1px solid #e2e8f0;padding:24px;margin-bottom:16px;}
+.card h2{font-size:16px;font-weight:700;margin-bottom:14px;color:#1e293b;display:flex;align-items:center;gap:8px;}
+.badge{display:inline-block;background:#2563eb;color:#fff;font-size:11px;padding:2px 8px;border-radius:6px;}
+.badge.student{background:#48bb78;}
+/* 로그인 폼 */
+.auth-tabs{display:flex;gap:0;margin-bottom:16px;border-radius:8px;overflow:hidden;border:1.5px solid #e2e8f0;}
+.auth-tab{flex:1;padding:10px;border:none;background:#f8fafc;cursor:pointer;font-size:14px;font-weight:600;color:#94a3b8;transition:all .2s;}
+.auth-tab.active{background:#2563eb;color:#fff;}
+.auth-row{margin-bottom:12px;}
+.auth-row label{display:block;font-size:13px;font-weight:600;color:#475569;margin-bottom:4px;}
+.auth-row input{width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:15px;font-family:inherit;outline:none;transition:all .15s;}
+.auth-row input:focus{border-color:#2563eb;box-shadow:0 0 0 2px rgba(37,99,235,0.15);}
+.auth-submit{width:100%;padding:14px;border:none;border-radius:8px;background:#2563eb;color:#fff;font-size:16px;font-weight:700;cursor:pointer;transition:all .15s;margin-top:4px;}
+.auth-submit:active{transform:scale(0.97);}
+.auth-submit:hover{background:#1d4ed8;}
+.auth-error{color:#ef4444;font-size:13px;margin-top:8px;min-height:18px;}
+.auth-hint{font-size:12px;color:#94a3b8;text-align:center;margin-top:10px;}
+.auth-link{border:none;background:none;color:#2563eb;font-size:13px;cursor:pointer;font-weight:600;margin-top:10px;display:block;text-align:center;width:100%;}
+.auth-welcome{font-size:15px;font-weight:600;color:#1e293b;margin-bottom:12px;text-align:center;}
+/* 선택 UI */
+.options{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.opt-btn{padding:14px 10px;border:2px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer;text-align:center;font-size:14px;font-weight:600;color:#4a5568;transition:all .15s;}
+.opt-btn:hover{border-color:#2563eb;color:#2563eb;}
+.opt-btn.selected{border-color:#2563eb;background:#eff6ff;color:#2563eb;}
+.opt-btn.disabled{opacity:.4;pointer-events:none;}
+.lessons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:#fff;border-radius:12px;padding:0;}
+.lesson-btn{padding:12px 6px;border:2px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer;text-align:center;font-size:13px;font-weight:600;color:#4a5568;transition:all .15s;min-width:0;overflow:hidden;}
+.lesson-btn:hover{border-color:#2563eb;color:#2563eb;}
+.lesson-btn.selected{border-color:#2563eb;background:#eff6ff;color:#2563eb;}
+.lesson-title{font-size:11px;color:#888;font-weight:400;display:block;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* 이동 버튼 */
+.btn-go{width:100%;padding:16px;border:none;border-radius:8px;font-size:17px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;transition:all .15s;}
+.btn-go:active{transform:scale(0.97);}
+.btn-go.teacher{background:#2563eb;}
+.btn-go.teacher:hover{background:#1d4ed8;}
+.btn-go.student{background:#22c55e;}
+.btn-go.student:hover{background:#16a34a;}
+.btn-go:disabled{background:#cbd5e0;cursor:not-allowed;}
+/* 상태 */
+.user-info{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#f7fafc;border-radius:10px;margin-bottom:16px;}
+.user-info .name{font-weight:600;font-size:14px;}
+.user-info .role{font-size:12px;padding:3px 10px;border-radius:12px;font-weight:600;}
+.user-info .role.teacher{background:#eff6ff;color:#2563eb;}
+.user-info .role.student{background:#f0fff4;color:#48bb78;}
+.btn-logout{border:none;background:none;color:#e53e3e;font-size:12px;cursor:pointer;font-weight:600;}
+.hidden{display:none!important;}
+.step-label{font-size:13px;color:#999;margin-bottom:6px;font-weight:500;}
+</style>
+</head>
+<body>
+<div class="portal">
+  <div class="logo">
+    <h1>수학 수업 포털</h1>
+    <p>교사와 학생을 위한 통합 수업 관리</p>
+  </div>
+
+  <!-- 로그인 -->
+  <div class="card" id="loginCard">
+    <h2>로그인</h2>
+    <div class="auth-tabs" id="authTabs">
+      <button class="auth-tab active" data-tab="login">로그인</button>
+      <button class="auth-tab" data-tab="register">계정 만들기</button>
+    </div>
+    <!-- 로그인 폼 -->
+    <div id="loginForm">
+      <div class="auth-row">
+        <label>아이디</label>
+        <input type="text" id="loginId" placeholder="아이디" autocomplete="username" autocapitalize="none">
+      </div>
+      <div class="auth-row">
+        <label>비밀번호</label>
+        <input type="password" id="loginPassword" placeholder="비밀번호" autocomplete="current-password">
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
+        <input type="checkbox" id="autoLoginCheck" checked style="width:16px;height:16px;accent-color:#2563eb;">
+        <label for="autoLoginCheck" style="font-size:13px;color:#64748b;margin:0;cursor:pointer;">자동으로 로그인 하기</label>
+      </div>
+      <button class="auth-submit" id="btnLogin">로그인</button>
+      <div class="auth-error" id="loginError"></div>
+    </div>
+    <!-- 계정 만들기 폼 -->
+    <div id="registerForm" style="display:none;">
+      <div class="auth-row">
+        <label>아이디</label>
+        <input type="text" id="regId" placeholder="영문, 숫자 4~20자" autocomplete="username" autocapitalize="none">
+      </div>
+      <div class="auth-row">
+        <label>비밀번호</label>
+        <input type="password" id="regPassword" placeholder="6자 이상" autocomplete="new-password">
+      </div>
+      <div class="auth-row">
+        <label>비밀번호 확인</label>
+        <input type="password" id="regPasswordConfirm" placeholder="비밀번호 확인" autocomplete="new-password">
+      </div>
+      <button class="auth-submit" id="btnRegister">계정 만들기</button>
+      <div class="auth-error" id="registerError"></div>
+      <p class="auth-hint">아이디와 비밀번호를 꼭 기억해주세요!</p>
+    </div>
+    <!-- 빠른 로그인 (재방문) -->
+    <div id="passwordOnlyForm" style="display:none;">
+      <p class="auth-welcome" id="welcomeBack"></p>
+      <div class="auth-row">
+        <label>비밀번호</label>
+        <input type="password" id="quickPassword" placeholder="비밀번호" autocomplete="current-password">
+      </div>
+      <button class="auth-submit" id="btnQuickLogin">로그인</button>
+      <div class="auth-error" id="quickError"></div>
+      <button class="auth-link" id="btnSwitchAccount">다른 계정으로 로그인</button>
+    </div>
+  </div>
+
+  <!-- 메인 UI (로그인 후) -->
+  <div class="hidden" id="mainUI">
+    <div class="user-info" id="userInfo">
+      <div>
+        <span class="name" id="userName"></span>
+        <span class="role" id="userRole"></span>
+      </div>
+      <button class="btn-logout" id="btnLogout">로그아웃</button>
+    </div>
+
+    <!-- Step 1: 과목 선택 -->
+    <div class="card" id="stepSubject">
+      <div class="step-label">STEP 1</div>
+      <h2>과목 선택</h2>
+      <div class="options" id="subjectList"></div>
+    </div>
+
+    <!-- Step 2: 단원 선택 -->
+    <div class="card hidden" id="stepUnit">
+      <div class="step-label">STEP 2</div>
+      <h2>단원 선택</h2>
+      <div class="options" id="unitList"></div>
+    </div>
+
+    <!-- Step 3: 차시 선택 -->
+    <div class="card hidden" id="stepLesson">
+      <div class="step-label">STEP 3</div>
+      <h2>차시 선택</h2>
+      <div class="lessons" id="lessonList"></div>
+    </div>
+
+    <!-- 이동 버튼 -->
+    <div class="card hidden" id="stepGo">
+      <button class="btn-go" id="btnGo" disabled>선택을 완료하세요</button>
+      <button class="btn-go student hidden" id="btnGoWorksheet" style="margin-top:8px;">학습지 보기</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+         signOut, onAuthStateChanged, setPersistence,
+         browserLocalPersistence, browserSessionPersistence }
+  from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy }
+  from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyCnNvdo3ozcv3HC1ilMQX_fiwn_fpB5KCM",
+  authDomain: "math-class.it.kr",
+  projectId: "math-high-cm1",
+  storageBucket: "math-high-cm1.firebasestorage.app",
+  messagingSenderId: "1097512338605",
+  appId: "1:1097512338605:web:c8572e37781be52e9a7224"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* ── Helpers ── */
+function buildEmail(id) {
+  return id.toLowerCase() + '@math-worksheet.school';
+}
+function extractUsername(email) {
+  return email ? email.split('@')[0] : '';
+}
+
+/* ── State ── */
+let isTeacher = false;
+let currentUsername = '';
+let subjects = [];
+let selected = { subject: null, unit: null, lesson: null };
+
+/* ── DOM ── */
+const $ = id => document.getElementById(id);
+const loginCard = $('loginCard'), mainUI = $('mainUI');
+const stepUnit = $('stepUnit'), stepLesson = $('stepLesson'), stepGo = $('stepGo');
+const subjectList = $('subjectList'), unitList = $('unitList'), lessonList = $('lessonList');
+const btnGo = $('btnGo');
+
+/* ── Auth: Tab switching ── */
+document.querySelectorAll('.auth-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const isLogin = tab.dataset.tab === 'login';
+    $('loginForm').style.display = isLogin ? 'block' : 'none';
+    $('registerForm').style.display = isLogin ? 'none' : 'block';
+    $('passwordOnlyForm').style.display = 'none';
+    $('loginError').textContent = '';
+    $('registerError').textContent = '';
+  });
+});
+
+/* ── Auth: Initial form state ── */
+function initLoginForm() {
+  const savedAutoLogin = localStorage.getItem('autoLogin') !== 'false';
+  $('autoLoginCheck').checked = savedAutoLogin;
+
+  const lastId = localStorage.getItem('lastLoginId');
+  if (lastId) {
+    // 빠른 로그인 폼
+    $('authTabs').style.display = 'none';
+    $('loginForm').style.display = 'none';
+    $('registerForm').style.display = 'none';
+    $('passwordOnlyForm').style.display = 'block';
+    $('welcomeBack').textContent = lastId + ' 님, 다시 오셨군요';
+    $('quickPassword').value = '';
+  }
+}
+
+/* ── Auth: Switch account ── */
+$('btnSwitchAccount').addEventListener('click', () => {
+  localStorage.removeItem('lastLoginId');
+  $('authTabs').style.display = 'flex';
+  $('loginForm').style.display = 'block';
+  $('registerForm').style.display = 'none';
+  $('passwordOnlyForm').style.display = 'none';
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'login'));
+});
+
+/* ── Auth: Login ── */
+$('btnLogin').addEventListener('click', handleLogin);
+$('loginPassword').addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+
+async function handleLogin() {
+  const id = $('loginId').value.trim().toLowerCase();
+  const pw = $('loginPassword').value;
+  $('loginError').textContent = '';
+  if (!id || !pw) { $('loginError').textContent = '아이디와 비밀번호를 입력하세요'; return; }
+
+  const autoLogin = $('autoLoginCheck').checked;
+  localStorage.setItem('autoLogin', autoLogin ? 'true' : 'false');
+
+  try {
+    await setPersistence(auth, autoLogin ? browserLocalPersistence : browserSessionPersistence);
+    await signInWithEmailAndPassword(auth, buildEmail(id), pw);
+    localStorage.setItem('lastLoginId', id);
+  } catch (e) {
+    const msg = e.code === 'auth/user-not-found' ? '존재하지 않는 아이디입니다'
+      : e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential' ? '비밀번호가 틀렸습니다'
+      : '로그인 실패: ' + e.message;
+    $('loginError').textContent = msg;
+  }
+}
+
+/* ── Auth: Quick login (returning user) ── */
+$('btnQuickLogin').addEventListener('click', handleQuickLogin);
+$('quickPassword').addEventListener('keydown', e => { if (e.key === 'Enter') handleQuickLogin(); });
+
+async function handleQuickLogin() {
+  const lastId = localStorage.getItem('lastLoginId');
+  const pw = $('quickPassword').value;
+  $('quickError').textContent = '';
+  if (!pw) { $('quickError').textContent = '비밀번호를 입력하세요'; return; }
+
+  const autoLogin = localStorage.getItem('autoLogin') !== 'false';
+  try {
+    await setPersistence(auth, autoLogin ? browserLocalPersistence : browserSessionPersistence);
+    await signInWithEmailAndPassword(auth, buildEmail(lastId), pw);
+  } catch (e) {
+    const msg = e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential'
+      ? '비밀번호가 틀렸습니다' : '로그인 실패: ' + e.message;
+    $('quickError').textContent = msg;
+  }
+}
+
+/* ── Auth: Register ── */
+$('btnRegister').addEventListener('click', handleRegister);
+$('regPasswordConfirm').addEventListener('keydown', e => { if (e.key === 'Enter') handleRegister(); });
+
+async function handleRegister() {
+  const id = $('regId').value.trim().toLowerCase();
+  const pw = $('regPassword').value;
+  const pw2 = $('regPasswordConfirm').value;
+  $('registerError').textContent = '';
+
+  if (!id || !pw) { $('registerError').textContent = '아이디와 비밀번호를 입력하세요'; return; }
+  if (!/^[a-z0-9]{4,20}$/.test(id)) { $('registerError').textContent = '아이디: 영문 소문자/숫자 4~20자'; return; }
+  if (pw.length < 6) { $('registerError').textContent = '비밀번호는 6자 이상이어야 합니다'; return; }
+  if (pw !== pw2) { $('registerError').textContent = '비밀번호가 일치하지 않습니다'; return; }
+
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+    await createUserWithEmailAndPassword(auth, buildEmail(id), pw);
+    localStorage.setItem('lastLoginId', id);
+    localStorage.setItem('autoLogin', 'true');
+    // Firestore에 학생 문서 생성
+    const user = auth.currentUser;
+    if (user) {
+      await setDoc(doc(db, 'students', user.uid), { username: id, createdAt: new Date().toISOString() }, { merge: true });
+    }
+  } catch (e) {
+    const msg = e.code === 'auth/email-already-in-use' ? '이미 사용 중인 아이디입니다'
+      : '계정 생성 실패: ' + e.message;
+    $('registerError').textContent = msg;
+  }
+}
+
+/* ── Auth: Logout ── */
+$('btnLogout').addEventListener('click', () => signOut(auth));
+
+/* ── Auth: State listener ── */
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    loginCard.classList.add('hidden');
+    mainUI.classList.remove('hidden');
+
+    currentUsername = extractUsername(user.email);
+
+    // 교사 확인 (usernames 배열 사용)
+    const teacherDoc = await getDoc(doc(db, 'config', 'teachers'));
+    const usernames = teacherDoc.exists() ? teacherDoc.data().usernames || [] : [];
+    isTeacher = usernames.includes(currentUsername);
+
+    $('userName').textContent = currentUsername;
+    const roleEl = $('userRole');
+    roleEl.textContent = isTeacher ? '교사' : '학생';
+    roleEl.className = 'role ' + (isTeacher ? 'teacher' : 'student');
+
+    await loadSubjects();
+  } else {
+    loginCard.classList.remove('hidden');
+    mainUI.classList.add('hidden');
+    initLoginForm();
+  }
+});
+
+/* ── Load subjects from Firestore ── */
+async function loadSubjects() {
+  const snap = await getDocs(query(collection(db, 'subjects'), orderBy('order')));
+  subjects = [];
+  for (const d of snap.docs) {
+    const subj = { id: d.id, data: d.data(), units: [] };
+    const uSnap = await getDocs(query(collection(db, 'subjects', d.id, 'units'), orderBy('order')));
+    for (const u of uSnap.docs) {
+      const unit = { id: u.id, data: u.data(), lessons: [] };
+      const lSnap = await getDocs(query(collection(db, 'subjects', d.id, 'units', u.id, 'lessons'), orderBy('order')));
+      lSnap.forEach(l => unit.lessons.push({ id: l.id, data: l.data() }));
+      subj.units.push(unit);
+    }
+    subjects.push(subj);
+  }
+  renderSubjects();
+}
+
+/* ── Render ── */
+function renderSubjects() {
+  subjectList.innerHTML = '';
+  subjects.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = s.data.name;
+    btn.addEventListener('click', () => selectSubject(s));
+    subjectList.appendChild(btn);
+  });
+}
+
+function selectSubject(s) {
+  selected = { subject: s, unit: null, lesson: null };
+  markSelected(subjectList, s.data.name);
+  stepUnit.classList.remove('hidden');
+  stepLesson.classList.add('hidden');
+  stepGo.classList.add('hidden');
+
+  unitList.innerHTML = '';
+  s.units.forEach(u => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = u.data.name;
+    btn.addEventListener('click', () => selectUnit(u));
+    unitList.appendChild(btn);
+  });
+}
+
+function selectUnit(u) {
+  selected.unit = u;
+  selected.lesson = null;
+  markSelected(unitList, u.data.name);
+  stepLesson.classList.remove('hidden');
+  stepGo.classList.add('hidden');
+
+  lessonList.innerHTML = '';
+  u.lessons.forEach(l => {
+    const btn = document.createElement('button');
+    btn.className = 'lesson-btn';
+    const noSlide = isTeacher && !l.data.slideFile;
+    btn.innerHTML = l.data.num + '차시' +
+      '<span class="lesson-title">' + l.data.title + '</span>' +
+      (noSlide ? '<span style="font-size:10px;color:#e53e3e;">슬라이드 없음</span>' : '');
+    if (noSlide) btn.classList.add('disabled');
+    btn.addEventListener('click', () => selectLesson(l));
+    lessonList.appendChild(btn);
+  });
+}
+
+function selectLesson(l) {
+  selected.lesson = l;
+  markSelected(lessonList, l.data.num + '차시');
+  stepGo.classList.remove('hidden');
+
+  const subj = selected.subject.data;
+  const unit = selected.unit.data;
+  const lesson = l.data;
+  const classId = selected.subject.id + '_' + selected.unit.id + '_' + l.data.num;
+
+  const btnGoWorksheet = $('btnGoWorksheet');
+
+  if (isTeacher) {
+    btnGo.textContent = '슬라이드 열기 — ' + lesson.num + '차시';
+    btnGo.className = 'btn-go teacher';
+    btnGo.disabled = false;
+    btnGo.onclick = () => {
+      const url = '/' + subj.code + '/' + unit.path + '/학습지/' +
+        encodeURIComponent(lesson.slideFile) + '?class=' + classId;
+      window.open(url, '_blank');
+    };
+    // 교사용: 학습지 보기 버튼 추가
+    btnGoWorksheet.textContent = '학습지 보기 — ' + lesson.num + '차시';
+    btnGoWorksheet.classList.remove('hidden');
+    btnGoWorksheet.onclick = () => {
+      const url = '/' + subj.code + '/' + unit.path + '/학습지/' +
+        encodeURIComponent(lesson.worksheetFile) + '?class=' + classId;
+      window.open(url, '_blank');
+    };
+  } else {
+    btnGo.textContent = '학습지 열기 — ' + lesson.num + '차시';
+    btnGo.className = 'btn-go student';
+    btnGo.disabled = false;
+    btnGo.onclick = () => {
+      const url = '/' + subj.code + '/' + unit.path + '/학습지/' +
+        encodeURIComponent(lesson.worksheetFile) + '?class=' + classId;
+      window.location.href = url;
+    };
+    btnGoWorksheet.classList.add('hidden');
+  }
+}
+
+function markSelected(container, text) {
+  container.querySelectorAll('.opt-btn,.lesson-btn').forEach(b => {
+    b.classList.toggle('selected', b.textContent.startsWith(text));
+  });
+}
+</script>
+</body>
+</html>

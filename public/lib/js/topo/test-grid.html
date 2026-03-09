@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>grid-renderer 테스트</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, sans-serif; background: #f0f4f8; padding: 20px; }
+    h1 { font-size: 1.3rem; margin-bottom: 16px; color: #1e293b; }
+    .controls { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+    .controls button {
+      padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 8px;
+      background: #fff; cursor: pointer; font-size: 0.9rem; transition: all 0.15s;
+    }
+    .controls button:hover { background: #eff6ff; border-color: #2563eb; }
+    .controls button.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+    #grid-container { max-width: 400px; }
+    #info { margin-top: 16px; font-size: 0.9rem; color: #475569; line-height: 1.6; }
+    #info strong { color: #1e293b; }
+  </style>
+</head>
+<body>
+  <h1>grid-renderer.js 테스트</h1>
+
+  <div class="controls">
+    <button id="btn-plain" class="active" data-space="plain">평면</button>
+    <button id="btn-cylinder" data-space="cylinder">원기둥</button>
+    <button id="btn-torus" data-space="torus">토러스</button>
+    <button id="btn-mobius" data-space="mobius">뫼비우스</button>
+  </div>
+
+  <div class="controls">
+    <button id="btn-paths">경로 보기</button>
+    <button id="btn-values">칸의 가치</button>
+  </div>
+
+  <div id="grid-container"></div>
+  <div id="info"></div>
+
+  <script type="module">
+    import { selfTest } from './math-engine.js';
+    import { createGridRenderer } from './grid-renderer.js';
+
+    selfTest();
+
+    const container = document.getElementById('grid-container');
+    const infoEl = document.getElementById('info');
+    let showPaths = false;
+    let showValues = false;
+
+    const renderer = createGridRenderer(container, {
+      spaceType: 'plain',
+      showPaths: false,
+      showValues: false,
+      interactive: true,
+      onCellClick: (r, c, indices) => {
+        updateInfo(r, c, indices);
+      },
+    });
+
+    function updateInfo(r, c, indices) {
+      const info = renderer.getInfo();
+      let html = `<strong>${info.spaceType}</strong> | 경로: ${info.pathCount}개 | 균등: ${info.uniform ? '✅' : '❌'}`;
+      if (r && c) {
+        html += `<br>선택: (${r},${c}) → ${indices.length}개 경로 포함 (칸의 가치 = ${info.cellValues[r-1][c-1]})`;
+      }
+      infoEl.innerHTML = html;
+    }
+
+    // 공간 전환 버튼
+    document.querySelectorAll('[data-space]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-space]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderer.setSpaceType(btn.dataset.space);
+        updateInfo();
+      });
+    });
+
+    // 토글 버튼
+    document.getElementById('btn-paths').addEventListener('click', (e) => {
+      showPaths = !showPaths;
+      e.target.classList.toggle('active', showPaths);
+      renderer.setShowPaths(showPaths);
+    });
+
+    document.getElementById('btn-values').addEventListener('click', (e) => {
+      showValues = !showValues;
+      e.target.classList.toggle('active', showValues);
+      renderer.setShowValues(showValues);
+    });
+
+    updateInfo();
+  </script>
+</body>
+</html>

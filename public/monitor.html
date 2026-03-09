@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학생 현황 모니터</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Pretendard','Malgun Gothic',sans-serif;background:#f0f2f5;color:#1a1a1a;min-height:100vh;}
+.monitor{max-width:900px;margin:0 auto;padding:24px 16px;}
+.monitor-header{text-align:center;margin-bottom:24px;}
+.monitor-header h1{font-size:24px;font-weight:800;color:#2c3e50;}
+.monitor-header .class-id{font-size:14px;color:#888;margin-top:4px;}
+.stats-bar{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.stat-card{flex:1;min-width:120px;background:#fff;border-radius:12px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.stat-card .num{font-size:32px;font-weight:800;color:#667eea;}
+.stat-card .num.online{color:#48bb78;}
+.stat-card .num.offline{color:#e53e3e;}
+.stat-card .label{font-size:12px;color:#888;margin-top:4px;}
+.section-group{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.section-group h3{font-size:15px;font-weight:700;color:#2c3e50;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.section-group h3 .count{background:#667eea;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;}
+.student-list{display:flex;flex-wrap:wrap;gap:8px;}
+.student-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;background:#f7fafc;border:1px solid #e2e8f0;}
+.student-tag .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.student-tag .dot.online{background:#48bb78;}
+.student-tag .dot.offline{background:#e53e3e;}
+.student-tag.stale{opacity:.5;}
+.empty-msg{color:#aaa;font-size:13px;font-style:italic;}
+.last-update{text-align:center;color:#aaa;font-size:12px;margin-top:16px;}
+</style>
+</head>
+<body>
+<div class="monitor">
+  <div class="monitor-header">
+    <h1>📊 학생 현황 모니터</h1>
+    <div class="class-id" id="classLabel">수업 코드: —</div>
+  </div>
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-card"><div class="num online" id="onlineCount">0</div><div class="label">접속 중</div></div>
+    <div class="stat-card"><div class="num offline" id="offlineCount">0</div><div class="label">이탈</div></div>
+    <div class="stat-card"><div class="num" id="totalCount">0</div><div class="label">전체</div></div>
+  </div>
+  <div id="sectionContainer"></div>
+  <div class="last-update" id="lastUpdate"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot }
+  from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyCnNvdo3ozcv3HC1ilMQX_fiwn_fpB5KCM",
+  authDomain: "math-class.it.kr",
+  projectId: "math-high-cm1",
+  storageBucket: "math-high-cm1.firebasestorage.app",
+  messagingSenderId: "1097512338605",
+  appId: "1:1097512338605:web:c8572e37781be52e9a7224"
+});
+const db = getFirestore(app);
+const classId = new URLSearchParams(window.location.search).get('class') || 'default';
+
+document.getElementById('classLabel').textContent = '수업 코드: ' + classId;
+
+var students = {};
+var STALE_THRESHOLD = 30000;
+
+onSnapshot(collection(db, 'classrooms', classId, 'students'), function(snapshot) {
+  students = {};
+  snapshot.forEach(function(d) {
+    var data = d.data();
+    students[d.id] = {
+      name: data.name || '(이름없음)',
+      section: data.section || 0,
+      sectionName: data.sectionName || ('섹션 ' + ((data.section || 0) + 1)),
+      lastSeen: data.lastSeen ? data.lastSeen.toMillis() : 0
+    };
+  });
+  render();
+});
+
+setInterval(render, 1000);
+
+function render() {
+  var now = Date.now();
+  var online = 0, offline = 0;
+  var sections = {};
+
+  for (var id in students) {
+    var s = students[id];
+    var isOnline = (now - s.lastSeen) < STALE_THRESHOLD;
+    if (isOnline) online++; else offline++;
+
+    var secKey = s.section + ':' + s.sectionName;
+    if (!sections[secKey]) sections[secKey] = { index: s.section, name: s.sectionName, students: [] };
+    sections[secKey].students.push({ name: s.name, online: isOnline });
+  }
+
+  var total = online + offline;
+  document.getElementById('onlineCount').textContent = online;
+  document.getElementById('offlineCount').textContent = offline;
+  document.getElementById('totalCount').textContent = total;
+
+  var sortedSections = Object.values(sections).sort(function(a, b) { return a.index - b.index; });
+
+  var container = document.getElementById('sectionContainer');
+  container.innerHTML = '';
+
+  if (total === 0) {
+    container.innerHTML = '<div class="section-group"><p class="empty-msg">아직 접속한 학생이 없습니다.</p></div>';
+  } else {
+    sortedSections.forEach(function(sec) {
+      var div = document.createElement('div');
+      div.className = 'section-group';
+
+      var onlineInSection = sec.students.filter(function(st) { return st.online; }).length;
+      div.innerHTML = '<h3><span>' + sec.name + '</span><span class="count">' + onlineInSection + '/' + sec.students.length + '명</span></h3>';
+
+      var list = document.createElement('div');
+      list.className = 'student-list';
+
+      sec.students.sort(function(a, b) {
+        if (a.online !== b.online) return a.online ? -1 : 1;
+        return a.name.localeCompare(b.name);
+      });
+
+      sec.students.forEach(function(st) {
+        var tag = document.createElement('span');
+        tag.className = 'student-tag' + (st.online ? '' : ' stale');
+        tag.innerHTML = '<span class="dot ' + (st.online ? 'online' : 'offline') + '"></span>' + st.name;
+        list.appendChild(tag);
+      });
+
+      div.appendChild(list);
+      container.appendChild(div);
+    });
+  }
+
+  document.getElementById('lastUpdate').textContent = '마지막 갱신: ' + new Date().toLocaleTimeString('ko-KR');
+}
+</script>
+</body>
+</html>

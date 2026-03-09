@@ -18,13 +18,12 @@ desktop.ini
 *.md
 !1단원/콘텐츠 라이브러리/*.md
 
-# Firebase (별도 배포)
-public/
-firebase.json
-.firebaserc
+# Firebase build output (GitHub Actions에서 소스 파일로 빌드)
+public/cm1/
+public/ps/
+# Firebase 내부 캐시
 .firebase/
-firestore.rules
-firestore.indexes.json
+# 보안 규칙/인덱스는 콘솔에서 직접 관리
 database.rules.json
 
 # 2~4단원 (아직 미완성)
