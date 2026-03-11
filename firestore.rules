@@ -47,6 +47,11 @@ service cloud.firestore {
       match /presentations/{presentationId} {
         allow read, write: if true;
       }
+
+      // 투표 — 누구나 읽기/쓰기 가능 (중복 투표 허용)
+      match /votes/{worksheetKey} {
+        allow read, write: if true;
+      }
     }
   }
 }

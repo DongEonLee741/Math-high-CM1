@@ -99,78 +99,129 @@ window.loadFromFirestore = loadFromFirestore;
 window.deleteFromFirestore = deleteFromFirestore;
 
 // ── Presentation (Send to Teacher) ──
-function captureCardCanvases(card) {
-  const canvases = card.querySelectorAll('.writing-area canvas');
-  const images = [];
-  canvases.forEach(canvas => {
-    const w = canvas.width, h = canvas.height;
-    const tmp = document.createElement('canvas');
-    tmp.width = w; tmp.height = h;
-    const tctx = tmp.getContext('2d');
-    tctx.fillStyle = '#fff';
-    tctx.fillRect(0, 0, w, h);
-    tctx.drawImage(canvas, 0, 0);
-    images.push(tmp.toDataURL('image/jpeg', 0.5));
-  });
-  return images;
+function captureOneCanvas(canvas) {
+  if (!canvas) return '';
+  const w = canvas.width, h = canvas.height;
+  const tmp = document.createElement('canvas');
+  tmp.width = w; tmp.height = h;
+  const tctx = tmp.getContext('2d');
+  tctx.fillStyle = '#fff';
+  tctx.fillRect(0, 0, w, h);
+  tctx.drawImage(canvas, 0, 0);
+  return tmp.toDataURL('image/jpeg', 0.5);
 }
 
-function captureCardProblemHtml(card) {
-  const clone = card.cloneNode(true);
-  // Keep only .section-title and .problem elements, remove everything else
-  Array.from(clone.children).forEach(el => {
-    if (!el.classList.contains('section-title') && !el.classList.contains('problem')) {
-      el.remove();
+function findAssociatedProblem(wa) {
+  let el = wa.previousElementSibling;
+  let problemHtml = '';
+  let problemLabel = '';
+
+  while (el) {
+    if (el.classList.contains('problem') || el.classList.contains('sub-problem')) {
+      const clone = el.cloneNode(true);
+      clone.querySelectorAll('.writing-area, .answer-reveal').forEach(c => c.remove());
+      problemHtml = clone.outerHTML;
+      const numEl = el.querySelector('.num, .problem-num, .p-num');
+      problemLabel = numEl ? numEl.textContent.trim() : el.textContent.trim().substring(0, 20);
+      break;
     }
-  });
-  // Remove writing areas, answer reveals, and buttons inside .problem
-  clone.querySelectorAll('.writing-area, .answer-reveal, .btn-present, .btn-save, .btn-records').forEach(el => el.remove());
-  return clone.innerHTML;
+    if (el.classList.contains('inquiry-box') || el.classList.contains('example-box')) {
+      const h3 = el.querySelector('h3');
+      problemLabel = h3 ? h3.textContent.trim() : '';
+      const clone = el.cloneNode(true);
+      clone.querySelectorAll('.writing-area, .answer-reveal').forEach(c => c.remove());
+      problemHtml = clone.outerHTML;
+      break;
+    }
+    el = el.previousElementSibling;
+  }
+
+  if (!problemHtml) {
+    const card = wa.closest('.card');
+    if (card) {
+      const h2 = card.querySelector('.section-title h2');
+      problemLabel = h2 ? h2.textContent : '';
+    }
+  }
+
+  return { problemHtml, problemLabel };
 }
 
-function addPresentationButtons(classId) {
+function addPresentationButtons(classId, _retries) {
   if (document.body.classList.contains('slide')) return;
-  document.querySelectorAll('.card').forEach((card, idx) => {
-    if (!card.querySelector('.writing-area')) return;
-    if (card.querySelector('.btn-present')) return;
+  const retries = _retries || 0;
+  let injected = 0;
+  document.querySelectorAll('.writing-area').forEach((wa, waIdx) => {
+    const toolbar = wa.querySelector('.canvas-toolbar');
+    if (!toolbar) return;
+    if (toolbar.querySelector('.btn-present-mini')) { injected++; return; }
+
     const btn = document.createElement('button');
-    btn.className = 'btn-present';
-    btn.textContent = '\uD83D\uDCE4 \uBCF4\uB0B4\uAE30';
-    btn.addEventListener('click', () => handlePresent(card, idx, btn, classId));
-    card.appendChild(btn);
+    btn.className = 'btn-present-mini';
+    btn.textContent = '\uD83D\uDCEE';
+    btn.title = '\uBCF4\uB0B4\uAE30';
+    btn.addEventListener('click', () => handlePresentWA(wa, waIdx, btn, classId));
+
+    const toggleBtn = toolbar.querySelector('.btn-toggle');
+    if (toggleBtn) {
+      toolbar.insertBefore(btn, toggleBtn);
+    } else {
+      toolbar.appendChild(btn);
+    }
+    injected++;
   });
+  // Retry if toolbars not yet created by writing-canvas.js
+  const totalWA = document.querySelectorAll('.writing-area').length;
+  if (injected < totalWA && retries < 10) {
+    setTimeout(() => addPresentationButtons(classId, retries + 1), 500);
+  }
 }
 
-async function handlePresent(card, cardIndex, btn, classId) {
+async function handlePresentWA(wa, waIdx, btn, classId) {
   btn.disabled = true;
-  btn.textContent = '\u23F3 \uC804\uC1A1 \uC911...';
+  const origText = btn.textContent;
+  btn.textContent = '\u23F3';
+
   try {
-    const canvasImages = captureCardCanvases(card);
-    const problemHtml = captureCardProblemHtml(card);
-    const h2 = card.querySelector('.section-title h2');
-    const blockTitle = h2 ? h2.textContent : ('\uBE14\uB85D ' + (cardIndex + 1));
+    const canvas = wa.querySelector('canvas');
+    const canvasImage = captureOneCanvas(canvas);
+
+    const { problemHtml, problemLabel } = findAssociatedProblem(wa);
+
+    const card = wa.closest('.card');
+    const h2 = card ? card.querySelector('.section-title h2') : null;
+    const sectionTitle = h2 ? h2.textContent : '';
+
+    const blockTitle = problemLabel
+      ? sectionTitle + ' \u2014 ' + problemLabel
+      : sectionTitle || ('\uC791\uC131\uB780 ' + (waIdx + 1));
+
     await addDoc(collection(db, 'classrooms', classId, 'presentations'), {
       studentName: currentUser ? currentUser.username : 'unknown',
       worksheetKey: _worksheetKey,
-      blockIndex: cardIndex,
+      writingAreaIndex: waIdx,
       blockTitle: blockTitle,
       problemHtml: problemHtml,
-      canvasImages: canvasImages,
+      canvasImage: canvasImage,
+      canvasImages: [canvasImage],
       status: 'pending',
       createdAt: serverTimestamp()
     });
-    btn.textContent = '\u2705 \uC804\uC1A1 \uC644\uB8CC';
+
+    btn.textContent = '\u2705';
+    btn.classList.add('sent');
     setTimeout(() => {
-      btn.textContent = '\uD83D\uDCE4 \uBCF4\uB0B4\uAE30';
+      btn.textContent = '\uD83D\uDCEE';
+      btn.classList.remove('sent');
       btn.disabled = false;
     }, 3000);
   } catch (e) {
     console.error('Presentation send error:', e);
-    btn.textContent = '\uD83D\uDCE4 \uBCF4\uB0B4\uAE30';
+    btn.textContent = origText;
     btn.disabled = false;
-    alert('\uC804\uC1A1\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uC2DC\uB3C4\uD574\uC8FC\uC138\uC694.');
   }
 }
+
 
 // ── Auth Overlay (dynamic injection) ──
 function buildAuthOverlayHTML() {
@@ -733,6 +784,7 @@ export function initFirebaseWorksheet(worksheetKey, options = {}) {
   } else {
     // No Auth — directly start heartbeat with anonymous visitor
     setupHeartbeat(classId);
+    addPresentationButtons(classId);
   }
 
   // FocusLock always active
