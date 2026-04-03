@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>10-11차시 - 조건부확률과 곱셈정리</title>
+
+  <link rel="stylesheet" href="https://math-class.it.kr/lib/katex/katex.min.css">
+  <link rel="stylesheet" href="https://math-class.it.kr/lib/css/worksheet-common.css">
+  <link rel="stylesheet" href="https://math-class.it.kr/lib/css/auth-overlay.css">
+
+  <style>
+    /* ── STEP fill-in-blank engine ── */
+    .step-container { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; margin: 12px 0; }
+    .step-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; }
+    .step-row:last-child { border-bottom: none; }
+    .step-row.locked { opacity: 0.45; pointer-events: none; }
+    .step-row.done .step-check-btn { display: none; }
+    .step-label { font-size: 12px; font-weight: 700; color: #2563eb; background: #eff6ff; border-radius: 6px; padding: 2px 8px; flex-shrink: 0; min-width: 52px; text-align: center; }
+    .step-guide { flex: 1; font-size: 14px; color: #1e293b; line-height: 1.5; min-width: 120px; }
+    .step-input-area { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .step-input-area input[type="number"] { width: 72px; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 15px; font-family: inherit; text-align: center; outline: none; transition: border-color 0.15s, box-shadow 0.15s; -moz-appearance: textfield; }
+    .step-input-area input[type="number"]::-webkit-outer-spin-button,
+    .step-input-area input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .step-input-area input:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+    .step-input-area input.correct { border-color: #22c55e; background: #f0fdf4; }
+    .step-input-area input.wrong { border-color: #f59e0b; background: #fffbeb; }
+
+    /* fraction input */
+    .frac-input { display: inline-flex; flex-direction: column; align-items: center; gap: 0; }
+    .frac-input input { width: 60px; padding: 5px 6px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 15px; font-family: inherit; text-align: center; outline: none; transition: border-color 0.15s; -moz-appearance: textfield; }
+    .frac-input input::-webkit-outer-spin-button,
+    .frac-input input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .frac-input input:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+    .frac-input .frac-line { width: 56px; height: 2px; background: #1e293b; margin: 2px 0; border-radius: 1px; }
+    .frac-input input.correct { border-color: #22c55e; background: #f0fdf4; }
+    .frac-input input.wrong { border-color: #f59e0b; background: #fffbeb; }
+
+    .step-check-btn { padding: 8px 16px; border: none; border-radius: 8px; background: #2563eb; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; min-height: 44px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .step-check-btn:active { transform: scale(0.97); background: #1d4ed8; }
+    .step-check-btn:disabled { background: #94a3b8; cursor: default; }
+    .step-feedback { font-size: 12px; margin-top: 4px; line-height: 1.4; min-height: 18px; width: 100%; }
+    .step-feedback.ok { color: #16a34a; font-weight: 700; }
+    .step-feedback.hint { color: #d97706; }
+    .step-feedback.reveal { color: #dc2626; font-weight: 600; }
+    .step-complete-msg { text-align: center; padding: 12px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; color: #16a34a; font-weight: 700; font-size: 15px; margin-top: 10px; display: none; }
+
+    /* ── Icon grid (sample space explorer) ── */
+    .ss-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; padding: 12px; justify-items: center; }
+    .ss-icon { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2.5px solid transparent; transition: opacity 0.4s, transform 0.4s, border-color 0.4s, box-shadow 0.4s; cursor: default; user-select: none; }
+    .ss-icon.male-ear { background: #bfdbfe; }
+    .ss-icon.male-doll { background: #dbeafe; }
+    .ss-icon.female-ear { background: #fce7f3; }
+    .ss-icon.female-doll { background: #fdf2f8; }
+    .ss-icon.dim { opacity: 0.18; transform: scale(0.85); }
+    .ss-icon.highlight { border-color: #facc15; transform: scale(1.15); box-shadow: 0 0 8px rgba(250,204,21,0.5); }
+    .ss-btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; justify-content: center; }
+    .ss-btn { padding: 8px 16px; border: 1.5px solid #e2e8f0; border-radius: 8px; background: #fff; color: #334155; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; min-height: 44px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: all 0.15s; }
+    .ss-btn:active { transform: scale(0.97); }
+    .ss-btn.active { border-color: #2563eb; background: #eff6ff; color: #2563eb; }
+    .ss-info-panel { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; margin-top: 10px; font-size: 14px; color: #1e293b; line-height: 1.6; min-height: 60px; }
+    .ss-info-panel .info-title { font-weight: 700; color: #2563eb; margin-bottom: 4px; }
+    .ss-info-panel .info-formula { font-size: 16px; margin: 6px 0; }
+    .ss-discovery { margin-top: 10px; padding: 10px 14px; background: #fefce8; border: 1.5px solid #fde047; border-radius: 10px; font-size: 13px; color: #854d0e; line-height: 1.5; display: none; }
+
+    /* ── SVG tree ── */
+    .tree-card { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 14px 0; }
+    .tree-card h3 { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 10px; }
+    .tree-controls { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+    .tree-btn { padding: 8px 18px; border: 1.5px solid #2563eb; border-radius: 8px; background: #fff; color: #2563eb; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; min-height: 44px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: all 0.15s; }
+    .tree-btn:active { transform: scale(0.97); }
+    .tree-btn:disabled { border-color: #94a3b8; color: #94a3b8; cursor: default; }
+    .tree-btn.btn-reset { border-color: #64748b; color: #64748b; }
+    .tree-message { margin-top: 10px; padding: 10px 14px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; font-size: 13px; color: #1e40af; line-height: 1.5; display: none; }
+    .tree-info { margin-top: 8px; padding: 10px 14px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; font-size: 14px; color: #166534; line-height: 1.5; display: none; font-weight: 600; }
+    .tree-svg-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .tree-svg-wrap svg { display: block; margin: 0 auto; }
+    .tree-svg-wrap svg text { font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif; }
+
+    /* ── Frequency tree collection ── */
+    .freq-collect { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 12px; padding: 10px 14px; background: #fff7ed; border: 1.5px solid #fed7aa; border-radius: 10px; display: none; }
+    .freq-box { padding: 6px 14px; border-radius: 8px; font-size: 14px; font-weight: 700; color: #fff; }
+    .freq-box.red { background: #ef4444; }
+    .freq-box.orange { background: #f97316; }
+    .freq-plus { font-size: 18px; font-weight: 700; color: #9a3412; }
+    .freq-eq { font-size: 18px; font-weight: 700; color: #9a3412; }
+    .freq-total { font-size: 16px; font-weight: 700; color: #9a3412; }
+    .freq-final { margin-top: 10px; padding: 12px 16px; background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 10px; font-size: 15px; color: #991b1b; line-height: 1.6; display: none; text-align: center; }
+
+    /* ── Simulation (fairness) ── */
+    .sim-card { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 14px 0; }
+    .sim-card h3 { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 10px; }
+    .sim-predict { margin-bottom: 12px; }
+    .sim-predict label { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 14px; color: #334155; background: #fff; transition: all 0.15s; min-height: 44px; margin-bottom: 6px; -webkit-tap-highlight-color: transparent; }
+    .sim-predict label:active { transform: scale(0.97); }
+    .sim-predict label.selected { border-color: #2563eb; background: #eff6ff; }
+    .sim-predict input[type="radio"] { accent-color: #2563eb; width: 18px; height: 18px; flex-shrink: 0; }
+    .sim-start-btn { padding: 10px 24px; border: none; border-radius: 8px; background: #2563eb; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; min-height: 44px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: all 0.15s; margin-top: 8px; }
+    .sim-start-btn:active { transform: scale(0.97); }
+    .sim-start-btn:disabled { background: #94a3b8; cursor: default; }
+    .sim-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .sim-btns button { padding: 8px 18px; border: 1.5px solid #2563eb; border-radius: 8px; background: #fff; color: #2563eb; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; min-height: 44px; touch-action: manipulation; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
+    .sim-btns button:active { transform: scale(0.97); }
+    .sim-btns button:disabled { border-color: #94a3b8; color: #94a3b8; cursor: default; }
+    .sim-btns .btn-reset { border-color: #64748b; color: #64748b; }
+    .sim-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+    .sim-stat { text-align: center; padding: 10px 6px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; }
+    .sim-stat .label { font-size: 11px; color: #64748b; margin-bottom: 2px; }
+    .sim-stat .value { font-size: 20px; font-weight: 700; color: #1e293b; }
+    .sim-chart-wrap { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; margin-bottom: 12px; }
+    .sim-chart-wrap canvas { width: 100% !important; max-height: 280px; }
+    .sim-result-msg { padding: 10px 14px; border-radius: 10px; font-size: 14px; line-height: 1.5; display: none; margin-bottom: 12px; }
+    .sim-result-msg.match { background: #f0fdf4; border: 1.5px solid #bbf7d0; color: #166534; }
+    .sim-result-msg.differ { background: #fefce8; border: 1.5px solid #fde047; color: #854d0e; }
+    .sim-math-proof { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 14px 16px; display: none; }
+    .sim-math-proof h4 { font-size: 14px; color: #2563eb; margin-bottom: 8px; }
+    .sim-math-step { font-size: 14px; color: #1e293b; line-height: 1.7; margin-bottom: 6px; }
+    .sim-conclusion { margin-top: 10px; padding: 10px 14px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; font-size: 15px; color: #166534; font-weight: 700; text-align: center; }
+  </style>
+
+  <script defer src="https://math-class.it.kr/lib/katex/katex.min.js"></script>
+  <script defer src="https://math-class.it.kr/lib/katex/contrib/auto-render.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <script type="module">
+    import { initWorksheetApp } from 'https://math-class.it.kr/lib/js/worksheet-app.js';
+    import { initFirebaseWorksheet } from 'https://math-class.it.kr/lib/js/firebase-worksheet.js';
+    initWorksheetApp('worksheet_PS_2-10-11차시_조건부확률_곱셈정리');
+    initFirebaseWorksheet('PS_2-10-11차시_조건부확률_곱셈정리', { showAuth: true });
+  </script>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- 헤더 -->
+  <div class="header">
+    <div class="header-unit">II. 확률</div>
+    <div class="header-title">
+      <h1>3. 조건부확률</h1>
+      <div class="header-info"><span>교과서 54~57쪽</span></div>
+    </div>
+  </div>
+
+  <!-- 학생 정보 -->
+  <div class="student-info">
+    <div class="save-actions">
+      <button class="btn-save" id="btnSave">&#x1F4BE; 저장</button>
+      <button class="btn-records" id="btnRecords">&#x1F4CB; 기록</button>
+    </div>
+    <span class="student-display" id="studentDisplay"></span>
+  </div>
+
+  <!-- 성취기준 -->
+  <div class="achievement">
+    <strong>성취기준</strong> &nbsp;
+    [12확통02-05] 조건부확률의 의미를 이해하고, 이를 구할 수 있다.
+    [12확통02-06] 확률의 곱셈정리를 이해하고, 이를 활용할 수 있다.
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 섹션 1: 탐구 열기 — 표본공간의 축소           -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="card">
+    <div class="section-title">
+      <div class="section-number">1</div>
+      <h2>탐구 열기 &mdash; 표본공간의 축소</h2>
+    </div>
+
+    <p style="font-size:14px; color:#475569; line-height:1.6; margin-bottom:12px;">
+      선생님이 반 학생 30명에게 생일 선물로 받고 싶은 것을 조사하였습니다.<br>
+      조사 결과가 다음 표와 같을 때, 물음에 답해 봅시다.
+    </p>
+
+    <div class="tip-box" style="margin-bottom: 14px;">
+      <strong>학습 목표</strong><br>
+      &bull; 조건부확률을 이해하고, 이를 실생활과 연결하여 문제를 해결할 수 있다.<br>
+      &bull; 확률의 곱셈정리를 이해하고, 이를 활용하여 문제를 해결할 수 있다.
+    </div>
+
+    <!-- 표 -->
+    <div style="overflow-x:auto; margin:14px 0;">
+      <table style="width:100%; border-collapse:collapse; font-size:14px; text-align:center;">
+        <thead>
+          <tr style="background:#eff6ff;">
+            <th style="border:1px solid #e2e8f0; padding:8px;">구분</th>
+            <th style="border:1px solid #e2e8f0; padding:8px;">무선 이어폰</th>
+            <th style="border:1px solid #e2e8f0; padding:8px;">캐릭터 인형</th>
+            <th style="border:1px solid #e2e8f0; padding:8px;">합계</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="border:1px solid #e2e8f0; padding:8px; font-weight:600;">남학생</td>
+            <td style="border:1px solid #e2e8f0; padding:8px;">9</td>
+            <td style="border:1px solid #e2e8f0; padding:8px;">7</td>
+            <td style="border:1px solid #e2e8f0; padding:8px; font-weight:600;">16</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #e2e8f0; padding:8px; font-weight:600;">여학생</td>
+            <td style="border:1px solid #e2e8f0; padding:8px;">6</td>
+            <td style="border:1px solid #e2e8f0; padding:8px;">8</td>
+            <td style="border:1px solid #e2e8f0; padding:8px; font-weight:600;">14</td>
+          </tr>
+          <tr style="background:#f8fafc;">
+            <td style="border:1px solid #e2e8f0; padding:8px; font-weight:700;">합계</td>
+            <td style="border:1px solid #e2e8f0; padding:8px; font-weight:700;">15</td>
+            <td style="border:1px solid #e2e8f0; padding:8px; font-weight:700;">15</td>
+            <td style="border:1px solid #e2e8f0; padding:8px; font-weight:700;">30</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 물음 (1) -->
+    <div class="problem">
+      <div class="problem-label">물음 (1)</div>
+      <p>30명의 학생 중에서 임의로 한 명을 택할 때, 이 학생이 무선 이어폰을 선호할 확률을 구하시오.</p>
+      <div class="writing-area" data-h="91"><canvas></canvas><div class="canvas-toolbar"></div></div>
+      <div class="answer-reveal">
+        <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+        <div class="answer-content">
+          <div class="ans-label">정답</div>
+          <p>\(\displaystyle \frac{15}{30} = \frac{1}{2}\)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 물음 (2) -->
+    <div class="problem">
+      <div class="problem-label">물음 (2)</div>
+      <p>선택한 학생이 <strong>남학생</strong>이라고 알려졌을 때, 이 학생이 무선 이어폰을 선호할 확률을 구하시오.</p>
+      <div class="writing-area" data-h="91"><canvas></canvas><div class="canvas-toolbar"></div></div>
+      <div class="answer-reveal">
+        <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+        <div class="answer-content">
+          <div class="ans-label">정답</div>
+          <p>\(\displaystyle \frac{9}{16}\)</p>
+          <div class="ans-label">풀이</div>
+          <p>남학생이라는 조건이 주어졌으므로 표본공간이 30명 전체에서 남학생 16명으로 축소됩니다. 남학생 16명 중 이어폰을 선호하는 학생은 9명이므로 \(\dfrac{9}{16}\).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive ① — 표본공간 축소 탐구기 -->
+    <div class="concept-game" style="margin: 18px 0;">
+      <h3 style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:6px;">&#128269; 표본공간 축소 탐구기</h3>
+      <p style="font-size:13px; color:#64748b; margin-bottom:10px;">조건 버튼을 눌러 표본공간이 어떻게 변하는지 관찰해 봅시다.</p>
+
+      <div class="ss-grid" id="ssGrid"></div>
+
+      <div class="ss-btn-group">
+        <button class="ss-btn active" data-cond="all">전체 (조건 없음)</button>
+        <button class="ss-btn" data-cond="male">조건: 남학생</button>
+        <button class="ss-btn" data-cond="earphone">조건: 이어폰 선호</button>
+      </div>
+
+      <div class="ss-info-panel" id="ssInfo">
+        <div class="info-title" id="ssInfoTitle">전체 30명</div>
+        <div id="ssInfoBody">조건 버튼을 눌러 표본공간의 변화를 확인하세요.</div>
+      </div>
+
+      <div class="ss-discovery" id="ssDiscovery">
+        두 조건 모두 '남학생이면서 이어폰 선호'인 같은 <strong>9명</strong>이 분자에 오지만, 분모가 달라서 확률이 다릅니다.
+      </div>
+    </div>
+
+    <!-- 생각 키우기 -->
+    <div class="tip-box" style="margin: 14px 0;">
+      <strong>생각 키우기</strong><br>
+      어떤 사건 \(A\)가 일어났을 때, 사건 \(B\)가 일어날 확률은 어떻게 구할까?
+    </div>
+  </div><!-- /card 1 -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 섹션 2: 조건부확률                            -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="card">
+    <div class="section-title">
+      <div class="section-number">2</div>
+      <h2>조건부확률</h2>
+    </div>
+
+    <div class="concept-box">
+      <strong>조건부확률의 정의</strong>
+      <p style="margin-top:8px;">
+        사건 \(A\)가 일어났을 때 사건 \(B\)가 일어날 확률을 <strong>사건 \(A\)가 일어났을 때의 사건 \(B\)의 조건부확률</strong>이라 하고, 기호로 \(P(B|A)\)와 같이 나타낸다.
+      </p>
+      <p style="margin-top:8px;">
+        표본공간의 원소의 수로부터:
+        $$P(B|A) = \frac{n(A \cap B)}{n(A)}$$
+      </p>
+      <p style="margin-top:8px;">
+        분자와 분모를 \(n(S)\)로 나누면:
+        $$P(B|A) = \frac{\dfrac{n(A \cap B)}{n(S)}}{\dfrac{n(A)}{n(S)}} = \frac{P(A \cap B)}{P(A)}$$
+      </p>
+    </div>
+
+    <div class="concept-box" style="background:#eff6ff; border-color:#bfdbfe; text-align:center; margin-top:12px;">
+      <strong style="color:#2563eb;">조건부확률 공식</strong>
+      $$P(B|A) = \frac{P(A \cap B)}{P(A)} \quad (\text{단, } P(A) > 0)$$
+    </div>
+  </div><!-- /card 2 -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 카드 3: 예제 1                               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="card">
+    <div class="example-box">
+      <div class="problem-label">예제 1</div>
+      <p>
+        어느 학교 학생 400명 중 남학생의 비율은 60%이고, 학생 대의원 30명 중 남학생의 비율은 50%이다.
+        이 학교 학생 중에서 임의로 1명을 택할 때, 이 학생이 남학생인 것을 알았다. 이 학생이 학생 대의원일 확률을 구하시오.
+      </p>
+    </div>
+    <div class="concept-box" style="margin-top:10px;">
+      <div class="ans-label">풀이</div>
+      <p>남학생인 사건을 \(A\), 학생 대의원인 사건을 \(B\)라 하면</p>
+      <p style="margin-top:6px;">
+        \(\displaystyle P(A) = \frac{60}{100} = \frac{3}{5}\), &ensp;
+        남학생 대의원 수 = \(30 \times \dfrac{50}{100} = 15\)명
+      </p>
+      <p style="margin-top:6px;">
+        \(\displaystyle P(A \cap B) = \frac{15}{400} = \frac{3}{80}\)
+      </p>
+      <p style="margin-top:6px;">
+        \(\displaystyle P(B|A) = \frac{P(A \cap B)}{P(A)} = \frac{\dfrac{3}{80}}{\dfrac{3}{5}} = \frac{3}{80} \times \frac{5}{3} = \frac{1}{16}\)
+      </p>
+    </div>
+    <div class="answer-reveal" style="margin-top:8px;">
+      <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+      <div class="answer-content">
+        <div class="ans-label">정답</div>
+        <p>\(\displaystyle \frac{1}{16}\)</p>
+      </div>
+    </div>
+  </div><!-- /card 3 -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 카드 4: 스스로 하기 (STEP) — 조건부확률       -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="card">
+    <div class="self-practice">
+      <div class="problem-label">스스로 하기 &mdash; 조건부확률 구하기</div>
+      <p>
+        어느 학교 학생 300명 중 여학생의 비율은 55%이고, 방송부 25명 중 여학생의 비율은 60%이다.
+        이 학교 학생 중에서 임의로 1명을 택할 때, 이 학생이 여학생인 것을 알았다. 이 학생이 방송부원일 확률을 구하시오.
+      </p>
+      <p style="font-size:13px; color:#64748b; margin-top:4px;">
+        여학생인 사건을 \(A\), 방송부인 사건을 \(B\)라 하자.
+      </p>
+
+      <div class="step-container" id="stepCond">
+        <!-- STEP 1 -->
+        <div class="step-row" data-step="0">
+          <div class="step-label">STEP 1</div>
+          <div class="step-guide">\(P(A)\) = ?</div>
+          <div class="step-input-area">
+            <div class="frac-input">
+              <input type="number" placeholder="분자" data-type="frac-num" data-ans-num="11" data-ans-den="20">
+              <div class="frac-line"></div>
+              <input type="number" placeholder="분모" data-type="frac-den">
+            </div>
+            <button class="step-check-btn">확인</button>
+          </div>
+          <div class="step-feedback"></div>
+        </div>
+        <!-- STEP 2 -->
+        <div class="step-row locked" data-step="1">
+          <div class="step-label">STEP 2</div>
+          <div class="step-guide">방송부 중 여학생 수 = ?명</div>
+          <div class="step-input-area">
+            <input type="number" data-type="number" data-answer="15">
+            <button class="step-check-btn">확인</button>
+          </div>
+          <div class="step-feedback"></div>
+        </div>
+        <!-- STEP 3 -->
+        <div class="step-row locked" data-step="2">
+          <div class="step-label">STEP 3</div>
+          <div class="step-guide">\(P(A \cap B)\) = ?</div>
+          <div class="step-input-area">
+            <div class="frac-input">
+              <input type="number" placeholder="분자" data-type="frac-num" data-ans-num="1" data-ans-den="20">
+              <div class="frac-line"></div>
+              <input type="number" placeholder="분모" data-type="frac-den">
+            </div>
+            <button class="step-check-btn">확인</button>
+          </div>
+          <div class="step-feedback"></div>
+        </div>
+        <!-- STEP 4 -->
+        <div class="step-row locked" data-step="3">
+          <div class="step-label">STEP 4</div>
+          <div class="step-guide">\(P(B|A) = \dfrac{P(A \cap B)}{P(A)}\) = ?</div>
+          <div class="step-input-area">
+            <div class="frac-input">
+              <input type="number" placeholder="분자" data-type="frac-num" data-ans-num="1" data-ans-den="11">
+              <div class="frac-line"></div>
+              <input type="number" placeholder="분모" data-type="frac-den">
+            </div>
+            <button class="step-check-btn">확인</button>
+          </div>
+          <div class="step-feedback"></div>
+        </div>
+        <div class="step-complete-msg">&#10024; 풀이 완성!</div>
+      </div>
+    </div>
+  </div><!-- /card 4 -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 카드 5: 문제 1                               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="card">
+    <div class="problem">
+      <div class="problem-label">문제 1</div>
+      <p>
+        어느 스포츠센터 회원의 30%가 고등학생이다. 전체 회원 중에서 수영을 하는 고등학생은 12%이다.
+        이 스포츠센터 회원 중에서 임의로 한 명을 택하였더니 이 회원이 고등학생이었다.
+        이 회원이 수영을 할 확률을 구하시오.
+      </p>
+      <div class="writing-area" data-h="120"><canvas></canvas><div class="canvas-toolbar"></div></div>
+      <div class="answer-reveal">
+        <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+        <div class="answer-content">
+          <div class="ans-label">정답</div>
+          <p>\(\displaystyle \frac{2}{5}\)</p>
+          <div class="ans-label">풀이</div>
+          <p>고등학생인 사건을 \(A\), 수영을 하는 사건을 \(B\)라 하면<br>
+          \(\displaystyle P(A) = 0.3\), \(\displaystyle P(A \cap B) = 0.12\)<br>
+          \(\displaystyle P(B|A) = \frac{P(A \cap B)}{P(A)} = \frac{0.12}{0.3} = \frac{2}{5}\)</p>
+        </div>
+      </div>
+    </div>
+  </div><!-- /card 5 -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 섹션 3: 확률의 곱셈정리                        -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="card">
+    <div class="section-title">
+      <div class="section-number">3</div>
+      <h2>확률의 곱셈정리</h2>
+    </div>
+
+    <div class="concept-box">
+      <strong>확률의 곱셈정리</strong>
+      <p style="margin-top:8px;">
+        조건부확률의 정의 \(\displaystyle P(B|A) = \frac{P(A \cap B)}{P(A)}\)의 양변에 \(P(A)\)를 곱하면:
+      </p>
+      <p style="margin-top:8px; font-size:15px;">
+        $$P(A \cap B) = P(A) \cdot P(B|A)$$
+      </p>
+      <p style="margin-top:6px;">
+        마찬가지로 \(\displaystyle P(A|B) = \frac{P(A \cap B)}{P(B)}\)로부터:
+      </p>
+      <p style="margin-top:8px; font-size:15px;">
+        $$P(A \cap B) = P(B) \cdot P(A|B)$$
+      </p>
+    </div>
+
+    <div class="concept-box" style="background:#eff6ff; border-color:#bfdbfe; text-align:center; margin-top:12px;">
+      <strong style="color:#2563eb;">확률의 곱셈정리</strong>
+      <p style="margin-top:6px;">
+        두 사건 \(A\), \(B\)에 대하여 \(P(A) > 0\), \(P(B) > 0\)일 때
+      </p>
+      $$P(A \cap B) = P(A) \cdot P(B|A) = P(B) \cdot P(A|B)$$
+    </div>
+
+    <!-- Interactive ④ — 확률 트리 다이어그램 -->
+    <div class="tree-card" id="probTree" style="margin-top:18px;">
+      <h3>&#127795; 확률 트리 다이어그램 &mdash; 비복원추출</h3>
+      <p style="font-size:13px; color:#64748b; margin-bottom:10px;">
+        주머니에 흰 공 4개, 검은 공 3개가 있다. 하나씩 꺼낼 때(비복원) 확률 트리를 살펴보자.
+      </p>
+
+      <div class="tree-svg-wrap">
+        <svg id="probTreeSvg" viewBox="0 0 720 310" width="100%" style="max-width:720px;">
+          <!-- 시작 노드 -->
+          <circle cx="60" cy="155" r="22" fill="#94a3b8" stroke="#64748b" stroke-width="2"/>
+          <text x="60" y="160" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">시작</text>
+
+          <!-- L1 branches (hidden initially) -->
+          <g id="treeL1" style="opacity:0; transition: opacity 0.5s;">
+            <!-- Branch to Black -->
+            <line x1="82" y1="145" x2="230" y2="75" stroke="#2563eb" stroke-width="2.5"/>
+            <text x="145" y="95" fill="#2563eb" font-size="13" font-weight="700">3/7</text>
+            <circle cx="250" cy="70" r="20" fill="#334155" stroke="#1e293b" stroke-width="2"/>
+            <text x="250" y="75" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">검은 공</text>
+
+            <!-- Branch to White -->
+            <line x1="82" y1="165" x2="230" y2="235" stroke="#2563eb" stroke-width="2.5"/>
+            <text x="145" y="220" fill="#2563eb" font-size="13" font-weight="700">4/7</text>
+            <circle cx="250" cy="240" r="20" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+            <text x="250" y="245" text-anchor="middle" fill="#334155" font-size="10" font-weight="700">흰 공</text>
+          </g>
+
+          <!-- L2 branches (hidden initially) -->
+          <g id="treeL2" style="opacity:0; transition: opacity 0.5s;">
+            <!-- Black -> Black -->
+            <line x1="270" y1="60" x2="430" y2="30" stroke="#7c3aed" stroke-width="2"/>
+            <text x="340" y="35" fill="#7c3aed" font-size="12" font-weight="700">2/6</text>
+            <circle cx="450" cy="30" r="18" fill="#334155" stroke="#1e293b" stroke-width="2" class="tree-end" data-path="bb"/>
+            <text x="450" y="35" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">검</text>
+
+            <!-- Black -> White -->
+            <line x1="270" y1="80" x2="430" y2="110" stroke="#7c3aed" stroke-width="2"/>
+            <text x="340" y="108" fill="#7c3aed" font-size="12" font-weight="700">4/6</text>
+            <circle cx="450" cy="110" r="18" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2" class="tree-end" data-path="bw"/>
+            <text x="450" y="115" text-anchor="middle" fill="#334155" font-size="9" font-weight="700">흰</text>
+
+            <!-- White -> Black -->
+            <line x1="270" y1="230" x2="430" y2="200" stroke="#7c3aed" stroke-width="2"/>
+            <text x="340" y="205" fill="#7c3aed" font-size="12" font-weight="700">3/6</text>
+            <circle cx="450" cy="200" r="18" fill="#334155" stroke="#1e293b" stroke-width="2" class="tree-end" data-path="wb"/>
+            <text x="450" y="205" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">검</text>
+
+            <!-- White -> White -->
+            <line x1="270" y1="250" x2="430" y2="280" stroke="#7c3aed" stroke-width="2"/>
+            <text x="340" y="278" fill="#7c3aed" font-size="12" font-weight="700">3/6</text>
+            <circle cx="450" cy="280" r="18" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2" class="tree-end" data-path="ww"/>
+            <text x="450" y="285" text-anchor="middle" fill="#334155" font-size="9" font-weight="700">흰</text>
+
+            <!-- Path probability labels (hidden initially) -->
+            <g id="treePathLabels" style="opacity:0; transition: opacity 0.5s;">
+              <text x="500" y="35" fill="#1e293b" font-size="12" font-weight="600" class="path-label" data-path="bb">= 1/7</text>
+              <text x="500" y="115" fill="#1e293b" font-size="12" font-weight="600" class="path-label" data-path="bw">= 2/7</text>
+              <text x="500" y="205" fill="#1e293b" font-size="12" font-weight="600" class="path-label" data-path="wb">= 2/7</text>
+              <text x="500" y="285" fill="#1e293b" font-size="12" font-weight="600" class="path-label" data-path="ww">= 2/7</text>
+            </g>
+
+            <!-- Path highlight rectangles (hidden) -->
+            <rect id="hlBB" x="75" y="10" width="445" height="40" rx="6" fill="rgba(250,204,21,0.15)" stroke="#facc15" stroke-width="1.5" style="display:none;"/>
+            <rect id="hlBW" x="75" y="90" width="445" height="40" rx="6" fill="rgba(250,204,21,0.15)" stroke="#facc15" stroke-width="1.5" style="display:none;"/>
+            <rect id="hlWB" x="75" y="180" width="445" height="40" rx="6" fill="rgba(250,204,21,0.15)" stroke="#facc15" stroke-width="1.5" style="display:none;"/>
+            <rect id="hlWW" x="75" y="260" width="445" height="40" rx="6" fill="rgba(250,204,21,0.15)" stroke="#facc15" stroke-width="1.5" style="display:none;"/>
+
+            <!-- Sum label -->
+            <text id="treeSumLabel" x="560" y="160" fill="#166534" font-size="14" font-weight="700" style="display:none;">합계 = 1</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="tree-controls">
+        <button class="tree-btn" id="treeStep1">첫 번째 꺼내기 &rarr;</button>
+        <button class="tree-btn" id="treeStep2" disabled>두 번째 꺼내기 &rarr;</button>
+        <button class="tree-btn btn-reset" id="treeReset">초기화</button>
+      </div>
+
+      <div class="tree-message" id="treeMsg"></div>
+      <div class="tree-info" id="treeInfo"></div>
+    </div>
+  </div><!-- /card 6 (곱셈정리) -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 카드 7: 예제 2                               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="card">
+    <div class="example-box">
+      <div class="problem-label">예제 2</div>
+      <p>
+        주머니에 흰 공 4개와 검은 공 3개가 들어 있다.
+        이 주머니에서 임의로 한 개의 공을 꺼내고, 꺼낸 공을 다시 넣지 않은 채 임의로 한 개의 공을 더 꺼낼 때,
+        2개 모두 검은 공일 확률을 구하시오.
+      </p>
+    </div>
+    <div class="concept-box" style="margin-top:10px;">
+      <div class="ans-label">풀이</div>
+      <p>첫 번째 공이 검은 공인 사건을 \(A\), 두 번째 공이 검은 공인 사건을 \(B\)라 하면</p>
+      <p style="margin-top:6px;">
+        \(\displaystyle P(A) = \frac{3}{7}\)
+      </p>
+      <p style="margin-top:4px;">
+        첫 번째에 검은 공을 꺼냈으므로 남은 공은 흰 공 4개, 검은 공 2개:
+      </p>
+      <p style="margin-top:4px;">
+        \(\displaystyle P(B|A) = \frac{2}{6} = \frac{1}{3}\)
+      </p>
+      <p style="margin-top:6px;">
+        따라서 곱셈정리에 의해<br>
+        \(\displaystyle P(A \cap B) = P(A) \cdot P(B|A) = \frac{3}{7} \times \frac{1}{3} = \frac{1}{7}\)
+      </p>
+    </div>
+    <div class="answer-reveal" style="margin-top:8px;">
+      <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+      <div class="answer-content">
+        <div class="ans-label">정답</div>
+        <p>\(\displaystyle \frac{1}{7}\)</p>
+      </div>
+    </div>
+  </div><!-- /card 7 -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 카드 8: 문제 2                               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="card">
+    <div class="problem">
+      <div class="problem-label">문제 2</div>
+      <p>
+        냉동실에 바닐라 아이스크림 5개와 딸기 아이스크림 6개가 있다.
+        이 중에서 임의로 하나를 꺼내 먹고, 다시 하나를 꺼낼 때,
+        두 번째로 꺼낸 것만 바닐라일 확률을 구하시오.
+      </p>
+      <div class="writing-area" data-h="120"><canvas></canvas><div class="canvas-toolbar"></div></div>
+      <div class="answer-reveal">
+        <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+        <div class="answer-content">
+          <div class="ans-label">정답</div>
+          <p>\(\displaystyle \frac{3}{11}\)</p>
+          <div class="ans-label">풀이</div>
+          <p>첫 번째 딸기(사건 \(A\)), 두 번째 바닐라(사건 \(B\))라 하면<br>
+          \(\displaystyle P(A) = \frac{6}{11}\), \(\displaystyle P(B|A) = \frac{5}{10} = \frac{1}{2}\)<br>
+          \(\displaystyle P(A \cap B) = \frac{6}{11} \times \frac{1}{2} = \frac{3}{11}\)</p>
+        </div>
+      </div>
+    </div>
+  </div><!-- /card 8 -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 섹션 4: 역확률 — 전체확률의 분해               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="card">
+    <div class="section-title">
+      <div class="section-number">4</div>
+      <h2>역확률 &mdash; 전체확률의 분해</h2>
+    </div>
+
+    <div class="example-box">
+      <div class="problem-label">예제 3</div>
+      <p>
+        어느 회사에서 수신하는 전자 우편 중 '행사 안내'를 포함한 것이 20%이다.
+        '행사 안내'를 포함한 전자 우편 중 40%가 광고이고, '행사 안내'를 포함하지 않은 전자 우편 중 30%가 광고이다.
+        수신한 전자 우편 중 임의로 하나를 택하였더니 광고였을 때, 이 우편이 '행사 안내'를 포함할 확률을 구하시오.
+      </p>
+    </div>
+
+    <!-- Interactive ⑥B — 빈도 트리 -->
+    <div class="tree-card" id="freqTree" style="margin-top:14px;">
+      <h3>&#128231; 빈도 트리 &mdash; 100통으로 생각하기</h3>
+      <p style="font-size:13px; color:#64748b; margin-bottom:10px;">
+        100통의 전자 우편을 단계별로 분류해 봅시다.
+      </p>
+
+      <div class="tree-svg-wrap">
+        <svg id="freqTreeSvg" viewBox="0 0 720 320" width="100%" style="max-width:720px;">
+          <!-- Root node -->
+          <rect x="20" y="130" width="80" height="40" rx="10" fill="#64748b" stroke="#475569" stroke-width="2"/>
+          <text x="60" y="155" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">100통</text>
+
+          <!-- L1 (hidden) -->
+          <g id="freqL1" style="opacity:0; transition: opacity 0.5s;">
+            <!-- Branch to "행사 포함" -->
+            <line x1="100" y1="140" x2="220" y2="80" stroke="#2563eb" stroke-width="2.5"/>
+            <text x="150" y="96" fill="#2563eb" font-size="12" font-weight="700">20%</text>
+            <rect x="220" y="58" width="90" height="40" rx="10" fill="#3b82f6" stroke="#2563eb" stroke-width="2"/>
+            <text x="265" y="83" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">행사 포함</text>
+            <text x="265" y="110" text-anchor="middle" fill="#2563eb" font-size="13" font-weight="700">20통</text>
+
+            <!-- Branch to "행사 없음" -->
+            <line x1="100" y1="160" x2="220" y2="230" stroke="#64748b" stroke-width="2.5"/>
+            <text x="150" y="213" fill="#64748b" font-size="12" font-weight="700">80%</text>
+            <rect x="220" y="210" width="90" height="40" rx="10" fill="#94a3b8" stroke="#64748b" stroke-width="2"/>
+            <text x="265" y="235" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">행사 없음</text>
+            <text x="265" y="262" text-anchor="middle" fill="#64748b" font-size="13" font-weight="700">80통</text>
+          </g>
+
+          <!-- L2 (hidden) -->
+          <g id="freqL2" style="opacity:0; transition: opacity 0.5s;">
+            <!-- 행사+광고 -->
+            <line x1="310" y1="70" x2="440" y2="35" stroke="#ef4444" stroke-width="2"/>
+            <text x="370" y="40" fill="#ef4444" font-size="12" font-weight="700">40%</text>
+            <rect x="440" y="15" width="80" height="38" rx="8" fill="#ef4444" stroke="#dc2626" stroke-width="2" class="freq-end" data-type="event-ad"/>
+            <text x="480" y="40" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">8통</text>
+            <text x="480" y="10" text-anchor="middle" fill="#ef4444" font-size="10" font-weight="600">광고</text>
+
+            <!-- 행사+비광고 -->
+            <line x1="310" y1="85" x2="440" y2="105" stroke="#93c5fd" stroke-width="2"/>
+            <text x="370" y="108" fill="#64748b" font-size="12" font-weight="700">60%</text>
+            <rect x="440" y="85" width="80" height="38" rx="8" fill="#93c5fd" stroke="#60a5fa" stroke-width="2"/>
+            <text x="480" y="110" text-anchor="middle" fill="#1e3a5f" font-size="12" font-weight="700">12통</text>
+            <text x="480" y="80" text-anchor="middle" fill="#3b82f6" font-size="10" font-weight="600">비광고</text>
+
+            <!-- 행사X+광고 -->
+            <line x1="310" y1="222" x2="440" y2="195" stroke="#f97316" stroke-width="2"/>
+            <text x="370" y="198" fill="#f97316" font-size="12" font-weight="700">30%</text>
+            <rect x="440" y="175" width="80" height="38" rx="8" fill="#f97316" stroke="#ea580c" stroke-width="2" class="freq-end" data-type="noevent-ad"/>
+            <text x="480" y="200" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">24통</text>
+            <text x="480" y="170" text-anchor="middle" fill="#f97316" font-size="10" font-weight="600">광고</text>
+
+            <!-- 행사X+비광고 -->
+            <line x1="310" y1="240" x2="440" y2="270" stroke="#d1d5db" stroke-width="2"/>
+            <text x="370" y="270" fill="#64748b" font-size="12" font-weight="700">70%</text>
+            <rect x="440" y="250" width="80" height="38" rx="8" fill="#e5e7eb" stroke="#d1d5db" stroke-width="2"/>
+            <text x="480" y="275" text-anchor="middle" fill="#4b5563" font-size="12" font-weight="700">56통</text>
+            <text x="480" y="245" text-anchor="middle" fill="#6b7280" font-size="10" font-weight="600">비광고</text>
+          </g>
+
+          <!-- Glow rects for phase 3 (hidden) -->
+          <rect id="glowAd1" x="436" y="11" width="88" height="46" rx="10" fill="none" stroke="#facc15" stroke-width="3" style="display:none;" class="glow-rect"/>
+          <rect id="glowAd2" x="436" y="171" width="88" height="46" rx="10" fill="none" stroke="#facc15" stroke-width="3" style="display:none;" class="glow-rect"/>
+        </svg>
+      </div>
+
+      <div class="tree-controls">
+        <button class="tree-btn" id="freqStep1">'행사' 포함 여부로 나누기 &rarr;</button>
+        <button class="tree-btn" id="freqStep2" disabled>각 가지에서 광고 분류 &rarr;</button>
+        <button class="tree-btn" id="freqStep3" disabled>광고 끝 노드 모으기 &rarr;</button>
+        <button class="tree-btn" id="freqStep4" disabled>P(A|B) 구하기 &rarr;</button>
+        <button class="tree-btn btn-reset" id="freqReset">초기화</button>
+      </div>
+
+      <div class="freq-collect" id="freqCollect">
+        <span class="freq-box red">8통</span>
+        <span class="freq-plus">+</span>
+        <span class="freq-box orange">24통</span>
+        <span class="freq-eq">=</span>
+        <span class="freq-total">32통 (전체 광고)</span>
+      </div>
+
+      <div class="freq-final" id="freqFinal">
+        광고 중 '행사 포함' 비율 = <strong>8 / 32 = 1/4</strong><br>
+        \(\displaystyle P(A|B) = \frac{P(A \cap B)}{P(B)} = \frac{\frac{8}{100}}{\frac{32}{100}} = \frac{8}{32} = \frac{1}{4}\)
+      </div>
+    </div>
+
+    <!-- 예제 3 풀이 -->
+    <div class="concept-box" style="margin-top:14px;">
+      <div class="ans-label">예제 3 풀이</div>
+      <p>'행사 안내'를 포함하는 사건을 \(A\), 광고인 사건을 \(B\)라 하면</p>
+      <p style="margin-top:6px;">
+        \(\displaystyle P(A) = \frac{1}{5}\), &ensp;
+        \(\displaystyle P(A^c) = \frac{4}{5}\)
+      </p>
+      <p style="margin-top:4px;">
+        \(\displaystyle P(B|A) = \frac{2}{5}\), &ensp;
+        \(\displaystyle P(B|A^c) = \frac{3}{10}\)
+      </p>
+      <p style="margin-top:8px;">
+        <strong>전체확률:</strong><br>
+        \(\displaystyle P(B) = P(A) \cdot P(B|A) + P(A^c) \cdot P(B|A^c)\)<br>
+        \(\displaystyle \phantom{P(B)} = \frac{1}{5} \times \frac{2}{5} + \frac{4}{5} \times \frac{3}{10} = \frac{2}{25} + \frac{12}{50} = \frac{4}{50} + \frac{12}{50} = \frac{16}{50} = \frac{8}{25}\)
+      </p>
+      <p style="margin-top:8px;">
+        <strong>역확률:</strong><br>
+        \(\displaystyle P(A|B) = \frac{P(A \cap B)}{P(B)} = \frac{P(A) \cdot P(B|A)}{P(B)} = \frac{\frac{2}{25}}{\frac{8}{25}} = \frac{2}{8} = \frac{1}{4}\)
+      </p>
+    </div>
+    <div class="answer-reveal" style="margin-top:8px;">
+      <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+      <div class="answer-content">
+        <div class="ans-label">정답</div>
+        <p>\(\displaystyle \frac{1}{4}\)</p>
+      </div>
+    </div>
+  </div><!-- /card 9 -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 카드 10: 문제 3                              -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="card">
+    <div class="problem">
+      <div class="problem-label">문제 3</div>
+      <p>
+        어느 회사에서 생산하는 제품은 공장 A에서 30%, 공장 B에서 70%를 생산한다.
+        공장 A에서 생산한 제품의 불량률은 1%, 공장 B에서 생산한 제품의 불량률은 2%이다.
+        이 회사에서 생산한 제품 중에서 임의로 하나를 택하였더니 불량품이었을 때,
+        이 제품이 공장 A에서 생산되었을 확률을 구하시오.
+      </p>
+      <div class="writing-area" data-h="150"><canvas></canvas><div class="canvas-toolbar"></div></div>
+      <div class="answer-reveal">
+        <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+        <div class="answer-content">
+          <div class="ans-label">정답</div>
+          <p>\(\displaystyle \frac{3}{17}\)</p>
+          <div class="ans-label">풀이</div>
+          <p>공장 A인 사건을 \(A\), 불량품인 사건을 \(B\)라 하면<br>
+          \(\displaystyle P(A) = 0.3\), \(\displaystyle P(A^c) = 0.7\)<br>
+          \(\displaystyle P(B|A) = 0.01\), \(\displaystyle P(B|A^c) = 0.02\)<br><br>
+          \(\displaystyle P(B) = 0.3 \times 0.01 + 0.7 \times 0.02 = 0.003 + 0.014 = 0.017\)<br><br>
+          \(\displaystyle P(A|B) = \frac{P(A) \cdot P(B|A)}{P(B)} = \frac{0.003}{0.017} = \frac{3}{17}\)</p>
+        </div>
+      </div>
+    </div>
+  </div><!-- /card 10 -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 섹션 5: 함께 하기 — 제비뽑기는 공정할까?       -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="card">
+    <div class="section-title">
+      <div class="section-number">5</div>
+      <h2>함께 하기 &mdash; 제비뽑기는 공정할까?</h2>
+    </div>
+
+    <p style="font-size:14px; color:#475569; line-height:1.6; margin-bottom:12px;">
+      지수, 현영, 서우 세 사람이 차례로 제비를 뽑습니다.
+      3장의 제비 중 당첨 제비는 1장이고, 뽑은 제비는 다시 넣지 않습니다.
+      <strong>먼저 뽑는 사람이 유리할까요?</strong>
+    </p>
+
+    <!-- Phase 1: 예측 -->
+    <div class="sim-card" id="fairPredict">
+      <h3>&#127919; 나의 예측</h3>
+      <p style="font-size:13px; color:#64748b; margin-bottom:10px;">제비뽑기에서 순서는 유리하거나 불리할까요?</p>
+      <div class="sim-predict" id="fairPredictGroup">
+        <label><input type="radio" name="fairPred" value="first"> 먼저 뽑는 사람이 유리하다</label>
+        <label><input type="radio" name="fairPred" value="later"> 나중에 뽑는 사람이 유리하다</label>
+        <label><input type="radio" name="fairPred" value="same"> 순서 상관없이 같다</label>
+      </div>
+      <button class="sim-start-btn" id="fairStartBtn" disabled>시뮬레이션 시작</button>
+    </div>
+
+    <!-- Phase 2: 시뮬레이션 -->
+    <div class="sim-card" id="fairSim" style="display:none;">
+      <h3>&#127922; 10,000회 시뮬레이션</h3>
+      <div class="sim-stats" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="sim-stat"><div class="label">시행 횟수</div><div class="value" id="fairTrials">0</div></div>
+        <div class="sim-stat"><div class="label">지수 (1번)</div><div class="value" id="fairP1">0.0%</div></div>
+        <div class="sim-stat"><div class="label">현영 (2번)</div><div class="value" id="fairP2">0.0%</div></div>
+        <div class="sim-stat"><div class="label">서우 (3번)</div><div class="value" id="fairP3">0.0%</div></div>
+      </div>
+      <div class="sim-chart-wrap">
+        <canvas id="fairChart"></canvas>
+      </div>
+      <div class="sim-result-msg" id="fairResultMsg"></div>
+    </div>
+
+    <!-- Phase 3: 수학적 확인 -->
+    <div class="sim-math-proof" id="fairProof" style="display:none;">
+      <h4>&#128220; 수학적 확인</h4>
+      <div class="sim-math-step">
+        <strong>1번째 (지수):</strong> 3장 중 당첨 1장<br>
+        \(\displaystyle P = \frac{1}{3}\)
+      </div>
+      <div class="sim-math-step">
+        <strong>2번째 (현영):</strong> 지수가 당첨이 아닐 때 남은 2장에서 당첨<br>
+        \(\displaystyle P = \frac{2}{3} \times \frac{1}{2} = \frac{1}{3}\)
+      </div>
+      <div class="sim-math-step">
+        <strong>3번째 (서우):</strong> 앞의 두 사람 모두 당첨이 아닐 때 남은 1장 = 당첨<br>
+        \(\displaystyle P = \frac{2}{3} \times \frac{1}{2} \times 1 = \frac{1}{3}\)
+      </div>
+      <div class="sim-conclusion">
+        모두 \(\dfrac{1}{3}\) &mdash; 순서에 상관없이 공정합니다!
+      </div>
+    </div>
+  </div><!-- /card 11 -->
+
+</div><!-- /container -->
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 스크립트                                          -->
+<!-- ═══════════════════════════════════════════════ -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+
+  /* ─── KaTeX 렌더링 ─── */
+  function renderKaTeX() {
+    if (typeof renderMathInElement === 'function') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+    } else {
+      setTimeout(renderKaTeX, 100);
+    }
+  }
+  renderKaTeX();
+
+  /* ═══════════════════════════════════════════════ */
+  /* 1. Icon grid — 표본공간 축소 탐구기                */
+  /* ═══════════════════════════════════════════════ */
+  (function () {
+    var grid = document.getElementById('ssGrid');
+    var infoTitle = document.getElementById('ssInfoTitle');
+    var infoBody = document.getElementById('ssInfoBody');
+    var discovery = document.getElementById('ssDiscovery');
+    var condClicked = { male: false, earphone: false };
+
+    // Build 30 icons
+    // male-ear: 9, male-doll: 7, female-ear: 6, female-doll: 8
+    var people = [];
+    var i;
+    for (i = 0; i < 9; i++) people.push({ gender: 'male', pref: 'ear', cls: 'male-ear', emoji: '\uD83C\uDFA7' });
+    for (i = 0; i < 7; i++) people.push({ gender: 'male', pref: 'doll', cls: 'male-doll', emoji: '\uD83E\uDDF8' });
+    for (i = 0; i < 6; i++) people.push({ gender: 'female', pref: 'ear', cls: 'female-ear', emoji: '\uD83C\uDFA7' });
+    for (i = 0; i < 8; i++) people.push({ gender: 'female', pref: 'doll', cls: 'female-doll', emoji: '\uD83E\uDDF8' });
+
+    people.forEach(function (p) {
+      var el = document.createElement('div');
+      el.className = 'ss-icon ' + p.cls;
+      el.textContent = p.emoji;
+      el.dataset.gender = p.gender;
+      el.dataset.pref = p.pref;
+      grid.appendChild(el);
+    });
+
+    var icons = grid.querySelectorAll('.ss-icon');
+    var btns = document.querySelectorAll('.ss-btn');
+
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        btns.forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        applyCond(btn.dataset.cond);
+      });
+    });
+
+    function applyCond(cond) {
+      icons.forEach(function (ic) {
+        ic.classList.remove('dim', 'highlight');
+      });
+
+      if (cond === 'all') {
+        infoTitle.textContent = '\uC804\uCCB4 30\uBA85';
+        infoBody.textContent = '\uC870\uAC74 \uBC84\uD2BC\uC744 \uB20C\uB7EC \uD45C\uBCF8\uACF5\uAC04\uC758 \uBCC0\uD654\uB97C \uD655\uC778\uD558\uC138\uC694.';
+        return;
+      }
+
+      if (cond === 'male') {
+        condClicked.male = true;
+        var activeCount = 0;
+        var hlCount = 0;
+        icons.forEach(function (ic) {
+          if (ic.dataset.gender === 'male') {
+            activeCount++;
+            if (ic.dataset.pref === 'ear') {
+              ic.classList.add('highlight');
+              hlCount++;
+            }
+          } else {
+            ic.classList.add('dim');
+          }
+        });
+        infoTitle.textContent = '\uC870\uAC74: \uB0A8\uD559\uC0DD (' + activeCount + '\uBA85)';
+        infoBody.innerHTML = '\uD65C\uC131: <strong>' + activeCount + '</strong>\uBA85 | \uAC15\uC870(\uC774\uC5B4\uD3F0 \uC120\uD638): <strong>' + hlCount + '</strong>\uBA85<br>' +
+          '<span style="font-size:15px;">\uD655\uB960 = ' + hlCount + ' / ' + activeCount + ' = <strong>9/16</strong></span>';
+      }
+
+      if (cond === 'earphone') {
+        condClicked.earphone = true;
+        var activeCount2 = 0;
+        var hlCount2 = 0;
+        icons.forEach(function (ic) {
+          if (ic.dataset.pref === 'ear') {
+            activeCount2++;
+            if (ic.dataset.gender === 'male') {
+              ic.classList.add('highlight');
+              hlCount2++;
+            }
+          } else {
+            ic.classList.add('dim');
+          }
+        });
+        infoTitle.textContent = '\uC870\uAC74: \uC774\uC5B4\uD3F0 \uC120\uD638 (' + activeCount2 + '\uBA85)';
+        infoBody.innerHTML = '\uD65C\uC131: <strong>' + activeCount2 + '</strong>\uBA85 | \uAC15\uC870(\uB0A8\uD559\uC0DD): <strong>' + hlCount2 + '</strong>\uBA85<br>' +
+          '<span style="font-size:15px;">\uD655\uB960 = ' + hlCount2 + ' / ' + activeCount2 + ' = <strong>9/15 = 3/5</strong></span>';
+      }
+
+      // Show discovery when both conditions have been clicked at least once
+      if (condClicked.male && condClicked.earphone) {
+        discovery.style.display = 'block';
+      }
+    }
+  })();
+
+  /* ═══════════════════════════════════════════════ */
+  /* 2. STEP fill-in-blank engine                    */
+  /* ═══════════════════════════════════════════════ */
+  var HINTS = {
+    stepCond: [
+      '300\uBA85 \uC911 \uC5EC\uD559\uC0DD\uC740 55%',
+      '25\uBA85 \u00D7 60% = ?',
+      '\uC5EC\uD559\uC0DD\uC774\uBA74\uC11C \uBC29\uC1A1\uBD80\uC778 \uD559\uC0DD \uC218 / \uC804\uCCB4 \uD559\uC0DD \uC218',
+      'P(A\u2229B) / P(A)'
+    ]
+  };
+
+  document.querySelectorAll('.step-container').forEach(function (container) {
+    var id = container.id;
+    var hints = HINTS[id] || [];
+    var rows = container.querySelectorAll('.step-row');
+    var totalSteps = rows.length;
+    var completeMsg = container.querySelector('.step-complete-msg');
+
+    rows.forEach(function (row, idx) {
+      var btn = row.querySelector('.step-check-btn');
+      var fb = row.querySelector('.step-feedback');
+      var attempts = 0;
+      var MAX = 3;
+
+      btn.addEventListener('click', function () {
+        var result = checkStep(row);
+        if (result === null) return;
+        attempts++;
+
+        if (result) {
+          fb.textContent = '\u2705 \uC815\uB2F5!';
+          fb.className = 'step-feedback ok';
+          row.classList.add('done');
+          markInputsCorrect(row);
+          unlockNext(idx);
+        } else if (attempts >= MAX) {
+          fb.innerHTML = '\uD83D\uDCA1 \uC815\uB2F5: ' + getAnswerText(row);
+          fb.className = 'step-feedback reveal';
+          row.classList.add('done');
+          markInputsCorrect(row);
+          unlockNext(idx);
+        } else {
+          var hint = hints[idx] || '\uB2E4\uC2DC \uC0DD\uAC01\uD574 \uBCF4\uC138\uC694.';
+          fb.textContent = '\u26A0\uFE0F ' + hint + ' (' + attempts + '/' + MAX + ')';
+          fb.className = 'step-feedback hint';
+          markInputsWrong(row);
+        }
+      });
+    });
+
+    function unlockNext(idx) {
+      if (idx + 1 < totalSteps) {
+        rows[idx + 1].classList.remove('locked');
+        if (typeof renderMathInElement === 'function') {
+          renderMathInElement(rows[idx + 1], {
+            delimiters: [
+              { left: '\\(', right: '\\)', display: false },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      } else {
+        if (completeMsg) completeMsg.style.display = 'block';
+      }
+    }
+
+    function checkStep(row) {
+      var numInput = row.querySelector('input[data-type="number"]');
+      if (numInput) {
+        var v = numInput.value.trim();
+        if (v === '') return null;
+        return parseInt(v, 10) === parseInt(numInput.dataset.answer, 10);
+      }
+
+      var fracNum = row.querySelector('input[data-type="frac-num"]');
+      if (fracNum) {
+        var fracDen = row.querySelector('input[data-type="frac-den"]');
+        var n = fracNum.value.trim();
+        var d = fracDen.value.trim();
+        if (n === '' || d === '') return null;
+        n = parseInt(n, 10);
+        d = parseInt(d, 10);
+        if (d === 0) {
+          row.querySelector('.step-feedback').textContent = '\uBD84\uBAA8\uB294 0\uC774 \uB420 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.';
+          row.querySelector('.step-feedback').className = 'step-feedback hint';
+          return null;
+        }
+        var aN = parseInt(fracNum.dataset.ansNum, 10);
+        var aD = parseInt(fracNum.dataset.ansDen, 10);
+        return n * aD === d * aN && n !== 0 && d > 0 && ((aN > 0 && n > 0) || (aN < 0 && n < 0));
+      }
+
+      var radioGroup = row.querySelector('.step-radio-group');
+      if (radioGroup) {
+        var checked = radioGroup.querySelector('input[type="radio"]:checked');
+        if (!checked) return null;
+        return checked.value === radioGroup.dataset.answer;
+      }
+
+      return null;
+    }
+
+    function getAnswerText(row) {
+      var numInput = row.querySelector('input[data-type="number"]');
+      if (numInput) return numInput.dataset.answer;
+      var fracNum = row.querySelector('input[data-type="frac-num"]');
+      if (fracNum) return fracNum.dataset.ansNum + '/' + fracNum.dataset.ansDen;
+      var radioGroup = row.querySelector('.step-radio-group');
+      if (radioGroup) {
+        var rIdx = parseInt(radioGroup.dataset.answer, 10);
+        var labels = radioGroup.querySelectorAll('label');
+        return labels[rIdx] ? labels[rIdx].textContent.trim() : '';
+      }
+      return '';
+    }
+
+    function markInputsCorrect(row) {
+      row.querySelectorAll('input[type="number"]').forEach(function (inp) { inp.classList.remove('wrong'); inp.classList.add('correct'); inp.disabled = true; });
+      row.querySelectorAll('input[type="radio"]').forEach(function (inp) { inp.disabled = true; });
+      var radioGroup = row.querySelector('.step-radio-group');
+      if (radioGroup) {
+        radioGroup.querySelectorAll('label').forEach(function (lbl) { lbl.classList.remove('wrong', 'selected'); });
+        var correctIdx = parseInt(radioGroup.dataset.answer, 10);
+        var labels = radioGroup.querySelectorAll('label');
+        if (labels[correctIdx]) labels[correctIdx].classList.add('correct');
+      }
+    }
+
+    function markInputsWrong(row) {
+      row.querySelectorAll('input[type="number"]').forEach(function (inp) { inp.classList.remove('correct'); inp.classList.add('wrong'); });
+      var radioGroup = row.querySelector('.step-radio-group');
+      if (radioGroup) {
+        var checked = radioGroup.querySelector('input[type="radio"]:checked');
+        if (checked) {
+          checked.closest('label').classList.add('wrong');
+        }
+      }
+    }
+  });
+
+  /* Radio selection highlight */
+  document.querySelectorAll('.step-radio-group label').forEach(function (lbl) {
+    lbl.addEventListener('click', function () {
+      var group = lbl.closest('.step-radio-group');
+      group.querySelectorAll('label').forEach(function (l) { l.classList.remove('selected', 'wrong'); });
+      lbl.classList.add('selected');
+    });
+  });
+
+  /* ═══════════════════════════════════════════════ */
+  /* 3. Probability tree — 비복원추출 트리             */
+  /* ═══════════════════════════════════════════════ */
+  (function () {
+    var treeL1 = document.getElementById('treeL1');
+    var treeL2 = document.getElementById('treeL2');
+    var treePathLabels = document.getElementById('treePathLabels');
+    var step1Btn = document.getElementById('treeStep1');
+    var step2Btn = document.getElementById('treeStep2');
+    var resetBtn = document.getElementById('treeReset');
+    var msgEl = document.getElementById('treeMsg');
+    var infoEl = document.getElementById('treeInfo');
+    var phase = 0;
+
+    var highlights = {
+      bb: document.getElementById('hlBB'),
+      bw: document.getElementById('hlBW'),
+      wb: document.getElementById('hlWB'),
+      ww: document.getElementById('hlWW')
+    };
+    var sumLabel = document.getElementById('treeSumLabel');
+
+    var pathProbs = { bb: '3/7 \u00D7 2/6 = 1/7', bw: '3/7 \u00D7 4/6 = 2/7', wb: '4/7 \u00D7 3/6 = 2/7', ww: '4/7 \u00D7 3/6 = 2/7' };
+
+    step1Btn.addEventListener('click', function () {
+      if (phase >= 1) return;
+      phase = 1;
+      treeL1.style.opacity = '1';
+      step1Btn.disabled = true;
+      step2Btn.disabled = false;
+      msgEl.textContent = '\uCCAB \uBC88\uC9F8 \uACF5\uC744 \uAEBC\uB0C5\uB2C8\uB2E4. \uAC80\uC740 \uACF5 3/7, \uD770 \uACF5 4/7\uC758 \uD655\uB960\uB85C \uB098\uB289\uB2C8\uB2E4.';
+      msgEl.style.display = 'block';
+    });
+
+    step2Btn.addEventListener('click', function () {
+      if (phase >= 2) return;
+      phase = 2;
+      treeL2.style.opacity = '1';
+      treePathLabels.style.opacity = '1';
+      step2Btn.disabled = true;
+      msgEl.textContent = '\uB450 \uBC88\uC9F8 \uACF5\uC744 \uAEBC\uB0C5\uB2C8\uB2E4. \uBE44\uBCF5\uC6D0\uC774\uBBC0\uB85C \uB0A8\uC740 6\uAC1C\uC5D0\uC11C \uD655\uB960\uC774 \uACB0\uC815\uB429\uB2C8\uB2E4. \uB05D \uB178\uB4DC\uB97C \uD074\uB9AD\uD574 \uBCF4\uC138\uC694!';
+      sumLabel.style.display = 'block';
+
+      // Enable end node clicks
+      document.querySelectorAll('.tree-end').forEach(function (nd) {
+        nd.style.cursor = 'pointer';
+        nd.addEventListener('click', function () {
+          var p = nd.dataset.path;
+          // Clear all highlights
+          Object.keys(highlights).forEach(function (k) {
+            highlights[k].style.display = 'none';
+          });
+          // Show this path
+          highlights[p].style.display = 'block';
+          infoEl.innerHTML = '\uACF1\uC148\uC815\uB9AC: ' + pathProbs[p];
+          infoEl.style.display = 'block';
+        });
+      });
+    });
+
+    resetBtn.addEventListener('click', function () {
+      phase = 0;
+      treeL1.style.opacity = '0';
+      treeL2.style.opacity = '0';
+      treePathLabels.style.opacity = '0';
+      step1Btn.disabled = false;
+      step2Btn.disabled = true;
+      msgEl.style.display = 'none';
+      infoEl.style.display = 'none';
+      sumLabel.style.display = 'none';
+      Object.keys(highlights).forEach(function (k) {
+        highlights[k].style.display = 'none';
+      });
+      document.querySelectorAll('.tree-end').forEach(function (nd) {
+        nd.style.cursor = 'default';
+      });
+    });
+  })();
+
+  /* ═══════════════════════════════════════════════ */
+  /* 4. Frequency tree — 빈도 트리                    */
+  /* ═══════════════════════════════════════════════ */
+  (function () {
+    var freqL1 = document.getElementById('freqL1');
+    var freqL2 = document.getElementById('freqL2');
+    var glow1 = document.getElementById('glowAd1');
+    var glow2 = document.getElementById('glowAd2');
+    var collectEl = document.getElementById('freqCollect');
+    var finalEl = document.getElementById('freqFinal');
+
+    var s1 = document.getElementById('freqStep1');
+    var s2 = document.getElementById('freqStep2');
+    var s3 = document.getElementById('freqStep3');
+    var s4 = document.getElementById('freqStep4');
+    var resetBtn = document.getElementById('freqReset');
+    var fPhase = 0;
+
+    s1.addEventListener('click', function () {
+      if (fPhase >= 1) return;
+      fPhase = 1;
+      freqL1.style.opacity = '1';
+      s1.disabled = true;
+      s2.disabled = false;
+    });
+
+    s2.addEventListener('click', function () {
+      if (fPhase >= 2) return;
+      fPhase = 2;
+      freqL2.style.opacity = '1';
+      s2.disabled = true;
+      s3.disabled = false;
+    });
+
+    s3.addEventListener('click', function () {
+      if (fPhase >= 3) return;
+      fPhase = 3;
+      glow1.style.display = 'block';
+      glow2.style.display = 'block';
+      collectEl.style.display = 'flex';
+      s3.disabled = true;
+      s4.disabled = false;
+    });
+
+    s4.addEventListener('click', function () {
+      if (fPhase >= 4) return;
+      fPhase = 4;
+      finalEl.style.display = 'block';
+      s4.disabled = true;
+      // Re-render KaTeX for the final formula
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(finalEl, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      }
+    });
+
+    resetBtn.addEventListener('click', function () {
+      fPhase = 0;
+      freqL1.style.opacity = '0';
+      freqL2.style.opacity = '0';
+      glow1.style.display = 'none';
+      glow2.style.display = 'none';
+      collectEl.style.display = 'none';
+      finalEl.style.display = 'none';
+      s1.disabled = false;
+      s2.disabled = true;
+      s3.disabled = true;
+      s4.disabled = true;
+    });
+  })();
+
+  /* ═══════════════════════════════════════════════ */
+  /* 5. 제비뽑기 공정성 시뮬레이션                      */
+  /* ═══════════════════════════════════════════════ */
+  (function () {
+    var TOTAL_TRIALS = 10000;
+    var BATCH_SIZE = 100;
+    var BATCH_DELAY = 50;
+    var prediction = null;
+    var wins = [0, 0, 0]; // person 0, 1, 2
+    var trialCount = 0;
+    var running = false;
+    var myChart = null;
+
+    var predictGroup = document.getElementById('fairPredictGroup');
+    var startBtn = document.getElementById('fairStartBtn');
+    var simDiv = document.getElementById('fairSim');
+    var proofDiv = document.getElementById('fairProof');
+    var resultMsg = document.getElementById('fairResultMsg');
+    var elTrials = document.getElementById('fairTrials');
+    var elP1 = document.getElementById('fairP1');
+    var elP2 = document.getElementById('fairP2');
+    var elP3 = document.getElementById('fairP3');
+
+    // Prediction radio labels
+    predictGroup.querySelectorAll('label').forEach(function (lbl) {
+      lbl.addEventListener('click', function () {
+        predictGroup.querySelectorAll('label').forEach(function (l) { l.classList.remove('selected'); });
+        lbl.classList.add('selected');
+        startBtn.disabled = false;
+      });
+    });
+
+    startBtn.addEventListener('click', function () {
+      var checked = predictGroup.querySelector('input[type="radio"]:checked');
+      if (!checked) return;
+      prediction = checked.value;
+      startBtn.disabled = true;
+      startBtn.textContent = '\u2705 \uC608\uCE21 \uC644\uB8CC';
+      predictGroup.querySelectorAll('input[type="radio"]').forEach(function (r) { r.disabled = true; });
+      simDiv.style.display = '';
+      initChart();
+      runSimulation();
+    });
+
+    function simulate() {
+      var slips = [1, 0, 0];
+      for (var i = slips.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = slips[i];
+        slips[i] = slips[j];
+        slips[j] = temp;
+      }
+      return slips;
+    }
+
+    function runSimulation() {
+      if (running) return;
+      running = true;
+
+      function batch() {
+        var batchEnd = Math.min(trialCount + BATCH_SIZE, TOTAL_TRIALS);
+        while (trialCount < batchEnd) {
+          var result = simulate();
+          for (var k = 0; k < 3; k++) {
+            if (result[k] === 1) wins[k]++;
+          }
+          trialCount++;
+        }
+        updateDisplay();
+
+        if (trialCount < TOTAL_TRIALS) {
+          setTimeout(batch, BATCH_DELAY);
+        } else {
+          running = false;
+          showResult();
+        }
+      }
+      batch();
+    }
+
+    function updateDisplay() {
+      elTrials.textContent = trialCount;
+      if (trialCount > 0) {
+        elP1.textContent = (wins[0] / trialCount * 100).toFixed(1) + '%';
+        elP2.textContent = (wins[1] / trialCount * 100).toFixed(1) + '%';
+        elP3.textContent = (wins[2] / trialCount * 100).toFixed(1) + '%';
+      }
+      updateChart();
+    }
+
+    function showResult() {
+      resultMsg.style.display = 'block';
+      if (prediction === 'same') {
+        resultMsg.className = 'sim-result-msg match';
+        resultMsg.textContent = '\uC608\uCE21\uC774 \uB9DE\uC558\uC2B5\uB2C8\uB2E4! \uC21C\uC11C \uC0C1\uAD00\uC5C6\uC774 \uAC19\uC2B5\uB2C8\uB2E4.';
+      } else {
+        resultMsg.className = 'sim-result-msg differ';
+        resultMsg.textContent = '\uC608\uCE21\uACFC \uB2E4\uB978 \uACB0\uACFC\uAC00 \uB098\uC654\uAD70\uC694! \uC21C\uC11C \uC0C1\uAD00\uC5C6\uC774 \uAC70\uC758 \uAC19\uC2B5\uB2C8\uB2E4.';
+      }
+      // Show math proof
+      proofDiv.style.display = '';
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(proofDiv, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    function initChart() {
+      var waitChart = function () {
+        if (typeof Chart === 'undefined') { setTimeout(waitChart, 100); return; }
+        var ctx = document.getElementById('fairChart').getContext('2d');
+        myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['\uC9C0\uC218 (1\uBC88)', '\uD604\uC601 (2\uBC88)', '\uC11C\uC6B0 (3\uBC88)'],
+            datasets: [{
+              label: '\uB2F9\uCCA8 \uBE44\uC728 (%)',
+              data: [0, 0, 0],
+              backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b'],
+              borderColor: ['#2563eb', '#7c3aed', '#d97706'],
+              borderWidth: 2,
+              borderRadius: 6
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            animation: false,
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+              x: {
+                min: 0,
+                max: 50,
+                title: { display: true, text: '\uB2F9\uCCA8 \uBE44\uC728 (%)', font: { size: 12 } },
+                ticks: { callback: function (v) { return v + '%'; } }
+              },
+              y: {
+                ticks: { font: { size: 13, weight: '600' } }
+              }
+            },
+            plugins: {
+              legend: { display: false },
+              annotation: {
+                annotations: {
+                  refLine: {
+                    type: 'line',
+                    xMin: 33.3,
+                    xMax: 33.3,
+                    borderColor: '#ef4444',
+                    borderWidth: 2,
+                    borderDash: [6, 4],
+                    label: {
+                      display: true,
+                      content: '33.3%',
+                      position: 'end',
+                      backgroundColor: '#ef4444',
+                      color: '#fff',
+                      font: { size: 11 }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        });
+        // Draw reference line manually if annotation plugin not available
+        var origDraw = myChart.draw;
+        myChart.draw = function () {
+          origDraw.apply(this, arguments);
+          var xScale = this.scales.x;
+          var yScale = this.scales.y;
+          var ctx2 = this.ctx;
+          var xPos = xScale.getPixelForValue(33.3);
+          ctx2.save();
+          ctx2.beginPath();
+          ctx2.setLineDash([6, 4]);
+          ctx2.strokeStyle = '#ef4444';
+          ctx2.lineWidth = 2;
+          ctx2.moveTo(xPos, yScale.top);
+          ctx2.lineTo(xPos, yScale.bottom);
+          ctx2.stroke();
+          ctx2.setLineDash([]);
+          ctx2.fillStyle = '#ef4444';
+          ctx2.font = '11px sans-serif';
+          ctx2.textAlign = 'center';
+          ctx2.fillText('33.3%', xPos, yScale.top - 6);
+          ctx2.restore();
+        };
+      };
+      waitChart();
+    }
+
+    function updateChart() {
+      if (!myChart) return;
+      if (trialCount > 0) {
+        myChart.data.datasets[0].data = [
+          +(wins[0] / trialCount * 100).toFixed(1),
+          +(wins[1] / trialCount * 100).toFixed(1),
+          +(wins[2] / trialCount * 100).toFixed(1)
+        ];
+      }
+      myChart.update();
+    }
+  })();
+
+});
+</script>
+
+</body>
+</html>
