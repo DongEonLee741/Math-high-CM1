@@ -810,35 +810,37 @@
       <strong>먼저 뽑는 사람이 유리할까요?</strong>
     </p>
 
-    <!-- Phase 1: 예측 -->
-    <div class="sim-card" id="fairPredict">
-      <h3>&#127919; 나의 예측</h3>
-      <p style="font-size:13px; color:#64748b; margin-bottom:10px;">제비뽑기에서 순서는 유리하거나 불리할까요?</p>
-      <div class="sim-predict" id="fairPredictGroup">
-        <label><input type="radio" name="fairPred" value="first"> 먼저 뽑는 사람이 유리하다</label>
-        <label><input type="radio" name="fairPred" value="later"> 나중에 뽑는 사람이 유리하다</label>
-        <label><input type="radio" name="fairPred" value="same"> 순서 상관없이 같다</label>
+    <!-- 시뮬레이션 전체 (하나의 슬라이드로 결합) -->
+    <div class="sim-activity">
+      <!-- Phase 1: 예측 -->
+      <div class="sim-card" id="fairPredict">
+        <h3>&#127919; 나의 예측</h3>
+        <p style="font-size:13px; color:#64748b; margin-bottom:10px;">제비뽑기에서 순서는 유리하거나 불리할까요?</p>
+        <div class="sim-predict" id="fairPredictGroup">
+          <label><input type="radio" name="fairPred" value="first"> 먼저 뽑는 사람이 유리하다</label>
+          <label><input type="radio" name="fairPred" value="later"> 나중에 뽑는 사람이 유리하다</label>
+          <label><input type="radio" name="fairPred" value="same"> 순서 상관없이 같다</label>
+        </div>
+        <button class="sim-start-btn" id="fairStartBtn" disabled>시뮬레이션 시작</button>
       </div>
-      <button class="sim-start-btn" id="fairStartBtn" disabled>시뮬레이션 시작</button>
-    </div>
 
-    <!-- Phase 2: 시뮬레이션 -->
-    <div class="sim-card" id="fairSim" style="display:none;">
-      <h3>&#127922; 10,000회 시뮬레이션</h3>
-      <div class="sim-stats" style="grid-template-columns: repeat(4, 1fr);">
-        <div class="sim-stat"><div class="label">시행 횟수</div><div class="value" id="fairTrials">0</div></div>
-        <div class="sim-stat"><div class="label">지수 (1번)</div><div class="value" id="fairP1">0.0%</div></div>
-        <div class="sim-stat"><div class="label">현영 (2번)</div><div class="value" id="fairP2">0.0%</div></div>
-        <div class="sim-stat"><div class="label">서우 (3번)</div><div class="value" id="fairP3">0.0%</div></div>
+      <!-- Phase 2: 시뮬레이션 -->
+      <div class="sim-card" id="fairSim" style="display:none;">
+        <h3>&#127922; 10,000회 시뮬레이션</h3>
+        <div class="sim-stats" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="sim-stat"><div class="label">시행 횟수</div><div class="value" id="fairTrials">0</div></div>
+          <div class="sim-stat"><div class="label">지수 (1번)</div><div class="value" id="fairP1">0.0%</div></div>
+          <div class="sim-stat"><div class="label">현영 (2번)</div><div class="value" id="fairP2">0.0%</div></div>
+          <div class="sim-stat"><div class="label">서우 (3번)</div><div class="value" id="fairP3">0.0%</div></div>
+        </div>
+        <div class="sim-chart-wrap">
+          <canvas id="fairChart"></canvas>
+        </div>
+        <div class="sim-result-msg" id="fairResultMsg"></div>
       </div>
-      <div class="sim-chart-wrap">
-        <canvas id="fairChart"></canvas>
-      </div>
-      <div class="sim-result-msg" id="fairResultMsg"></div>
-    </div>
 
-    <!-- Phase 3: 수학적 확인 -->
-    <div class="sim-math-proof" id="fairProof" style="display:none;">
+      <!-- Phase 3: 수학적 확인 -->
+      <div class="sim-math-proof" id="fairProof" style="display:none;">
       <h4>&#128220; 수학적 확인</h4>
       <div class="sim-math-step">
         <strong>1번째 (지수):</strong> 3장 중 당첨 1장<br>
@@ -856,6 +858,7 @@
         모두 \(\dfrac{1}{3}\) &mdash; 순서에 상관없이 공정합니다!
       </div>
     </div>
+    </div><!-- /sim-activity -->
   </div><!-- /card 11 -->
 
 </div><!-- /container -->
@@ -1359,13 +1362,13 @@ document.addEventListener('DOMContentLoaded', function () {
           }
           trialCount++;
         }
-        updateDisplay();
+        try { updateDisplay(); } catch(e) { /* chart may fail in slide-mode */ }
 
         if (trialCount < TOTAL_TRIALS) {
           setTimeout(batch, BATCH_DELAY);
         } else {
           running = false;
-          showResult();
+          try { showResult(); } catch(e) {}
         }
       }
       batch();
@@ -1498,7 +1501,7 @@ document.addEventListener('DOMContentLoaded', function () {
           +(wins[2] / trialCount * 100).toFixed(1)
         ];
       }
-      myChart.update();
+      myChart.update('none');
     }
   })();
 
