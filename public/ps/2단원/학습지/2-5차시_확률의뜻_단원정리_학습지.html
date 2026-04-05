@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2-5차시 - 확률의 뜻 단원 정리</title>
+
+  <!-- 공통 라이브러리 (Firebase Hosting) -->
+  <link rel="stylesheet" href="https://math-class.it.kr/lib/katex/katex.min.css">
+  <link rel="stylesheet" href="https://math-class.it.kr/lib/css/worksheet-common.css">
+  <link rel="stylesheet" href="https://math-class.it.kr/lib/css/auth-overlay.css">
+
+  <!-- 이 차시 고유 스타일 -->
+  <style>
+    /* ── 생존표 ── */
+    .life-table { width: 100%; border-collapse: collapse; margin: 10px 0 14px; font-size: 14px; }
+    .life-table th { background: #eff6ff; color: #1e293b; font-weight: 700; padding: 8px 10px; border: 1px solid #cbd5e1; text-align: center; }
+    .life-table td { padding: 8px 10px; border: 1px solid #e2e8f0; text-align: center; color: #334155; }
+    .life-table tr:nth-child(even) td { background: #f8fafc; }
+
+    /* ── ① 원 위의 이등변삼각형 탐색기 ── */
+    .tri-explorer { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 14px 0; }
+    .tri-explorer h3 { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .tri-explorer .desc { font-size: 13px; color: #64748b; margin-bottom: 12px; line-height: 1.5; }
+    .tri-svg-wrap { display: flex; justify-content: center; margin-bottom: 10px; }
+    .tri-svg-wrap svg { max-width: 320px; width: 100%; height: auto; }
+    .tri-svg-wrap svg .pt-circle { cursor: pointer; transition: all 0.15s; }
+    .tri-svg-wrap svg .pt-circle:hover { r: 18; }
+    .tri-svg-wrap svg .pt-circle.selected { fill: #2563eb; }
+    .tri-svg-wrap svg .pt-label { font-size: 14px; font-weight: 700; pointer-events: none; }
+    .tri-svg-wrap svg .edge-label { font-size: 11px; font-weight: 600; }
+    .tri-edge-short { stroke: #3b82f6; }
+    .tri-edge-medium { stroke: #22c55e; }
+    .tri-edge-long { stroke: #f97316; }
+    .tri-edge-label-short { fill: #3b82f6; }
+    .tri-edge-label-medium { fill: #22c55e; }
+    .tri-edge-label-long { fill: #f97316; }
+    .tri-controls { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .tri-controls button { padding: 8px 18px; border: 1.5px solid #cbd5e1; border-radius: 8px; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .tri-controls button:active { transform: scale(0.97); }
+    .tri-controls .btn-reset { border-color: #2563eb; color: #2563eb; }
+    .tri-controls .btn-showall { border-color: #22c55e; color: #22c55e; }
+    .tri-history { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 10px; min-height: 48px; align-items: center; }
+    .tri-history-item { width: 48px; height: 48px; border: 1px solid #e2e8f0; border-radius: 6px; background: #fff; }
+    .tri-guide { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 13px; color: #1e40af; line-height: 1.6; display: none; }
+    .tri-guide p { margin: 4px 0; }
+    .tri-legend { display: flex; justify-content: center; gap: 14px; margin: 8px 0; font-size: 12px; color: #64748b; }
+    .tri-legend span { display: flex; align-items: center; gap: 4px; }
+    .tri-legend .leg-line { width: 20px; height: 3px; border-radius: 2px; }
+    .tri-all-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 10px; }
+    .tri-all-item { border: 1px solid #e2e8f0; border-radius: 6px; background: #fff; aspect-ratio: 1; position: relative; }
+    .tri-all-item.isosceles { border-color: #3b82f6; background: #eff6ff; }
+    .tri-all-label { position: absolute; bottom: 2px; left: 0; right: 0; text-align: center; font-size: 9px; color: #64748b; }
+    .tri-all-result { text-align: center; margin-top: 10px; font-size: 15px; font-weight: 700; color: #1e293b; }
+
+    /* ── ② 벤 다이어그램 집합 연산 ── */
+    .venn-drag-game { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 14px 0; }
+    .venn-drag-game h3 { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .venn-drag-game .desc { font-size: 13px; color: #64748b; margin-bottom: 10px; line-height: 1.5; }
+    .venn-sets-info { font-size: 14px; color: #1e293b; margin-bottom: 12px; line-height: 1.7; }
+    .venn-cards-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 14px; min-height: 50px; padding: 6px; border: 1.5px dashed #cbd5e1; border-radius: 8px; background: #fff; }
+    .venn-card { width: 44px; height: 44px; border: 2px solid #cbd5e1; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #334155; background: #fff; cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none; transition: border-color 0.15s, box-shadow 0.15s; z-index: 1; }
+    .venn-card.dragging { opacity: 0.7; cursor: grabbing; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+    .venn-card.placed { position: absolute; cursor: grab; }
+    .venn-card.correct { border-color: #22c55e; background: #f0fdf4; }
+    .venn-diagram-wrap { position: relative; margin: 0 auto 14px; max-width: 380px; }
+    .venn-diagram-svg { width: 100%; height: auto; }
+    .venn-region { cursor: default; transition: opacity 0.2s; }
+    .venn-region-hover { stroke: #2563eb; stroke-width: 2; stroke-dasharray: 4; }
+    .venn-region-label { font-size: 11px; fill: #94a3b8; font-weight: 600; pointer-events: none; }
+    .venn-circle-label { font-size: 16px; fill: #1e293b; font-weight: 700; pointer-events: none; }
+    .venn-confirm-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; }
+    .venn-confirm-row button { padding: 8px 22px; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .venn-confirm-row button:active { transform: scale(0.97); }
+    .venn-confirm-row .btn-check { background: #2563eb; color: #fff; }
+    .venn-confirm-row .btn-check:disabled { background: #94a3b8; cursor: default; }
+    .venn-confirm-row .btn-vreset { background: #64748b; color: #fff; }
+    .venn-ops-section { display: none; margin-top: 14px; }
+    .venn-ops-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; justify-content: center; }
+    .venn-ops-btns button { padding: 7px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .venn-ops-btns button.active { border-color: #2563eb; background: #eff6ff; color: #2563eb; }
+    .venn-ops-btns button:active { transform: scale(0.97); }
+    .venn-ops-result { min-height: 40px; padding: 10px 14px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; line-height: 1.6; text-align: center; }
+    .venn-region.dimmed { opacity: 0.15; }
+    .venn-region.highlighted { opacity: 1; }
+  </style>
+
+  <!-- KaTeX (defer) -->
+  <script defer src="https://math-class.it.kr/lib/katex/katex.min.js"></script>
+  <script defer src="https://math-class.it.kr/lib/katex/contrib/auto-render.min.js"></script>
+
+  <!-- Firebase + Auth + App (type="module") -->
+  <script type="module">
+    import { initWorksheetApp } from 'https://math-class.it.kr/lib/js/worksheet-app.js';
+    import { initFirebaseWorksheet } from 'https://math-class.it.kr/lib/js/firebase-worksheet.js';
+
+    const app = initWorksheetApp('worksheet_PS_2-5차시_확률의뜻_단원정리');
+    initFirebaseWorksheet('PS_2-5차시_확률의뜻_단원정리', { showAuth: true });
+  </script>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- 헤더 -->
+    <div class="header">
+        <div class="header-unit">Ⅱ. 확률</div>
+        <div class="header-title">
+            <h1>1. 확률의 뜻 &mdash; 단원 정리</h1>
+            <div class="header-info"><span>교과서 48쪽 + 외부 문제</span></div>
+        </div>
+    </div>
+
+    <!-- 학생 정보 -->
+    <div class="student-info">
+        <div class="save-actions">
+            <button class="btn-save" id="btnSave">💾 저장</button>
+            <button class="btn-records" id="btnRecords">📋 기록</button>
+        </div>
+        <span class="student-display" id="studentDisplay"></span>
+    </div>
+
+    <!-- 성취기준 -->
+    <div class="achievement">
+        <strong>성취기준</strong> &nbsp; [12확통02-01] 통계적 확률과 수학적 확률의 의미를 이해한다. &nbsp; [12확통02-04] 여사건의 확률의 뜻을 알고 이를 활용할 수 있다.
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- Phase 1: 교과서 문제 (p.48 스스로 확인하기)   -->
+    <!-- ═══════════════════════════════════════════ -->
+
+    <div class="card">
+        <div class="section-title">
+            <div class="section-number">1</div>
+            <h2>스스로 확인하기 (교과서 48쪽)</h2>
+        </div>
+
+        <!-- 문제 1 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 1</span> 4개의 숫자 1, 2, 3, 4가 하나씩 적힌 카드를 모두 사용하여 네 자리 자연수를 만들 때, 이 수가 짝수일 확률을 구하시오.</div>
+            <div class="writing-area" data-h="180"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 풀이 보기</div>
+                <div class="answer-content">
+                    <div class="ans-label">풀이</div>
+                    전체 경우의 수: 4개의 숫자를 모두 나열 &rarr; \(4! = 24\)<br><br>
+                    짝수가 되려면 일의 자리가 2 또는 4이어야 한다.<br>
+                    &bull; 일의 자리 선택: 2가지 (2 또는 4)<br>
+                    &bull; 나머지 3자리 배열: \(3! = 6\)가지<br>
+                    &bull; 짝수인 경우의 수: \(2 \times 3! = 12\)<br><br>
+                    \(\therefore\; P = \dfrac{12}{24} = \boldsymbol{\dfrac{1}{2}}\)
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 문제 2 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 2</span> 다음은 2021년 우리나라에서 출생한 사람의 생존자 수를 추정한 것이다. 2021년 우리나라에서 출생한 사람이 80세까지 생존할 확률을 구하시오.</div>
+            <table class="life-table">
+                <thead><tr><th>연령(세)</th><th>생존자(명)</th></tr></thead>
+                <tbody>
+                    <tr><td>0</td><td>200,000</td></tr>
+                    <tr><td>20</td><td>199,055</td></tr>
+                    <tr><td>40</td><td>196,946</td></tr>
+                    <tr><td>60</td><td>188,570</td></tr>
+                    <tr><td>80</td><td>144,738</td></tr>
+                    <tr><td>100 이상</td><td>6,873</td></tr>
+                </tbody>
+            </table>
+            <div class="writing-area" data-h="140"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 풀이 보기</div>
+                <div class="answer-content">
+                    <div class="ans-label">풀이</div>
+                    출생한 사람 200,000명 중 80세까지 생존하는 사람은 144,738명이므로<br><br>
+                    \(P = \dfrac{144738}{200000} = \boldsymbol{0.72369}\)
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 문제 3 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 3</span> 여학생 3명과 남학생 4명 중에서 임의로 4명의 대표를 뽑을 때, 여학생과 남학생의 수가 같을 확률을 구하시오.</div>
+            <div class="writing-area" data-h="180"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 풀이 보기</div>
+                <div class="answer-content">
+                    <div class="ans-label">풀이</div>
+                    여학생과 남학생의 수가 같으려면 각각 2명씩 뽑아야 한다.<br><br>
+                    &bull; 전체: \({}_{7}\mathrm{C}_{4} = 35\)<br>
+                    &bull; 여학생 2명, 남학생 2명: \({}_{3}\mathrm{C}_{2} \times {}_{4}\mathrm{C}_{2} = 3 \times 6 = 18\)<br><br>
+                    \(\therefore\; P = \dfrac{18}{35} = \boldsymbol{\dfrac{18}{35}}\)
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 문제 4 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 4</span> 오른쪽 그림과 같이 원의 둘레를 6등분하는 6개의 점이 있다. 이 6개의 점 중에서 임의로 세 점을 택하여 그 세 점을 꼭짓점으로 하는 삼각형을 만들 때, 이등변삼각형이 만들어질 확률을 구하시오.</div>
+
+            <!-- ★ 인터랙티브 ① — 원 위의 이등변삼각형 탐색기 -->
+            <div class="tri-explorer" id="triExplorer">
+                <h3><span class="badge">탐구</span> 원 위의 이등변삼각형 탐색기</h3>
+                <div class="desc">6개의 점 중 3개를 선택하여 삼각형을 만들어 보세요. 같은 길이의 변은 같은 색으로 표시됩니다.</div>
+                <div class="tri-legend">
+                    <span><span class="leg-line" style="background:#3b82f6;"></span> 짧은 변</span>
+                    <span><span class="leg-line" style="background:#22c55e;"></span> 중간 변</span>
+                    <span><span class="leg-line" style="background:#f97316;"></span> 긴 변</span>
+                </div>
+                <div class="tri-svg-wrap">
+                    <svg id="triSvg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"></svg>
+                </div>
+                <div class="tri-controls">
+                    <button class="btn-reset" id="triResetBtn">다른 삼각형 만들기</button>
+                    <button class="btn-showall" id="triShowAllBtn">모든 삼각형 보기</button>
+                </div>
+                <div class="tri-history" id="triHistory"></div>
+                <div class="tri-guide" id="triGuide">
+                    <p>만들어본 삼각형들을 관찰해 보세요. 변의 길이가 몇 종류인가요?</p>
+                    <p>같은 색 변이 2개 이상인 삼각형은 어떤 특징이 있나요?</p>
+                </div>
+                <div id="triAllContainer" style="display:none;">
+                    <div class="tri-all-grid" id="triAllGrid"></div>
+                    <div class="tri-all-result" id="triAllResult"></div>
+                </div>
+            </div>
+
+            <div class="writing-area" data-h="180"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 풀이 보기</div>
+                <div class="answer-content">
+                    <div class="ans-label">풀이</div>
+                    전체 삼각형의 수: \({}_{6}\mathrm{C}_{3} = 20\)<br><br>
+                    이등변삼각형(정삼각형 포함)의 수:<br>
+                    &bull; 인접 두 변이 같은 이등변 (호 간격 1,1,4): 6개<br>
+                    &bull; 정삼각형 (호 간격 2,2,2): 2개<br>
+                    &bull; 합계: 8개<br><br>
+                    \(\therefore\; P = \dfrac{8}{20} = \boldsymbol{\dfrac{2}{5}}\)
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 문제 5 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 5</span> 주머니 안에 1부터 9까지의 자연수가 하나씩 적힌 9개의 공이 들어 있다. 이 주머니에서 임의로 3개의 공을 동시에 꺼낼 때, 꺼낸 공에 적힌 세 수의 합이 홀수일 확률을 구하시오.</div>
+            <div class="writing-area" data-h="200"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 풀이 보기</div>
+                <div class="answer-content">
+                    <div class="ans-label">풀이</div>
+                    홀수 5개: \(\{1, 3, 5, 7, 9\}\), 짝수 4개: \(\{2, 4, 6, 8\}\)<br><br>
+                    세 수의 합이 홀수가 되려면:<br>
+                    &bull; (홀수 1개) + (짝수 2개): \({}_{5}\mathrm{C}_{1} \times {}_{4}\mathrm{C}_{2} = 5 \times 6 = 30\)<br>
+                    &bull; (홀수 3개): \({}_{5}\mathrm{C}_{3} = 10\)<br>
+                    &bull; 합이 홀수인 경우의 수: \(30 + 10 = 40\)<br><br>
+                    전체: \({}_{9}\mathrm{C}_{3} = 84\)<br><br>
+                    \(\therefore\; P = \dfrac{40}{84} = \boldsymbol{\dfrac{10}{21}}\)
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 문제 6 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 6</span> <span style="color:#2563eb; font-weight:700;">수학으로 생각 넓히기</span></div>
+            <p style="margin:8px 0 4px; line-height:1.7;">수빈, 지원, 선아가 차례로 한 개의 주사위를 한 번씩 던져서 각자 나온 눈의 수만큼 말판에서 말을 옮기는 게임을 하려고 한다. 세 명의 말이 출발 위치에 있는 상태에서 한 번씩 주사위를 던졌을 때, 지원이가 놓은 말이 수빈이와 선아가 놓은 말 사이에 있게 될 확률을 구해 보자.</p>
+            <div class="writing-area" data-h="240"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 풀이 보기</div>
+                <div class="answer-content">
+                    <div class="ans-label">풀이</div>
+                    전체 경우의 수: \(6^3 = 216\)<br><br>
+                    수빈, 지원, 선아의 눈이 모두 다른 경우:<br>
+                    \(6 \times 5 \times 4 = 120\)가지<br><br>
+                    이 중 지원이가 가운데인 경우는 대칭성에 의해<br>
+                    \(\dfrac{120}{3} = 40\)가지<br><br>
+                    \(\therefore\; P = \dfrac{40}{216} = \boldsymbol{\dfrac{5}{27}}\)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- Phase 2: 외부 문제                            -->
+    <!-- ═══════════════════════════════════════════ -->
+
+    <div class="card">
+        <div class="section-title">
+            <div class="section-number">2</div>
+            <h2>외부 문제</h2>
+        </div>
+
+        <!-- 문제 7 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 7</span> 한 개의 주사위를 던지는 시행에 대하여 다음을 구하시오.</div>
+            <div class="sub-problem"><span class="num">⑴</span> 표본공간 \(S\)</div>
+            <div class="writing-area" data-h="80"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="sub-problem"><span class="num">⑵</span> 홀수의 눈이 나오는 사건 \(A\)</div>
+            <div class="writing-area" data-h="80"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="sub-problem"><span class="num">⑶</span> 3의 배수의 눈이 나오는 사건 \(B\)</div>
+            <div class="writing-area" data-h="80"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 풀이 보기</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    ⑴ \(S = \{1, 2, 3, 4, 5, 6\}\)<br>
+                    ⑵ \(A = \{1, 3, 5\}\)<br>
+                    ⑶ \(B = \{3, 6\}\)
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 문제 8 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 8</span> 한 개의 주사위를 던지는 시행에서 4보다 큰 눈이 나오는 사건을 \(A\), 6의 약수의 눈이 나오는 사건을 \(B\)라 할 때, 다음을 구하시오.</div>
+            <div class="sub-problem"><span class="num">⑴</span> \(A \cup B\)</div>
+            <div class="sub-problem"><span class="num">⑵</span> \(A \cap B\)</div>
+            <div class="sub-problem"><span class="num">⑶</span> \(A^C\)</div>
+            <div class="sub-problem"><span class="num">⑷</span> \(A^C \cup B^C\)</div>
+
+            <!-- ★ 인터랙티브 ② — 벤 다이어그램 집합 연산 시각화 -->
+            <div class="venn-drag-game" id="vennDragGame">
+                <h3><span class="badge">탐구</span> 벤 다이어그램 집합 연산 시각화</h3>
+                <div class="desc">원소 카드를 알맞은 영역으로 드래그하여 배치해 보세요.</div>
+                <div class="venn-sets-info">
+                    \(S = \{1, 2, 3, 4, 5, 6\}\)<br>
+                    \(A = \{5, 6\}\) (4보다 큰 눈) &nbsp;&nbsp; \(B = \{1, 2, 3, 6\}\) (6의 약수)
+                </div>
+                <div class="venn-cards-row" id="vennCardsRow"></div>
+                <div class="venn-diagram-wrap" id="vennDiagramWrap">
+                    <svg id="vennSvg" viewBox="0 0 380 240" class="venn-diagram-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+                </div>
+                <div class="venn-confirm-row">
+                    <button class="btn-check" id="vennCheckBtn" disabled>확인</button>
+                    <button class="btn-vreset" id="vennResetBtn">다시 하기</button>
+                </div>
+                <div class="venn-ops-section" id="vennOpsSection">
+                    <div class="venn-ops-btns" id="vennOpsBtns">
+                        <button data-op="union">\(A \cup B\)</button>
+                        <button data-op="inter">\(A \cap B\)</button>
+                        <button data-op="compA">\(A^C\)</button>
+                        <button data-op="compAuB">\(A^C \cup B^C\)</button>
+                    </div>
+                    <div class="venn-ops-result" id="vennOpsResult">위의 버튼을 눌러 집합 연산 결과를 확인해 보세요.</div>
+                </div>
+            </div>
+
+            <div class="writing-area" data-h="180"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 풀이 보기</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    \(A = \{5, 6\}\), \(B = \{1, 2, 3, 6\}\)<br><br>
+                    ⑴ \(A \cup B = \{1, 2, 3, 5, 6\}\)<br>
+                    ⑵ \(A \cap B = \{6\}\)<br>
+                    ⑶ \(A^C = \{1, 2, 3, 4\}\)<br>
+                    ⑷ \(A^C \cup B^C = \{1, 2, 3, 4, 5\}\)
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 문제 9 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 9</span> 상자 속에 흰 공 5개와 검은 공 3개가 들어 있다. 이 상자에서 임의로 3개의 공을 동시에 꺼낼 때, 다음을 구하시오.</div>
+            <div class="sub-problem"><span class="num">⑴</span> 흰 공을 3개 꺼낼 확률</div>
+            <div class="writing-area" data-h="140"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="sub-problem"><span class="num">⑵</span> 흰 공을 1개, 검은 공을 2개 꺼낼 확률</div>
+            <div class="writing-area" data-h="140"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 풀이 보기</div>
+                <div class="answer-content">
+                    <div class="ans-label">풀이</div>
+                    전체: \({}_{8}\mathrm{C}_{3} = 56\)<br><br>
+                    ⑴ 흰 공 3개: \(\dfrac{{}_{5}\mathrm{C}_{3}}{{}_{8}\mathrm{C}_{3}} = \dfrac{10}{56} = \boldsymbol{\dfrac{5}{28}}\)<br><br>
+                    ⑵ 흰 1 + 검 2: \(\dfrac{{}_{5}\mathrm{C}_{1} \times {}_{3}\mathrm{C}_{2}}{{}_{8}\mathrm{C}_{3}} = \dfrac{5 \times 3}{56} = \boldsymbol{\dfrac{15}{56}}\)
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 문제 10 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 10</span> 서로 다른 두 개의 주사위를 동시에 던질 때, 다음을 구하시오.</div>
+            <div class="sub-problem"><span class="num">⑴</span> 나오는 두 눈의 수가 서로 같을 확률</div>
+            <div class="writing-area" data-h="120"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="sub-problem"><span class="num">⑵</span> 나오는 두 눈의 수의 합이 12일 확률</div>
+            <div class="writing-area" data-h="120"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="sub-problem"><span class="num">⑶</span> 나오는 두 눈의 수의 곱이 0일 확률</div>
+            <div class="writing-area" data-h="120"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 풀이 보기</div>
+                <div class="answer-content">
+                    <div class="ans-label">풀이</div>
+                    전체: \(6 \times 6 = 36\)<br><br>
+                    ⑴ 같은 눈: \((1,1),(2,2),\ldots,(6,6)\) &rarr; 6가지<br>
+                    \(P = \dfrac{6}{36} = \boldsymbol{\dfrac{1}{6}}\)<br><br>
+                    ⑵ 합이 12: \((6,6)\)뿐 &rarr; 1가지<br>
+                    \(P = \boldsymbol{\dfrac{1}{36}}\)<br><br>
+                    ⑶ 곱이 0: 주사위 눈은 1~6이므로 0이 나올 수 없다.<br>
+                    \(P = \boldsymbol{0}\) (불가능 사건)
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 문제 11 -->
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 11</span> 표본공간 \(S\)의 세 사건 \(A, B, C\)에 대하여 \(A \cap C = \varnothing\), \(B \subset C\)가 성립할 때, 보기에서 옳은 것을 있는 대로 고르시오.</div>
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px 16px; margin:10px 0; line-height:1.8; font-size:14px;">
+                ㄱ. \(A \cup C = S\)<br>
+                ㄴ. \(A\)와 \(B\)는 서로 배반사건이다.<br>
+                ㄷ. \(A\)는 \(C\)의 여사건이다.
+            </div>
+            <div class="writing-area" data-h="220"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 풀이 보기</div>
+                <div class="answer-content">
+                    <div class="ans-label">풀이</div>
+                    <b>답: ㄴ</b><br><br>
+                    ㄱ. \(A \cap C = \varnothing\)이지만 \(A \cup C = S\)가 반드시 성립하지는 않는다.<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;예) \(S=\{1,2,3\}, A=\{1\}, C=\{2\}\)이면 \(A \cup C = \{1,2\} \neq S\)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&rarr; <b>거짓</b><br><br>
+                    ㄴ. \(B \subset C\)이고 \(A \cap C = \varnothing\)이므로<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;\(A \cap B \subset A \cap C = \varnothing\) &rarr; \(A \cap B = \varnothing\)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;따라서 \(A\)와 \(B\)는 서로 배반사건이다. &rarr; <b>참</b><br><br>
+                    ㄷ. \(A\)가 \(C\)의 여사건이려면 \(A \cap C = \varnothing\)이고 \(A \cup C = S\)이어야 하는데,<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;\(A \cup C = S\)는 보장되지 않는다. &rarr; <b>거짓</b>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">확률과 통계 &middot; II. 확률 &middot; 1. 확률의 뜻과 활용</div>
+</div><!-- /.container -->
+
+<button class="global-answer-btn" id="globalAnswerBtn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    정답 전체 보기
+</button>
+
+<div class="records-overlay" id="recordsOverlay">
+    <div class="records-panel">
+        <div class="records-header">
+            <h3>📋 저장 기록</h3>
+            <button class="close-btn" id="btnCloseRecords">&times;</button>
+        </div>
+        <div class="records-list" id="recordsList"></div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 인터랙티브 ① — 원 위의 이등변삼각형 탐색기 스크립트    -->
+<!-- ═══════════════════════════════════════════════════ -->
+<script>
+(function(){
+    const R = 110, CX = 150, CY = 150;
+    const svg = document.getElementById('triSvg');
+    const history = document.getElementById('triHistory');
+    const guide = document.getElementById('triGuide');
+    const allContainer = document.getElementById('triAllContainer');
+    const allGrid = document.getElementById('triAllGrid');
+    const allResult = document.getElementById('triAllResult');
+
+    // 6 points at regular hexagon vertices (top = point 1)
+    const pts = [];
+    for(let k = 0; k < 6; k++){
+        const angle = (Math.PI / 2) - (Math.PI / 3) * k;
+        pts.push({ x: CX + R * Math.cos(angle), y: CY - R * Math.sin(angle), idx: k+1 });
+    }
+
+    let selected = [];
+    let triangleCount = 0;
+    let drawnTriangles = []; // track which combos have been drawn
+
+    // Side length classification
+    function arcGap(a, b){
+        const d = Math.abs(a - b);
+        return Math.min(d, 6 - d);
+    }
+    function sideLen(gap){
+        if(gap === 1) return 1;      // short (r)
+        if(gap === 2) return 1.732;  // medium (r*sqrt3)
+        return 2;                     // long (2r, diameter)
+    }
+    function sideClass(len){
+        if(Math.abs(len - 1) < 0.01) return 'short';
+        if(Math.abs(len - 1.732) < 0.1) return 'medium';
+        return 'long';
+    }
+    function sideLabel(len){
+        if(Math.abs(len - 1) < 0.01) return '1';
+        if(Math.abs(len - 1.732) < 0.1) return '\u221A3';
+        return '2';
+    }
+
+    function drawBase(){
+        svg.innerHTML = '';
+        // Circle
+        const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        circle.setAttribute('cx', CX); circle.setAttribute('cy', CY); circle.setAttribute('r', R);
+        circle.setAttribute('fill','none'); circle.setAttribute('stroke','#cbd5e1'); circle.setAttribute('stroke-width','1.5');
+        svg.appendChild(circle);
+
+        // Points
+        pts.forEach((p, i) => {
+            const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+            g.style.cursor = 'pointer';
+
+            const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+            c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); c.setAttribute('r', 15);
+            c.setAttribute('fill', selected.includes(i) ? '#2563eb' : '#e2e8f0');
+            c.setAttribute('stroke', selected.includes(i) ? '#1d4ed8' : '#94a3b8');
+            c.setAttribute('stroke-width', '2');
+            c.classList.add('pt-circle');
+            if(selected.includes(i)) c.classList.add('selected');
+
+            const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+            t.setAttribute('x', p.x); t.setAttribute('y', p.y + 5);
+            t.setAttribute('text-anchor','middle');
+            t.setAttribute('fill', selected.includes(i) ? '#fff' : '#334155');
+            t.classList.add('pt-label');
+            t.textContent = '\u2460\u2461\u2462\u2463\u2464\u2465'[i];
+
+            g.appendChild(c); g.appendChild(t);
+            g.addEventListener('pointerdown', function(e){
+                e.preventDefault();
+                togglePoint(i);
+            });
+            svg.appendChild(g);
+        });
+    }
+
+    function togglePoint(idx){
+        if(selected.length >= 3 && !selected.includes(idx)) return;
+        if(selected.includes(idx)){
+            selected = selected.filter(x => x !== idx);
+        } else {
+            selected.push(idx);
+        }
+        drawBase();
+        if(selected.length === 3) drawTriangle();
+    }
+
+    function drawTriangle(){
+        const [a,b,c] = selected.map(i => pts[i]);
+        const idxs = selected.map(i => i+1).sort((x,y)=>x-y);
+
+        // Edges with classification
+        const pairs = [[selected[0],selected[1]],[selected[1],selected[2]],[selected[0],selected[2]]];
+        const edges = pairs.map(([i,j]) => {
+            const gap = arcGap(i+1, j+1);
+            const len = sideLen(gap);
+            return { p1: pts[i], p2: pts[j], len, cls: sideClass(len), label: sideLabel(len) };
+        });
+
+        // Draw edges
+        edges.forEach(e => {
+            const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+            line.setAttribute('x1', e.p1.x); line.setAttribute('y1', e.p1.y);
+            line.setAttribute('x2', e.p2.x); line.setAttribute('y2', e.p2.y);
+            line.setAttribute('stroke-width','3'); line.setAttribute('stroke-linecap','round');
+            line.classList.add('tri-edge-' + e.cls);
+            svg.appendChild(line);
+
+            // Edge length label
+            const mx = (e.p1.x + e.p2.x)/2, my = (e.p1.y + e.p2.y)/2;
+            // offset label slightly outward from center
+            const dx = mx - CX, dy = my - CY;
+            const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+            const ox = dx/dist * 14, oy = dy/dist * 14;
+            const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+            txt.setAttribute('x', mx + ox); txt.setAttribute('y', my + oy + 4);
+            txt.setAttribute('text-anchor','middle');
+            txt.classList.add('edge-label', 'tri-edge-label-' + e.cls);
+            txt.textContent = e.label;
+            svg.appendChild(txt);
+        });
+
+        // Fill triangle
+        const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+        poly.setAttribute('points', `${a.x},${a.y} ${b.x},${b.y} ${c.x},${c.y}`);
+        poly.setAttribute('fill','rgba(37,99,235,0.06)'); poly.setAttribute('stroke','none');
+        svg.insertBefore(poly, svg.children[1]);
+
+        // Save to history
+        const key = idxs.join(',');
+        if(!drawnTriangles.includes(key)){
+            drawnTriangles.push(key);
+            triangleCount++;
+            addHistoryItem(idxs, edges);
+        }
+
+        if(triangleCount >= 3) guide.style.display = 'block';
+    }
+
+    function addHistoryItem(idxs, edges){
+        if(history.children.length >= 5) history.removeChild(history.firstChild);
+        const mini = document.createElement('div');
+        mini.className = 'tri-history-item';
+        const msvg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+        msvg.setAttribute('viewBox','0 0 300 300');
+        msvg.style.width = '100%'; msvg.style.height = '100%';
+        // mini triangle
+        const idxArr = idxs.map(i => i-1);
+        const mp = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+        mp.setAttribute('points', idxArr.map(i => `${pts[i].x},${pts[i].y}`).join(' '));
+        mp.setAttribute('fill','rgba(37,99,235,0.1)'); mp.setAttribute('stroke','#2563eb'); mp.setAttribute('stroke-width','4');
+        msvg.appendChild(mp);
+        // mini circle
+        const mc = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        mc.setAttribute('cx',CX); mc.setAttribute('cy',CY); mc.setAttribute('r',R);
+        mc.setAttribute('fill','none'); mc.setAttribute('stroke','#e2e8f0'); mc.setAttribute('stroke-width','2');
+        msvg.insertBefore(mc, msvg.firstChild);
+        mini.appendChild(msvg);
+        history.appendChild(mini);
+    }
+
+    document.getElementById('triResetBtn').addEventListener('click', function(){
+        selected = [];
+        drawBase();
+    });
+
+    // Show all 20 triangles
+    document.getElementById('triShowAllBtn').addEventListener('click', function(){
+        allContainer.style.display = 'block';
+        this.disabled = true; this.style.opacity = '0.5';
+        allGrid.innerHTML = '';
+        // Generate all C(6,3) = 20
+        const combos = [];
+        for(let i=1;i<=6;i++) for(let j=i+1;j<=6;j++) for(let k=j+1;k<=6;k++) combos.push([i,j,k]);
+
+        const isoscelesList = [
+            [1,2,3],[2,3,4],[3,4,5],[4,5,6],[5,6,1],[6,1,2], // arc gaps (1,1,4)
+            [1,3,5],[2,4,6] // equilateral
+        ];
+        const isoKeys = isoscelesList.map(a => a.sort((x,y)=>x-y).join(','));
+
+        let isoCount = 0;
+        combos.forEach(combo => {
+            const key = combo.join(',');
+            const isIso = isoKeys.includes(key);
+            if(isIso) isoCount++;
+
+            const item = document.createElement('div');
+            item.className = 'tri-all-item' + (isIso ? ' isosceles' : '');
+
+            const s = document.createElementNS('http://www.w3.org/2000/svg','svg');
+            s.setAttribute('viewBox','0 0 300 300'); s.style.width='100%'; s.style.height='100%';
+            const idxArr = combo.map(i => i-1);
+
+            // edges with color
+            const prs = [[idxArr[0],idxArr[1]],[idxArr[1],idxArr[2]],[idxArr[0],idxArr[2]]];
+            prs.forEach(([a,b]) => {
+                const gap = arcGap(a+1, b+1);
+                const cls = sideClass(sideLen(gap));
+                const ln = document.createElementNS('http://www.w3.org/2000/svg','line');
+                ln.setAttribute('x1',pts[a].x); ln.setAttribute('y1',pts[a].y);
+                ln.setAttribute('x2',pts[b].x); ln.setAttribute('y2',pts[b].y);
+                ln.setAttribute('stroke-width','4'); ln.setAttribute('stroke-linecap','round');
+                ln.classList.add('tri-edge-'+cls);
+                s.appendChild(ln);
+            });
+
+            // fill
+            const p = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+            p.setAttribute('points', idxArr.map(i => `${pts[i].x},${pts[i].y}`).join(' '));
+            p.setAttribute('fill', isIso ? 'rgba(37,99,235,0.1)' : 'rgba(100,116,139,0.05)');
+            p.setAttribute('stroke','none');
+            s.insertBefore(p, s.firstChild);
+
+            // circle bg
+            const crc = document.createElementNS('http://www.w3.org/2000/svg','circle');
+            crc.setAttribute('cx',CX); crc.setAttribute('cy',CY); crc.setAttribute('r',R);
+            crc.setAttribute('fill','none'); crc.setAttribute('stroke','#e2e8f0'); crc.setAttribute('stroke-width','2');
+            s.insertBefore(crc, s.firstChild);
+
+            item.appendChild(s);
+
+            const lbl = document.createElement('div');
+            lbl.className = 'tri-all-label';
+            lbl.textContent = combo.map(x => '\u2460\u2461\u2462\u2463\u2464\u2465'[x-1]).join('');
+            item.appendChild(lbl);
+            allGrid.appendChild(item);
+        });
+
+        allResult.innerHTML = '';
+        if(typeof katex !== 'undefined'){
+            katex.render('\\dfrac{8}{20} = \\dfrac{2}{5}', allResult);
+        } else {
+            allResult.textContent = '8/20 = 2/5';
+        }
+    });
+
+    drawBase();
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- 인터랙티브 ② — 벤 다이어그램 드래그 & 집합 연산       -->
+<!-- ═══════════════════════════════════════════════════ -->
+<script>
+(function(){
+    // --- Constants ---
+    const A_SET = new Set([5,6]);
+    const B_SET = new Set([1,2,3,6]);
+    const ALL = [1,2,3,4,5,6];
+
+    // Correct placement
+    const CORRECT = { 5:'onlyA', 6:'inter', 1:'onlyB', 2:'onlyB', 3:'onlyB', 4:'outside' };
+
+    // SVG geometry (viewBox 0 0 380 240)
+    const cA = {cx:145, cy:120, r:80};
+    const cB = {cx:235, cy:120, r:80};
+    const sRect = {x:30, y:20, w:320, h:200};
+
+    // Region centers for drop targets and placed cards
+    const regionCenters = {
+        onlyA:  {x:110, y:120},
+        inter:  {x:190, y:120},
+        onlyB:  {x:270, y:120},
+        outside:{x:60,  y:40}
+    };
+
+    // --- Build SVG ---
+    const svg = document.getElementById('vennSvg');
+    const wrap = document.getElementById('vennDiagramWrap');
+
+    function buildVennSVG(){
+        svg.innerHTML = '';
+        // S rectangle
+        const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+        rect.setAttribute('x',sRect.x); rect.setAttribute('y',sRect.y);
+        rect.setAttribute('width',sRect.w); rect.setAttribute('height',sRect.h);
+        rect.setAttribute('rx','10'); rect.setAttribute('fill','#f1f5f9');
+        rect.setAttribute('stroke','#94a3b8'); rect.setAttribute('stroke-width','1.5');
+        rect.dataset.region = 'outside';
+        rect.classList.add('venn-region');
+        svg.appendChild(rect);
+
+        // S label
+        addText(sRect.x+8, sRect.y+16, 'S', 'venn-circle-label');
+
+        // clipPaths for regions
+        const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+
+        // onlyA: A minus B
+        const clipOnlyA = document.createElementNS('http://www.w3.org/2000/svg','clipPath');
+        clipOnlyA.id = 'clipOnlyA';
+        const cOnlyA = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        cOnlyA.setAttribute('cx',cA.cx); cOnlyA.setAttribute('cy',cA.cy); cOnlyA.setAttribute('r',cA.r);
+        clipOnlyA.appendChild(cOnlyA);
+        defs.appendChild(clipOnlyA);
+
+        // onlyB: B minus A
+        const clipOnlyB = document.createElementNS('http://www.w3.org/2000/svg','clipPath');
+        clipOnlyB.id = 'clipOnlyB';
+        const cOnlyB = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        cOnlyB.setAttribute('cx',cB.cx); cOnlyB.setAttribute('cy',cB.cy); cOnlyB.setAttribute('r',cB.r);
+        clipOnlyB.appendChild(cOnlyB);
+        defs.appendChild(clipOnlyB);
+
+        svg.appendChild(defs);
+
+        // Circle A
+        const circleA = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        circleA.setAttribute('cx',cA.cx); circleA.setAttribute('cy',cA.cy); circleA.setAttribute('r',cA.r);
+        circleA.setAttribute('fill','rgba(59,130,246,0.08)');
+        circleA.setAttribute('stroke','#3b82f6'); circleA.setAttribute('stroke-width','2');
+        circleA.dataset.region = 'circleA';
+        circleA.classList.add('venn-region');
+        svg.appendChild(circleA);
+
+        // Circle B
+        const circleB = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        circleB.setAttribute('cx',cB.cx); circleB.setAttribute('cy',cB.cy); circleB.setAttribute('r',cB.r);
+        circleB.setAttribute('fill','rgba(34,197,94,0.08)');
+        circleB.setAttribute('stroke','#22c55e'); circleB.setAttribute('stroke-width','2');
+        circleB.dataset.region = 'circleB';
+        circleB.classList.add('venn-region');
+        svg.appendChild(circleB);
+
+        // Labels
+        addText(cA.cx - 40, cA.cy - cA.r - 8, 'A', 'venn-circle-label');
+        addText(cB.cx + 40, cB.cy - cB.r - 8, 'B', 'venn-circle-label');
+
+        // Region labels (small text)
+        addText(regionCenters.onlyA.x, regionCenters.onlyA.y + 40, 'A\uB9CC', 'venn-region-label');
+        addText(regionCenters.inter.x, regionCenters.inter.y + 40, 'A\u2229B', 'venn-region-label');
+        addText(regionCenters.onlyB.x, regionCenters.onlyB.y + 40, 'B\uB9CC', 'venn-region-label');
+        addText(regionCenters.outside.x + 20, regionCenters.outside.y, '\uBC14\uAE65', 'venn-region-label');
+    }
+
+    function addText(x, y, text, cls){
+        const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+        t.setAttribute('x',x); t.setAttribute('y',y);
+        t.setAttribute('text-anchor','middle');
+        t.classList.add(cls);
+        t.textContent = text;
+        svg.appendChild(t);
+    }
+
+    buildVennSVG();
+
+    // --- Build element cards ---
+    const cardsRow = document.getElementById('vennCardsRow');
+    const checkBtn = document.getElementById('vennCheckBtn');
+    const resetBtn = document.getElementById('vennResetBtn');
+    const opsSection = document.getElementById('vennOpsSection');
+    const opsBtns = document.getElementById('vennOpsBtns');
+    const opsResult = document.getElementById('vennOpsResult');
+
+    let cards = {};
+    let placements = {}; // {element: regionName}
+    let dragState = null;
+    let confirmed = false;
+
+    function createCards(){
+        cardsRow.innerHTML = '';
+        cards = {};
+        placements = {};
+        confirmed = false;
+        checkBtn.disabled = true;
+        opsSection.style.display = 'none';
+        // Remove any placed card DOM elements from wrap
+        wrap.querySelectorAll('.venn-card.placed').forEach(c => c.remove());
+
+        ALL.forEach(num => {
+            const card = document.createElement('div');
+            card.className = 'venn-card';
+            card.textContent = num;
+            card.dataset.num = num;
+            card.addEventListener('pointerdown', onPointerDown);
+            cardsRow.appendChild(card);
+            cards[num] = card;
+        });
+    }
+
+    function hitTestRegion(clientX, clientY){
+        const svgRect = svg.getBoundingClientRect();
+        // Convert client coords to SVG viewBox coords
+        const scaleX = 380 / svgRect.width;
+        const scaleY = 240 / svgRect.height;
+        const sx = (clientX - svgRect.left) * scaleX;
+        const sy = (clientY - svgRect.top) * scaleY;
+
+        // Check which region the point falls in
+        const inA = Math.pow(sx - cA.cx, 2) + Math.pow(sy - cA.cy, 2) <= Math.pow(cA.r, 2);
+        const inB = Math.pow(sx - cB.cx, 2) + Math.pow(sy - cB.cy, 2) <= Math.pow(cB.r, 2);
+        const inS = sx >= sRect.x && sx <= sRect.x + sRect.w && sy >= sRect.y && sy <= sRect.y + sRect.h;
+
+        if(inA && inB) return 'inter';
+        if(inA && !inB) return 'onlyA';
+        if(!inA && inB) return 'onlyB';
+        if(inS) return 'outside';
+        return null;
+    }
+
+    function onPointerDown(e){
+        if(confirmed) return;
+        e.preventDefault();
+        const card = e.currentTarget;
+        const num = parseInt(card.dataset.num);
+
+        // If card is placed, pick it up
+        if(card.classList.contains('placed')){
+            delete placements[num];
+            card.classList.remove('placed','correct');
+            card.style.position = '';
+            card.style.left = '';
+            card.style.top = '';
+            cardsRow.appendChild(card);
+        }
+
+        card.classList.add('dragging');
+        card.setPointerCapture(e.pointerId);
+
+        const startRect = card.getBoundingClientRect();
+        const offsetX = e.clientX - startRect.left - startRect.width/2;
+        const offsetY = e.clientY - startRect.top - startRect.height/2;
+
+        // Move to body for free positioning
+        card.style.position = 'fixed';
+        card.style.zIndex = '1000';
+        card.style.left = (e.clientX - startRect.width/2) + 'px';
+        card.style.top = (e.clientY - startRect.height/2) + 'px';
+        document.body.appendChild(card);
+
+        function onMove(ev){
+            ev.preventDefault();
+            card.style.left = (ev.clientX - 22) + 'px';
+            card.style.top = (ev.clientY - 22) + 'px';
+        }
+
+        function onUp(ev){
+            ev.preventDefault();
+            card.removeEventListener('pointermove', onMove);
+            card.removeEventListener('pointerup', onUp);
+            card.classList.remove('dragging');
+            card.style.zIndex = '';
+
+            const region = hitTestRegion(ev.clientX, ev.clientY);
+            if(region){
+                // Place card in the region
+                placements[num] = region;
+                card.classList.add('placed');
+
+                // Position card relative to venn diagram wrapper
+                const wrapRect = wrap.getBoundingClientRect();
+                const svgRect = svg.getBoundingClientRect();
+                const scaleX = svgRect.width / 380;
+                const scaleY = svgRect.height / 240;
+                const rc = regionCenters[region];
+
+                // Offset within region for multiple cards
+                const cardsInRegion = Object.entries(placements).filter(([k,v]) => v === region);
+                const idx = cardsInRegion.findIndex(([k]) => parseInt(k) === num);
+                const offsets = [[-16,-16],[16,-16],[0,16],[-16,16],[16,16],[0,-16]];
+                const off = offsets[idx % offsets.length] || [0,0];
+
+                const px = (rc.x + off[0]) * scaleX + svgRect.left - wrapRect.left - 22;
+                const py = (rc.y + off[1]) * scaleY + svgRect.top - wrapRect.top - 22;
+
+                card.style.position = 'absolute';
+                card.style.left = px + 'px';
+                card.style.top = py + 'px';
+                wrap.appendChild(card);
+            } else {
+                // Return to cards row
+                card.style.position = '';
+                card.style.left = '';
+                card.style.top = '';
+                delete placements[num];
+                card.classList.remove('placed');
+                cardsRow.appendChild(card);
+            }
+
+            // Check if all placed
+            checkBtn.disabled = Object.keys(placements).length < 6;
+        }
+
+        card.addEventListener('pointermove', onMove);
+        card.addEventListener('pointerup', onUp);
+    }
+
+    // Reposition all placed cards (for resize etc)
+    function repositionPlaced(){
+        const wrapRect = wrap.getBoundingClientRect();
+        const svgRect = svg.getBoundingClientRect();
+        const scaleX = svgRect.width / 380;
+        const scaleY = svgRect.height / 240;
+
+        Object.entries(placements).forEach(([num, region]) => {
+            const card = cards[parseInt(num)];
+            if(!card || !card.classList.contains('placed')) return;
+            const rc = regionCenters[region];
+            const cardsInRegion = Object.entries(placements).filter(([k,v]) => v === region);
+            const idx = cardsInRegion.findIndex(([k]) => k === num);
+            const offsets = [[-16,-16],[16,-16],[0,16],[-16,16],[16,16],[0,-16]];
+            const off = offsets[idx % offsets.length] || [0,0];
+            const px = (rc.x + off[0]) * scaleX + svgRect.left - wrapRect.left - 22;
+            const py = (rc.y + off[1]) * scaleY + svgRect.top - wrapRect.top - 22;
+            card.style.left = px + 'px';
+            card.style.top = py + 'px';
+        });
+    }
+
+    // Check button
+    checkBtn.addEventListener('click', function(){
+        let allCorrect = true;
+        ALL.forEach(num => {
+            const card = cards[num];
+            const placed = placements[num];
+            const correct = CORRECT[num];
+            if(placed === correct){
+                card.classList.add('correct');
+            } else {
+                allCorrect = false;
+                // Slide wrong card back
+                card.classList.remove('placed','correct');
+                card.style.position = '';
+                card.style.left = '';
+                card.style.top = '';
+                delete placements[num];
+                cardsRow.appendChild(card);
+            }
+        });
+
+        if(allCorrect){
+            confirmed = true;
+            checkBtn.disabled = true;
+            checkBtn.textContent = '\uD655\uC778 \uC644\uB8CC';
+            opsSection.style.display = 'block';
+            // Re-render KaTeX in ops buttons
+            if(typeof renderMathInElement === 'function'){
+                renderMathInElement(opsBtns, {delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}]});
+            }
+        } else {
+            checkBtn.disabled = Object.keys(placements).length < 6;
+        }
+    });
+
+    // Reset
+    resetBtn.addEventListener('click', function(){
+        createCards();
+    });
+
+    // Set operation buttons
+    const opData = {
+        union:  { regions: ['onlyA','inter','onlyB'], elements: [1,2,3,5,6], tex: 'A \\cup B = \\{1, 2, 3, 5, 6\\}' },
+        inter:  { regions: ['inter'], elements: [6], tex: 'A \\cap B = \\{6\\}' },
+        compA:  { regions: ['onlyB','outside'], elements: [1,2,3,4], tex: 'A^C = \\{1, 2, 3, 4\\}' },
+        compAuB:{ regions: ['onlyA','onlyB','outside'], elements: [1,2,3,4,5], tex: 'A^C \\cup B^C = \\{1, 2, 3, 4, 5\\}' }
+    };
+
+    opsBtns.addEventListener('click', function(e){
+        const btn = e.target.closest('button');
+        if(!btn) return;
+        const op = btn.dataset.op;
+        if(!op || !opData[op]) return;
+
+        // Toggle active
+        opsBtns.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const d = opData[op];
+        // Highlight regions in SVG
+        const allRegions = ['onlyA','inter','onlyB','outside'];
+        // We need to dim/highlight the card elements
+        ALL.forEach(num => {
+            const card = cards[num];
+            if(d.elements.includes(num)){
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1.1)';
+            } else {
+                card.style.opacity = '0.3';
+                card.style.transform = 'scale(0.9)';
+            }
+        });
+
+        // Render result
+        opsResult.innerHTML = '';
+        if(typeof katex !== 'undefined'){
+            katex.render(d.tex, opsResult, {throwOnError:false});
+        } else {
+            opsResult.textContent = d.tex;
+        }
+    });
+
+    // Init
+    createCards();
+
+    // Handle resize
+    window.addEventListener('resize', function(){
+        if(confirmed) repositionPlaced();
+    });
+})();
+</script>
+
+<!-- KaTeX auto-render -->
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    function tryRender(){
+        if(typeof renderMathInElement === 'function'){
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '$$', right: '$$', display: true}
+                ],
+                throwOnError: false
+            });
+        } else {
+            setTimeout(tryRender, 100);
+        }
+    }
+    tryRender();
+});
+</script>
+
+</body>
+</html>

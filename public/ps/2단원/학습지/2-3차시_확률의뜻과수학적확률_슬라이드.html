@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>확률의 뜻과 수학적 확률 — 수업 슬라이드</title>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="https://math-class.it.kr/lib/katex/katex.min.css">
+    <link rel="stylesheet" href="https://math-class.it.kr/lib/css/slide-common.css">
+
+    <!-- ★ 학습지 인라인 게임 CSS 복사 -->
+    <style>
+    /* ── ① 벤 다이어그램 시각화 ── */
+    .venn-container { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .venn-container h3 { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .venn-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .venn-btns button { padding: 6px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .venn-btns button.active { border-color: #2563eb; background: #eff6ff; color: #2563eb; }
+    .venn-btns button:active { transform: scale(0.97); }
+    .venn-svg-wrap { display: flex; justify-content: center; margin-bottom: 8px; }
+    .venn-svg-wrap svg { max-width: 100%; height: auto; }
+    .venn-result { min-height: 36px; padding: 8px 12px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; line-height: 1.6; text-align: center; }
+
+    /* ── ② 정십이면체 탐구 ── */
+    .dodeca-game { background: #f0fdf4; border: 1.5px solid #22c55e; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .dodeca-game h3 { font-size: 15px; font-weight: 700; color: #16a34a; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .dodeca-desc { font-size: 13px; color: #64748b; margin-bottom: 10px; }
+    .dodeca-step-label { font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
+    .dodeca-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-width: 280px; margin: 0 auto 10px; }
+    .dodeca-face { width: 100%; aspect-ratio: 1; border: 2px solid #d0d0d0; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; background: #fff; color: #334155; cursor: pointer; transition: all 0.2s; user-select: none; -webkit-user-select: none; }
+    .dodeca-face.selected-a { background: #dbeafe; border-color: #3b82f6; color: #1d4ed8; }
+    .dodeca-face.selected-b { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
+    .dodeca-face.selected-ab { background: #d1fae5; border-color: #10b981; color: #065f46; }
+    .dodeca-face.selected-bc { background: #fecaca; border-color: #ef4444; color: #991b1b; }
+    .dodeca-face.wrong { border-color: #ef4444; animation: dodeca-shake 0.4s; }
+    @keyframes dodeca-shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+    .dodeca-controls { display: flex; justify-content: center; gap: 8px; margin-top: 10px; }
+    .dodeca-controls button { padding: 8px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .dodeca-controls button:active { transform: scale(0.97); }
+    .dodeca-check { background: #2563eb; color: #fff; }
+    .dodeca-next { background: #22c55e; color: #fff; }
+    .dodeca-reset { background: #64748b; color: #fff; }
+    .dodeca-result { text-align: center; font-size: 14px; min-height: 24px; margin-top: 8px; font-weight: 600; }
+    .dodeca-legend { display: flex; justify-content: center; gap: 12px; margin-top: 8px; font-size: 12px; color: #64748b; }
+    .dodeca-legend span { display: flex; align-items: center; gap: 4px; }
+    .dodeca-legend .dot { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
+
+    /* ── ③ 제비뽑기 시뮬레이션 ── */
+    .lottery-sim { background: #eff6ff; border: 1.5px solid #3b82f6; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .lottery-sim h3 { font-size: 15px; font-weight: 700; color: #1d4ed8; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .lottery-desc { font-size: 13px; color: #64748b; margin-bottom: 10px; }
+    .lottery-predict { margin-bottom: 12px; }
+    .lottery-predict textarea { width: 100%; height: 48px; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 13px; font-family: inherit; resize: none; box-sizing: border-box; }
+    .lottery-predict textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); outline: none; }
+    .lottery-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .lottery-btns button { padding: 8px 16px; border: 1.5px solid #cbd5e1; border-radius: 8px; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .lottery-btns button:disabled { opacity: 0.4; cursor: default; }
+    .lottery-btns button:not(:disabled):active { transform: scale(0.97); }
+    .lottery-btns .btn-reset { border-color: #ef4444; color: #ef4444; }
+    .lottery-chart { margin-bottom: 8px; }
+    .lottery-bar-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .lottery-bar-label { width: 36px; text-align: right; font-size: 13px; font-weight: 600; color: #334155; }
+    .lottery-bar-track { flex: 1; height: 22px; background: #e2e8f0; border-radius: 6px; position: relative; overflow: hidden; }
+    .lottery-bar-fill { height: 100%; background: #3b82f6; border-radius: 6px; transition: width 0.3s; min-width: 0; }
+    .lottery-bar-val { width: 50px; font-size: 12px; color: #64748b; text-align: left; }
+    .lottery-ref-line { position: absolute; left: 20%; top: 0; bottom: 0; width: 2px; background: #ef4444; z-index: 1; }
+    .lottery-total { text-align: center; font-size: 14px; color: #1e293b; font-weight: 600; margin-top: 6px; }
+    .lottery-reflect { font-size: 13px; color: #64748b; text-align: center; margin-top: 8px; font-style: italic; }
+
+    /* ── ④ 주사위 격자 ── */
+    .dice-grid-game { background: #fefce8; border: 1.5px solid #eab308; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .dice-grid-game h3 { font-size: 15px; font-weight: 700; color: #854d0e; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .dice-desc { font-size: 13px; color: #64748b; margin-bottom: 10px; }
+    .dice-cond-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .dice-cond-btns button { padding: 6px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .dice-cond-btns button.active { border-color: #eab308; background: #fef9c3; color: #854d0e; }
+    .dice-cond-btns button:active { transform: scale(0.97); }
+    .dice-table-wrap { overflow-x: auto; margin-bottom: 10px; }
+    .dice-table { border-collapse: collapse; margin: 0 auto; }
+    .dice-table th, .dice-table td { width: 42px; height: 42px; text-align: center; border: 1px solid #d1d5db; font-size: 12px; font-weight: 600; transition: all 0.2s; }
+    .dice-table th { background: #f1f5f9; color: #64748b; font-size: 11px; }
+    .dice-table td { background: #fff; color: #334155; cursor: pointer; user-select: none; -webkit-user-select: none; }
+    .dice-table td.highlighted { background: #fef08a; border-color: #eab308; color: #854d0e; }
+    .dice-table td.user-selected { background: #dbeafe; border-color: #3b82f6; color: #1d4ed8; }
+    .dice-table td:active { transform: scale(0.95); }
+    .dice-result { padding: 8px 12px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; text-align: center; min-height: 36px; line-height: 1.6; }
+    </style>
+
+    <script defer src="https://math-class.it.kr/lib/katex/katex.min.js"></script>
+    <script defer src="https://math-class.it.kr/lib/katex/contrib/auto-render.min.js"></script>
+
+    <script type="module">
+        import { initFirebaseSlide } from 'https://math-class.it.kr/lib/js/firebase-slide.js';
+        initFirebaseSlide('PS_2-3차시_확률의뜻과수학적확률');
+    </script>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="header-unit">Ⅱ. 확률</div>
+        <div class="header-title">
+            <h1>1. 확률의 뜻과 활용 &mdash; 확률의 뜻과 수학적 확률</h1>
+            <div class="header-info"><span>교과서 41~44쪽</span></div>
+        </div>
+    </div>
+
+    <div class="student-info">
+        <div class="save-actions">
+            <button class="btn-save" id="btnSave">💾 저장</button>
+            <button class="btn-records" id="btnRecords">📋 기록</button>
+        </div>
+        <div class="field"><label>학년 반</label> <input type="text" placeholder="예: 1-3"></div>
+        <div class="field"><label>번호</label> <input type="text" style="width:40px;" placeholder="00"></div>
+        <div class="field"><label>이름</label> <input type="text" placeholder="이름 입력"></div>
+    </div>
+
+    <div class="achievement">
+        <strong>성취기준</strong> &nbsp; [12확통02-01] 통계적 확률과 수학적 확률의 의미를 이해한다. &nbsp; [12확통02-04] 여사건의 확률의 뜻을 알고 이를 활용할 수 있다.
+    </div>
+
+    <!-- ============ 섹션 1: 확률의 뜻 ============ -->
+    <div class="card">
+        <div class="section-title">
+            <div class="section-number">1</div>
+            <h2>확률의 뜻 (2차시)</h2>
+        </div>
+
+        <div class="inquiry-box">
+            <h3>단원 도입</h3>
+            <p>윷놀이에서 윷을 던지면 도, 개, 걸, 윷, 모 중 하나가 나오고, 축구 경기 전 동전을 던지면 앞면 또는 뒷면이 나온다. 이처럼 우연에 의해 결과가 정해지는 상황을 탐구해 보자.</p>
+        </div>
+
+        <div class="concept-box highlight">
+            <h3><span class="badge">개념</span> 시행과 사건</h3>
+            <ul>
+                <li><b>시행</b>: 같은 조건에서 반복할 수 있고, 그 결과가 우연에 의하여 정해지는 실험이나 관찰</li>
+                <li><b>표본공간(\(S\))</b>: 어떤 시행에서 일어날 수 있는 모든 결과의 집합</li>
+                <li><b>사건</b>: 표본공간의 부분집합</li>
+                <li><b>근원사건</b>: 한 개의 원소로만 이루어진 사건</li>
+            </ul>
+            <div class="tip-box">예) 주사위 한 개를 던지는 시행: \(S = \{1, 2, 3, 4, 5, 6\}\), 짝수 사건 \(A = \{2, 4, 6\}\)</div>
+        </div>
+
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 1</span> 1부터 10까지의 자연수가 하나씩 적힌 10장의 카드에서 한 장을 뽑을 때, 다음을 구하여라.</div>
+            <div class="sub-problem"><span class="num">⑴</span> 표본공간 \(S\)</div>
+            <div class="writing-area" data-h="80"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    \(S = \{1, 2, 3, 4, 5, 6, 7, 8, 9, 10\}\)
+                </div>
+            </div>
+            <div class="sub-problem"><span class="num">⑵</span> 4의 배수가 적힌 카드가 나오는 사건 \(A\)</div>
+            <div class="writing-area" data-h="80"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    \(A = \{4, 8\}\)
+                </div>
+            </div>
+        </div>
+
+        <div class="concept-box highlight">
+            <h3><span class="badge">개념</span> 합사건과 곱사건</h3>
+            <ul>
+                <li><b>합사건</b> \(A \cup B\): 사건 \(A\) 또는 사건 \(B\)가 일어나는 사건</li>
+                <li><b>곱사건</b> \(A \cap B\): 사건 \(A\)와 사건 \(B\)가 동시에 일어나는 사건</li>
+            </ul>
+        </div>
+
+        <div class="venn-container" id="vennDiagram">
+            <h3><span class="badge">탐구</span> 벤 다이어그램으로 사건 탐구하기</h3>
+            <div class="venn-btns" id="vennExBtns">
+                <button class="active" data-ex="0">예시 1: 비배반</button>
+                <button data-ex="1">예시 2: 배반</button>
+                <button data-ex="2">예시 3: 여사건</button>
+            </div>
+            <div class="venn-btns" id="vennOpBtns">
+                <button data-op="union">\(A \cup B\)</button>
+                <button data-op="inter">\(A \cap B\)</button>
+                <button data-op="none">초기화</button>
+            </div>
+            <div class="venn-svg-wrap" id="vennSvgWrap"></div>
+            <div class="venn-result" id="vennResult">예시를 선택하고 합사건/곱사건 버튼을 눌러 보세요.</div>
+        </div>
+
+        <div class="concept-box highlight">
+            <h3><span class="badge">개념</span> 배반사건과 여사건</h3>
+            <ul>
+                <li><b>배반사건</b>: \(A \cap B = \emptyset\)일 때, 두 사건 \(A\)와 \(B\)는 서로 배반사건</li>
+                <li><b>여사건</b>: 사건 \(A\)가 일어나지 않는 사건 \(A^c\). &nbsp; \(A \cap A^c = \emptyset\)</li>
+            </ul>
+            <div class="tip-box">예) \(S=\{1,2,3,4,5,6\}\)에서 \(A=\{1,2,3\}\), \(B=\{5,6\}\) &rarr; \(A \cap B = \emptyset\) (배반), \(B^c = \{1,2,3,4\}\)</div>
+        </div>
+
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 2</span> 정십이면체 주사위를 한 번 던지는 시행에서 사건 \(A\)와 \(B\)를 다음과 같이 정할 때, 아래 물음에 답하여라.</div>
+            <p style="font-size:14px; margin: 4px 0 4px 12px; color:#334155;">사건 \(A\): 12의 약수의 눈이 나오는 사건 &nbsp;&nbsp; 사건 \(B\): 3의 배수의 눈이 나오는 사건</p>
+            <div class="sub-problem"><span class="num">⑴</span> \(A \cap B\)를 구하여라.</div>
+            <div class="sub-problem"><span class="num">⑵</span> 사건 \(A\)와 사건 \(B\)는 서로 배반사건인지 판단하여라.</div>
+            <div class="sub-problem"><span class="num">⑶</span> \(B^c\)를 구하여라.</div>
+            <div class="writing-area" data-h="120"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    \(A = \{1,2,3,4,6,12\}\), \(B = \{3,6,9,12\}\)<br>
+                    ⑴ \(A \cap B = \{3, 6, 12\}\)<br>
+                    ⑵ \(A \cap B \neq \emptyset\)이므로 배반사건이 아니다.<br>
+                    ⑶ \(B^c = \{1, 2, 4, 5, 7, 8, 10, 11\}\)
+                </div>
+            </div>
+        </div>
+
+        <div class="dodeca-game" id="dodecaGame">
+            <h3><span class="badge">탐구</span> 정십이면체 배반/여사건 탐구</h3>
+            <p class="dodeca-desc">1~12의 면을 직접 탭하여 사건을 구성하고, 배반사건과 여사건을 탐구해 보세요.</p>
+            <div class="dodeca-step-label" id="dodecaStepLabel">Step 1: "12의 약수"인 면을 탭하세요 (사건 A)</div>
+            <div class="dodeca-grid" id="dodecaGrid"></div>
+            <div class="dodeca-controls">
+                <button class="dodeca-check" id="dodecaCheck">확인</button>
+                <button class="dodeca-next" id="dodecaNext" style="display:none;">다음 단계</button>
+                <button class="dodeca-reset" id="dodecaReset" style="display:none;">🔄 처음부터</button>
+            </div>
+            <div class="dodeca-result" id="dodecaResult"></div>
+            <div class="dodeca-legend" id="dodecaLegend" style="display:none;">
+                <span><span class="dot" style="background:#dbeafe;border:1px solid #3b82f6;"></span> A만</span>
+                <span><span class="dot" style="background:#fef3c7;border:1px solid #f59e0b;"></span> B만</span>
+                <span><span class="dot" style="background:#d1fae5;border:1px solid #10b981;"></span> A&cap;B</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ 섹션 2: 수학적 확률 ============ -->
+    <div class="card">
+        <div class="section-title">
+            <div class="section-number">2</div>
+            <h2>수학적 확률 (3차시)</h2>
+        </div>
+
+        <div class="lottery-sim" id="lotterySim">
+            <h3><span class="badge">탐구</span> 제비뽑기 시뮬레이션</h3>
+            <p class="lottery-desc">1~5번 제비에서 하나를 뽑을 때, 각 제비가 뽑힐 가능성은 모두 같을까?</p>
+            <div class="lottery-predict">
+                <label style="font-size:13px; font-weight:600; color:#1e293b;">예측: 100번 뽑으면 각 제비가 뽑히는 횟수는?</label>
+                <textarea id="lotteryPredict" placeholder="예: 각각 20번 정도 나올 것 같다..."></textarea>
+            </div>
+            <div class="lottery-btns" id="lotteryBtns">
+                <button data-n="10" disabled>10번 뽑기</button>
+                <button data-n="100" disabled>100번 뽑기</button>
+                <button data-n="1000" disabled>1000번 뽑기</button>
+                <button class="btn-reset" id="lotteryReset">초기화</button>
+            </div>
+            <div class="lottery-chart" id="lotteryChart"></div>
+            <div class="lottery-total" id="lotteryTotal">총 시행 횟수: 0번</div>
+            <div class="lottery-reflect" id="lotteryReflect"></div>
+        </div>
+
+        <div class="concept-box highlight">
+            <h3><span class="badge">개념</span> 수학적 확률</h3>
+            <p>어떤 시행에서 표본공간 \(S\)가 공집합이 아닌 유한집합이고, 각 근원사건이 일어날 가능성이 모두 같은 정도로 기대될 때, 사건 \(A\)가 일어날 <b>수학적 확률</b>:</p>
+            <div style="text-align:center; margin:12px 0; padding:12px 16px; background:#fff; border:2px solid #d4a853; border-radius:10px">
+                \(P(A) = \dfrac{n(A)}{n(S)}\)
+            </div>
+            <div class="tip-box">주의: 표본공간이 공집합이 아닌 유한집합인 경우에만 적용</div>
+        </div>
+
+        <div class="concept-box">
+            <h3><span class="badge">비주얼</span> 공 뽑기 예시</h3>
+            <p>1~6번 공 6개에서 한 개를 뽑을 때, 홀수가 적힌 공이 나오는 사건</p>
+            <p style="text-align:center; margin-top:8px;">\(A = \{1, 3, 5\}\), &nbsp; \(P(A) = \dfrac{3}{6} = \dfrac{1}{2}\)</p>
+        </div>
+
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 3</span> 두 개의 주사위를 동시에 던질 때, 나온 두 눈의 합이 같은 경우의 확률을 구하여라.</div>
+            <div class="writing-area" data-h="120"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    표본공간: 36가지. 두 눈이 같은 경우: \((1,1),(2,2),(3,3),(4,4),(5,5),(6,6)\) &rarr; 6가지.<br>
+                    \(P = \dfrac{6}{36} = \boldsymbol{\dfrac{1}{6}}\)
+                </div>
+            </div>
+        </div>
+
+        <div class="dice-grid-game" id="diceGridGame">
+            <h3><span class="badge">탐구</span> 주사위 2개 표본공간 격자</h3>
+            <p class="dice-desc">6&times;6 격자에서 조건에 맞는 칸을 탐구하고, 확률을 직관적으로 이해해 보세요.</p>
+            <div class="dice-cond-btns" id="diceCondBtns">
+                <button data-cond="same">두 눈이 같다</button>
+                <button data-cond="sum7">합이 7</button>
+                <button data-cond="even">합이 짝수</button>
+                <button data-cond="free">직접 선택</button>
+            </div>
+            <div class="dice-table-wrap">
+                <table class="dice-table" id="diceTable"></table>
+            </div>
+            <div class="dice-result" id="diceResult">\(n(S) = 36\). 조건을 선택하거나 칸을 직접 탭해 보세요.</div>
+        </div>
+
+        <div class="example-box">
+            <div class="example-header">
+                <span class="example-badge">예제 1</span>
+                <span class="example-title">공 꺼내기</span>
+            </div>
+            <div class="example-content">
+                <p>흰 공 4개와 검은 공 5개가 들어 있는 주머니에서 3개의 공을 동시에 꺼낼 때, 흰 공 2개, 검은 공 1개가 나올 확률을 구하여라.</p>
+            </div>
+            <div class="example-solution">
+                <div class="solution-label">풀이</div>
+                <p><b>STEP 1</b> &nbsp; 전체 경우의 수 \(n(S) = {}_{9}\mathrm{C}_{3} = 84\)</p>
+                <p><b>STEP 2</b> &nbsp; 흰 공 2개 &times; 검은 공 1개 = \({}_{4}\mathrm{C}_{2} \times {}_{5}\mathrm{C}_{1} = 6 \times 5 = 30\)</p>
+                <p style="margin-top:6px;">\(\therefore\) \(P = \dfrac{30}{84} = \boldsymbol{\dfrac{5}{14}}\)</p>
+            </div>
+        </div>
+
+        <div class="self-practice">
+            <div class="self-practice-header">
+                <span>📝</span> 스스로 하기
+            </div>
+            <div class="self-practice-content">
+                <p>남학생 6명, 여학생 5명 중에서 3명의 대표를 뽑을 때, 남학생 1명과 여학생 2명이 뽑힐 확률을 구하여라.</p>
+                <div class="writing-area" data-h="130"><canvas></canvas><div class="canvas-toolbar"></div></div>
+                <div class="answer-reveal">
+                    <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                    <div class="answer-content">
+                        <div class="ans-label">정답</div>
+                        \(n(S) = {}_{11}\mathrm{C}_{3} = 165\)<br>
+                        남 1명 &times; 여 2명 = \({}_{6}\mathrm{C}_{1} \times {}_{5}\mathrm{C}_{2} = 6 \times 10 = 60\)<br>
+                        \(P = \dfrac{60}{165} = \boldsymbol{\dfrac{4}{11}}\)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="problem">
+            <div class="problem-label"><span class="p-num">문제 4</span> 1, 2, 3, 4, 5의 숫자가 적힌 5장의 카드에서 3장을 뽑아 세 자리 자연수를 만들 때, 250보다 작은 자연수가 될 확률을 구하여라.</div>
+            <div class="writing-area" data-h="150"><canvas></canvas><div class="canvas-toolbar"></div></div>
+            <div class="answer-reveal">
+                <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+                <div class="answer-content">
+                    <div class="ans-label">정답</div>
+                    전체: \({}_{5}\mathrm{P}_{3} = 60\)<br>
+                    250보다 작은 경우: 백의 자리 1 &rarr; \({}_{4}\mathrm{P}_{2} = 12\)가지, 백의 자리 2이고 십의 자리 1, 3, 4 &rarr; 각 3가지 = 9가지<br>
+                    합계 21가지. &nbsp; \(P = \dfrac{21}{60} = \boldsymbol{\dfrac{7}{20}}\)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">확률과 통계 &middot; Ⅱ. 확률 &middot; 1. 확률의 뜻과 활용</div>
+</div>
+
+<button class="global-answer-btn" id="globalAnswerBtn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    정답 전체 보기
+</button>
+
+<div class="records-overlay" id="recordsOverlay">
+    <div class="records-panel">
+        <div class="records-header">
+            <h3>📋 저장 기록</h3>
+            <button class="close-btn" id="btnCloseRecords">&times;</button>
+        </div>
+        <div class="records-list" id="recordsList"></div>
+    </div>
+</div>
+
+<script>
+// ── 인터랙티브 요소 엔진 ──
+class StepSimulation {
+    constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        if (!this.container) return;
+        this.steps = this.container.querySelectorAll('.sim-step');
+        this.total = this.steps.length; this.current = 0;
+        this.progressEl = document.getElementById(containerId + '-progress');
+        this.updateUI();
+    }
+    showStep(n) {
+        if (n < 0 || n >= this.total) return;
+        this.steps.forEach(s => s.classList.remove('active'));
+        this.steps[n].classList.add('active'); this.current = n; this.updateUI();
+        if (typeof renderMathInElement === 'function') renderMathInElement(this.steps[n], {delimiters:[{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+    }
+    next() { this.showStep(this.current + 1); }
+    prev() { this.showStep(this.current - 1); }
+    updateUI() {
+        if (this.progressEl) this.progressEl.textContent = (this.current+1)+' / '+this.total;
+        var btns = this.container.querySelectorAll('.sim-btn');
+        btns.forEach(btn => { if(btn.dataset.dir==='prev') btn.disabled=(this.current===0); if(btn.dataset.dir==='next') btn.disabled=(this.current===this.total-1); });
+    }
+}
+
+document.addEventListener('click', function(e) {
+    var flipSingle = e.target.closest('.flip-card-single');
+    if (flipSingle && !e.target.closest('.flip-back a')) { e.preventDefault(); flipSingle.classList.toggle('flipped'); }
+    var formulaFlip = e.target.closest('.formula-flip');
+    if (formulaFlip) { e.preventDefault(); formulaFlip.classList.toggle('flipped'); if(typeof renderMathInElement==='function') renderMathInElement(formulaFlip,{delimiters:[{left:'\\(',right:'\\)',display:false}],throwOnError:false}); }
+    var simBtn = e.target.closest('.sim-btn');
+    if (simBtn) { e.preventDefault(); var inst = window[simBtn.dataset.sim]; if(inst){if(simBtn.dataset.dir==='next')inst.next();else if(simBtn.dataset.dir==='prev')inst.prev();} }
+});
+document.getElementById('recordsOverlay').addEventListener('click', function(e) { if (e.target === this) closeRecordsPanel(); });
+
+// ── ① 벤 다이어그램 인터랙티브 ──
+(function() {
+    var S = [1,2,3,4,5,6];
+    var examples = [
+        { name: '비배반', A: [1,2,3], B: [2,4,6], label: 'A={1,2,3}, B={2,4,6}' },
+        { name: '배반', A: [1,2,3], B: [5,6], label: 'A={1,2,3}, B={5,6}' },
+        { name: '여사건', A: [2,4,6], B: null, label: 'A={2,4,6}, A^c={1,3,5}' }
+    ];
+    var curEx = 0, curOp = 'none';
+    var svgWrap = document.getElementById('vennSvgWrap');
+    var resultEl = document.getElementById('vennResult');
+
+    function inter(a, b) { return a.filter(function(x){return b.indexOf(x)>=0;}); }
+    function union(a, b) { var r = a.slice(); b.forEach(function(x){if(r.indexOf(x)<0)r.push(x);}); return r.sort(function(a,b){return a-b;}); }
+    function diff(a, b) { return a.filter(function(x){return b.indexOf(x)<0;}); }
+
+    function renderVenn() {
+        var ex = examples[curEx];
+        var w = 450, h = 300, cx1 = 160, cx2 = 290, cy = 155, r = 100;
+        var svg = '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'">';
+        svg += '<rect x="10" y="10" width="'+(w-20)+'" height="'+(h-20)+'" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>';
+        svg += '<text x="22" y="32" font-size="15" fill="#64748b" font-weight="700" font-family="inherit">S = {1, 2, 3, 4, 5, 6}</text>';
+
+        if (ex.B !== null) {
+            var aOnly = diff(ex.A, ex.B);
+            var bOnly = diff(ex.B, ex.A);
+            var ab = inter(ex.A, ex.B);
+            var outside = diff(S, union(ex.A, ex.B));
+            var aFill = '#fff', bFill = '#fff';
+            if (curOp === 'union') { aFill = '#dbeafe'; bFill = '#dbeafe'; }
+            svg += '<circle cx="'+cx1+'" cy="'+cy+'" r="'+r+'" fill="'+aFill+'" stroke="#3b82f6" stroke-width="2.5" opacity="0.7"/>';
+            svg += '<circle cx="'+cx2+'" cy="'+cy+'" r="'+r+'" fill="'+bFill+'" stroke="#f59e0b" stroke-width="2.5" opacity="0.7"/>';
+            if (curOp === 'inter' && ab.length > 0) {
+                svg += '<clipPath id="clipA"><circle cx="'+cx1+'" cy="'+cy+'" r="'+r+'"/></clipPath>';
+                svg += '<circle cx="'+cx2+'" cy="'+cy+'" r="'+r+'" fill="#d1fae5" clip-path="url(#clipA)" opacity="0.8"/>';
+            }
+            svg += '<text x="'+(cx1-10)+'" y="'+(cy-r-10)+'" text-anchor="middle" font-size="18" font-weight="700" fill="#3b82f6">A</text>';
+            svg += '<text x="'+(cx2+10)+'" y="'+(cy-r-10)+'" text-anchor="middle" font-size="18" font-weight="700" fill="#f59e0b">B</text>';
+            var posA=[{x:105,y:130},{x:115,y:160},{x:105,y:190}];
+            var posB=[{x:345,y:130},{x:335,y:160},{x:345,y:190}];
+            var posAB=[{x:225,y:140},{x:225,y:165},{x:225,y:190}];
+            var posOut=[{x:50,y:270},{x:400,y:270},{x:225,y:270}];
+            aOnly.forEach(function(v,i){var p=posA[i]||{x:110,y:155};var dim=(curOp==='inter')?0.3:1;svg+='<text x="'+p.x+'" y="'+p.y+'" text-anchor="middle" font-size="20" font-weight="700" fill="#3b82f6" opacity="'+dim+'">'+v+'</text>';});
+            bOnly.forEach(function(v,i){var p=posB[i]||{x:340,y:155};var dim=(curOp==='inter')?0.3:1;svg+='<text x="'+p.x+'" y="'+p.y+'" text-anchor="middle" font-size="20" font-weight="700" fill="#f59e0b" opacity="'+dim+'">'+v+'</text>';});
+            ab.forEach(function(v,i){var p=posAB[i]||{x:225,y:155};svg+='<text x="'+p.x+'" y="'+p.y+'" text-anchor="middle" font-size="20" font-weight="800" fill="#059669">'+v+'</text>';});
+            outside.forEach(function(v,i){var p=posOut[i]||{x:225,y:270};var dim=(curOp!=='none')?0.3:1;svg+='<text x="'+p.x+'" y="'+p.y+'" text-anchor="middle" font-size="18" font-weight="600" fill="#94a3b8" opacity="'+dim+'">'+v+'</text>';});
+        } else {
+            var Ac = diff(S, ex.A);
+            var aFill = (curOp==='union') ? '#dbeafe' : '#fff';
+            svg += '<circle cx="225" cy="'+cy+'" r="110" fill="'+aFill+'" stroke="#3b82f6" stroke-width="2.5" opacity="0.7"/>';
+            svg += '<text x="225" y="'+(cy-110-10)+'" text-anchor="middle" font-size="18" font-weight="700" fill="#3b82f6">A</text>';
+            ex.A.forEach(function(v,i){var angle=(i/ex.A.length)*Math.PI*2-Math.PI/2;var px=225+55*Math.cos(angle),py=cy+55*Math.sin(angle);svg+='<text x="'+px+'" y="'+py+'" text-anchor="middle" font-size="20" font-weight="700" fill="#3b82f6">'+v+'</text>';});
+            var acPos=[{x:50,y:60},{x:400,y:60},{x:50,y:270}];
+            Ac.forEach(function(v,i){var p=acPos[i]||{x:400,y:270};var op=(curOp==='inter')?1:0.5;svg+='<text x="'+p.x+'" y="'+p.y+'" text-anchor="middle" font-size="20" font-weight="700" fill="#ef4444" opacity="'+op+'">'+v+'</text>';});
+        }
+        svg += '</svg>';
+        svgWrap.innerHTML = svg;
+        updateResult();
+    }
+
+    function updateResult() {
+        var ex = examples[curEx];
+        if (curOp === 'none') { resultEl.innerHTML = ex.label.replace(/A\^c/g,'A<sup>c</sup>'); renderMath(); return; }
+        if (ex.B !== null) {
+            if (curOp === 'union') { var u = union(ex.A, ex.B); resultEl.innerHTML = '\\(A \\cup B = \\{' + u.join(', ') + '\\}\\)'; }
+            else { var i = inter(ex.A, ex.B); resultEl.innerHTML = i.length===0 ? '\\(A \\cap B = \\emptyset\\) &mdash; 공통 원소가 없습니다. <b>배반사건</b>입니다!' : '\\(A \\cap B = \\{' + i.join(', ') + '\\}\\)'; }
+        } else {
+            var Ac = diff(S, ex.A);
+            resultEl.innerHTML = curOp==='union' ? '\\(A = \\{' + ex.A.join(', ') + '\\}\\)' : '\\(A^c = \\{' + Ac.join(', ') + '\\}\\) &mdash; 여사건';
+        }
+        renderMath();
+    }
+    function renderMath() { if (typeof renderMathInElement === 'function') renderMathInElement(resultEl, {delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false}); }
+
+    document.getElementById('vennExBtns').addEventListener('click', function(e) {
+        var btn = e.target.closest('button'); if (!btn) return;
+        curEx = parseInt(btn.dataset.ex); curOp = 'none';
+        this.querySelectorAll('button').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active');
+        document.getElementById('vennOpBtns').querySelectorAll('button').forEach(function(b){b.classList.remove('active');});
+        renderVenn();
+    });
+    document.getElementById('vennOpBtns').addEventListener('click', function(e) {
+        var btn = e.target.closest('button'); if (!btn) return;
+        curOp = btn.dataset.op;
+        this.querySelectorAll('button').forEach(function(b){b.classList.remove('active');});
+        if (curOp !== 'none') btn.classList.add('active');
+        renderVenn();
+    });
+    setTimeout(renderVenn, 300);
+})();
+
+// ── ② 정십이면체 탐구 ──
+(function() {
+    var grid = document.getElementById('dodecaGrid');
+    var stepLabel = document.getElementById('dodecaStepLabel');
+    var checkBtn = document.getElementById('dodecaCheck');
+    var nextBtn = document.getElementById('dodecaNext');
+    var resetBtn = document.getElementById('dodecaReset');
+    var resultEl = document.getElementById('dodecaResult');
+    var legendEl = document.getElementById('dodecaLegend');
+    if (!grid) return;
+    var answersA = [1,2,3,4,6,12], answersB = [3,6,9,12];
+    var step = 1, selected = [];
+    for (var i = 1; i <= 12; i++) { var face = document.createElement('div'); face.className = 'dodeca-face'; face.textContent = i; face.dataset.val = i; grid.appendChild(face); }
+    function resetAll() {
+        step = 1; selected = [];
+        stepLabel.textContent = 'Step 1: "12의 약수"인 면을 탭하세요 (사건 A)';
+        resultEl.textContent = ''; resultEl.style.color = '';
+        grid.querySelectorAll('.dodeca-face').forEach(function(f) { f.className = 'dodeca-face'; });
+        legendEl.style.display = 'none';
+        legendEl.innerHTML = '<span><span class="dot" style="background:#dbeafe;border:1px solid #3b82f6;"></span> A만</span><span><span class="dot" style="background:#fef3c7;border:1px solid #f59e0b;"></span> B만</span><span><span class="dot" style="background:#d1fae5;border:1px solid #10b981;"></span> A&cap;B</span>';
+        checkBtn.style.display = ''; nextBtn.style.display = 'none'; nextBtn.textContent = '다음 단계';
+        resetBtn.style.display = 'none';
+    }
+    resetBtn.addEventListener('click', resetAll);
+    grid.addEventListener('click', function(e) {
+        var face = e.target.closest('.dodeca-face'); if (!face || step > 2) return;
+        var val = parseInt(face.dataset.val); var idx = selected.indexOf(val);
+        if (idx >= 0) { selected.splice(idx, 1); face.className = 'dodeca-face'; }
+        else { selected.push(val); face.classList.add(step === 1 ? 'selected-a' : 'selected-b'); }
+    });
+    checkBtn.addEventListener('click', function() {
+        var correct = step === 1 ? answersA : answersB;
+        var isCorrect = selected.length === correct.length && correct.every(function(v){return selected.indexOf(v)>=0;});
+        if (isCorrect) {
+            resultEl.style.color = '#16a34a';
+            resultEl.textContent = step === 1 ? 'A = {1, 2, 3, 4, 6, 12} — 12의 약수 6개!' : 'B = {3, 6, 9, 12} — 3의 배수 4개!';
+            checkBtn.style.display = 'none'; nextBtn.style.display = '';
+        } else {
+            resultEl.style.color = '#ef4444';
+            resultEl.textContent = '다시 확인해 보세요. ' + (step === 1 ? '12의 약수' : '3의 배수') + '를 모두 선택하세요.';
+            grid.querySelectorAll('.dodeca-face').forEach(function(f) { var v = parseInt(f.dataset.val); if (selected.indexOf(v) >= 0 && correct.indexOf(v) < 0) { f.classList.add('wrong'); setTimeout(function(){f.classList.remove('wrong');}, 400); } });
+        }
+    });
+    nextBtn.addEventListener('click', function() {
+        if (step === 1) {
+            step = 2; selected = []; stepLabel.textContent = 'Step 2: "3의 배수"인 면을 탭하세요 (사건 B)'; resultEl.textContent = '';
+            grid.querySelectorAll('.dodeca-face').forEach(function(f) { var v = parseInt(f.dataset.val); f.className = answersA.indexOf(v) >= 0 ? 'dodeca-face selected-a' : 'dodeca-face'; });
+            checkBtn.style.display = ''; nextBtn.style.display = 'none'; resetBtn.style.display = '';
+        } else if (step === 2) {
+            step = 3; stepLabel.textContent = 'Step 3: A ∩ B 확인 — 두 사건 모두에 속하는 면';
+            resultEl.innerHTML = '\\(A \\cap B = \\{3, 6, 12\\}\\) — 3개의 공통 원소가 있으므로 <b>배반사건이 아닙니다</b>.';
+            grid.querySelectorAll('.dodeca-face').forEach(function(f) { var v = parseInt(f.dataset.val); var inA = answersA.indexOf(v) >= 0, inB = answersB.indexOf(v) >= 0; if (inA && inB) f.className = 'dodeca-face selected-ab'; else if (inA) f.className = 'dodeca-face selected-a'; else if (inB) f.className = 'dodeca-face selected-b'; else f.className = 'dodeca-face'; });
+            legendEl.style.display = ''; checkBtn.style.display = 'none'; nextBtn.textContent = '여사건 보기'; nextBtn.style.display = ''; resetBtn.style.display = '';
+            if (typeof renderMathInElement === 'function') renderMathInElement(resultEl, {delimiters:[{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+        } else if (step === 3) {
+            step = 4; stepLabel.textContent = 'Step 4: B의 여사건 B^c';
+            resultEl.innerHTML = '\\(B^c = \\{1, 2, 4, 5, 7, 8, 10, 11\\}\\) — B에 속하지 않는 8개의 면';
+            grid.querySelectorAll('.dodeca-face').forEach(function(f) { var v = parseInt(f.dataset.val); f.className = [1,2,4,5,7,8,10,11].indexOf(v) >= 0 ? 'dodeca-face selected-bc' : 'dodeca-face selected-b'; });
+            legendEl.innerHTML = '<span><span class="dot" style="background:#fef3c7;border:1px solid #f59e0b;"></span> B</span><span><span class="dot" style="background:#fecaca;border:1px solid #ef4444;"></span> B<sup>c</sup></span>';
+            nextBtn.style.display = 'none'; resetBtn.style.display = '';
+            if (typeof renderMathInElement === 'function') renderMathInElement(resultEl, {delimiters:[{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+        }
+    });
+})();
+
+// ── ③ 제비뽑기 시뮬레이션 ──
+(function() {
+    var counts = [0,0,0,0,0], totalTrials = 0;
+    var predictEl = document.getElementById('lotteryPredict');
+    var chartEl = document.getElementById('lotteryChart');
+    var totalEl = document.getElementById('lotteryTotal');
+    var reflectEl = document.getElementById('lotteryReflect');
+    var btnsEl = document.getElementById('lotteryBtns');
+    if (!chartEl) return;
+    function renderChart() {
+        var html = '';
+        for (var i = 0; i < 5; i++) {
+            var freq = totalTrials > 0 ? (counts[i] / totalTrials) : 0;
+            var pct = totalTrials > 0 ? (counts[i] / totalTrials * 100) : 0;
+            html += '<div class="lottery-bar-wrap"><div class="lottery-bar-label">' + (i+1) + '번</div><div class="lottery-bar-track"><div class="lottery-bar-fill" style="width:'+pct+'%"></div><div class="lottery-ref-line"></div></div><div class="lottery-bar-val">' + (totalTrials > 0 ? freq.toFixed(3) : '—') + '</div></div>';
+        }
+        chartEl.innerHTML = html; totalEl.textContent = '총 시행 횟수: ' + totalTrials + '번';
+        reflectEl.textContent = totalTrials >= 100 ? '시행 횟수가 늘어날수록 각 상대도수가 0.2에 가까워지나요?' : '';
+    }
+    predictEl.addEventListener('input', function() { var hasText = predictEl.value.trim().length > 0; btnsEl.querySelectorAll('button[data-n]').forEach(function(b){ b.disabled = !hasText; }); });
+    btnsEl.addEventListener('click', function(e) {
+        var btn = e.target.closest('button[data-n]'); if (!btn || btn.disabled) return;
+        var n = parseInt(btn.dataset.n);
+        for (var t = 0; t < n; t++) counts[Math.floor(Math.random() * 5)]++;
+        totalTrials += n; renderChart();
+    });
+    document.getElementById('lotteryReset').addEventListener('click', function() {
+        counts = [0,0,0,0,0]; totalTrials = 0; predictEl.value = '';
+        btnsEl.querySelectorAll('button[data-n]').forEach(function(b){ b.disabled = true; }); renderChart(); reflectEl.textContent = '';
+    });
+    renderChart();
+})();
+
+// ── ④ 주사위 2개 격자 ──
+(function() {
+    var table = document.getElementById('diceTable');
+    var resultEl = document.getElementById('diceResult');
+    var condBtns = document.getElementById('diceCondBtns');
+    if (!table) return;
+    var freeMode = false, userSelected = {};
+    var html = '<tr><th></th>';
+    for (var j = 1; j <= 6; j++) html += '<th>주사위2: '+j+'</th>';
+    html += '</tr>';
+    for (var i = 1; i <= 6; i++) { html += '<tr><th>주사위1: '+i+'</th>'; for (var j = 1; j <= 6; j++) html += '<td data-i="'+i+'" data-j="'+j+'">('+i+','+j+')</td>'; html += '</tr>'; }
+    table.innerHTML = html;
+    function clearAll() { table.querySelectorAll('td').forEach(function(td){ td.className = ''; }); userSelected = {}; }
+    function highlightCells(condFn) { clearAll(); var count = 0; table.querySelectorAll('td').forEach(function(td) { var i = parseInt(td.dataset.i), j = parseInt(td.dataset.j); if (condFn(i, j)) { td.classList.add('highlighted'); count++; } }); updateResult(count); }
+    function updateResult(n) {
+        resultEl.innerHTML = '\\(n(A) = '+n+'\\), \\(n(S) = 36\\), \\(P(A) = \\dfrac{'+n+'}{36}' + (n > 0 ? ' = \\dfrac{' + simplify(n, 36) + '}' : '') + '\\)';
+        if (typeof renderMathInElement === 'function') renderMathInElement(resultEl, {delimiters:[{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+    }
+    function simplify(a, b) { function gcd(x,y) { return y === 0 ? x : gcd(y, x%y); } var g = gcd(a, b); var na = a/g, nb = b/g; if (na === a) return a + '}{' + b; return na + '}{' + nb; }
+    condBtns.addEventListener('click', function(e) {
+        var btn = e.target.closest('button'); if (!btn) return;
+        condBtns.querySelectorAll('button').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active');
+        var cond = btn.dataset.cond; freeMode = (cond === 'free');
+        if (cond === 'same') highlightCells(function(i,j){return i===j;});
+        else if (cond === 'sum7') highlightCells(function(i,j){return i+j===7;});
+        else if (cond === 'even') highlightCells(function(i,j){return (i+j)%2===0;});
+        else { clearAll(); resultEl.innerHTML = '칸을 직접 탭하여 선택/해제하세요. \\(n(S) = 36\\)'; if(typeof renderMathInElement==='function') renderMathInElement(resultEl,{delimiters:[{left:'\\(',right:'\\)',display:false}],throwOnError:false}); }
+    });
+    table.addEventListener('click', function(e) {
+        var td = e.target.closest('td'); if (!td || !freeMode) return;
+        var key = td.dataset.i + ',' + td.dataset.j;
+        if (userSelected[key]) { delete userSelected[key]; td.classList.remove('user-selected'); } else { userSelected[key] = true; td.classList.add('user-selected'); }
+        updateResult(Object.keys(userSelected).length);
+    });
+})();
+
+if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, { delimiters: [{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}], throwOnError: false });
+}
+</script>
+
+<!-- ── 슬라이드 변환 JS ── -->
+<script>
+(function() {
+    'use strict';
+    document.body.classList.add('slide-mode');
+    var container = document.querySelector('.container');
+    if (!container) return;
+
+    var headerUnit = '', headerTitle = '', headerInfo = '', achievementText = '';
+    var h = container.querySelector('.header');
+    if (h) { var hu = h.querySelector('.header-unit'); if (hu) headerUnit = hu.textContent.trim(); var h1 = h.querySelector('h1'); if (h1) headerTitle = h1.innerHTML; var hi = h.querySelector('.header-info span'); if (hi) headerInfo = hi.textContent.trim(); }
+    var ach = container.querySelector('.achievement');
+    if (ach) achievementText = ach.innerHTML.replace(/<strong>.*?<\/strong>\s*(&nbsp;)?\s*/i, '').trim();
+
+    var deck = document.createElement('div'); deck.className = 'slide-deck'; deck.id = 'slideDeck';
+    var slideIndex = 0;
+
+    function makeSlide(innerHtml, extraClass) {
+        var s = document.createElement('section'); s.className = 'slide' + (slideIndex === 0 ? ' active' : ''); s.setAttribute('data-slide', String(slideIndex));
+        var sc = document.createElement('div'); sc.className = 'slide-content' + (extraClass ? ' ' + extraClass : ''); sc.innerHTML = innerHtml;
+        s.appendChild(sc); deck.appendChild(s); slideIndex++;
+    }
+    function makeSlideFromEl(el) {
+        var s = document.createElement('section'); s.className = 'slide' + (slideIndex === 0 ? ' active' : ''); s.setAttribute('data-slide', String(slideIndex));
+        var sc = document.createElement('div'); sc.className = 'slide-content'; sc.appendChild(el);
+        s.appendChild(sc); deck.appendChild(s); slideIndex++;
+    }
+
+    var tHtml = '';
+    if (headerUnit) tHtml += '<div class="title-unit">' + headerUnit + '</div>';
+    tHtml += '<div class="title-main">' + headerTitle + '</div>';
+    if (headerInfo) tHtml += '<div class="title-meta"><span>' + headerInfo + '</span></div>';
+    if (achievementText) tHtml += '<div class="title-achievement"><strong>성취기준</strong>&nbsp; ' + achievementText + '</div>';
+    makeSlide(tHtml, 'title-slide');
+
+    var blockClasses = ['concept-box','inquiry-box','example-box','self-practice','problem','step-simulation','flip-card-single','formula-flip-grid','algebra-tiles','matching-game','tutor-game','concept-game','padlock-game','tablecloth-svg','sim-activity','venn-container','dodeca-game','lottery-sim','dice-grid-game'];
+
+    function isContentBlock(el) {
+        for (var i = 0; i < blockClasses.length; i++) { if (el.classList.contains(blockClasses[i])) return true; }
+        if (el.classList.contains('formula') && el.parentElement && el.parentElement.classList.contains('card')) return true;
+        return false;
+    }
+
+    var cards = container.querySelectorAll('.card');
+    for (var ci = 0; ci < cards.length; ci++) {
+        var card = cards[ci];
+        var st = card.querySelector('.section-title');
+        if (st) { var sn = st.querySelector('.section-number'); var sh = st.querySelector('h2'); var secHtml = ''; if (sn) secHtml += '<div class="section-number">' + sn.textContent.trim() + '</div>'; if (sh) secHtml += '<h2>' + sh.innerHTML + '</h2>'; makeSlide(secHtml, 'section-header-slide'); }
+        var children = []; for (var k = 0; k < card.children.length; k++) children.push(card.children[k]);
+        var pendingTip = null;
+        for (var j = 0; j < children.length; j++) {
+            var child = children[j];
+            if (child.classList.contains('section-title')) continue;
+            if (child.classList.contains('divider') || child.tagName === 'HR') continue;
+            if (child.classList.contains('tip-box')) { pendingTip = child; continue; }
+            if (isContentBlock(child)) {
+                if (pendingTip) { var wrapper = document.createElement('div'); wrapper.appendChild(pendingTip); wrapper.appendChild(child); makeSlideFromEl(wrapper); pendingTip = null; }
+                else makeSlideFromEl(child);
+            }
+        }
+    }
+
+    document.body.insertBefore(deck, container);
+    var was = deck.querySelectorAll('.writing-area, .canvas-toolbar');
+    for (var w = 0; w < was.length; w++) was[w].parentNode.removeChild(was[w]);
+
+    var total = slideIndex;
+    var navHtml = '<div class="slide-nav"><button class="nav-btn" id="navPrev">&#9664;</button><span class="slide-counter" id="slideCounter">1 / ' + total + '</span><button class="nav-btn" id="navNext">&#9654;</button><button class="nav-btn nav-fs" id="navFS" title="전체 화면">&#9974;</button></div><div class="slide-progress"><div class="slide-progress-bar" id="progressBar"></div></div>';
+    document.body.insertAdjacentHTML('beforeend', navHtml);
+
+    var slides = deck.querySelectorAll('.slide');
+    var totalSlides = slides.length;
+    var current = 0;
+    var counter = document.getElementById('slideCounter');
+    var bar = document.getElementById('progressBar');
+    var btnP = document.getElementById('navPrev');
+    var btnN = document.getElementById('navNext');
+
+    function show(i) {
+        if (i < 0 || i >= totalSlides) return;
+        slides[current].classList.remove('active'); current = i; slides[current].classList.add('active'); updateNav();
+        if (typeof renderMathInElement === 'function') renderMathInElement(slides[current], {delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false});
+    }
+    window.goToSlide = show;
+
+    function updateNav() { counter.textContent = (current+1)+' / '+totalSlides; bar.style.width = ((current+1)/totalSlides*100)+'%'; btnP.disabled = (current===0); btnN.disabled = (current===totalSlides-1); }
+
+    function tryNext() {
+        var cs = slides[current];
+        var simEl = cs.querySelector('.step-simulation');
+        if (simEl) { var nb = simEl.querySelector('.sim-btn[data-dir="next"]'); if (nb && !nb.disabled) { nb.click(); return; } }
+        var ur = cs.querySelectorAll('.answer-content:not(.revealed), .solution-content:not(.revealed), .example-solution:not(.revealed)');
+        if (ur.length > 0) { for (var i = 0; i < ur.length; i++) ur[i].classList.add('revealed'); if (typeof renderMathInElement === 'function') renderMathInElement(cs, {delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false}); return; }
+        show(current + 1);
+    }
+    function tryPrev() {
+        var cs = slides[current];
+        var simEl = cs.querySelector('.step-simulation');
+        if (simEl) { var pb = simEl.querySelector('.sim-btn[data-dir="prev"]'); if (pb && !pb.disabled) { pb.click(); return; } }
+        show(current - 1);
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        if (e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '||e.key==='PageDown'||e.key==='Enter') { e.preventDefault(); tryNext(); }
+        else if (e.key==='ArrowLeft'||e.key==='ArrowUp'||e.key==='PageUp') { e.preventDefault(); tryPrev(); }
+        else if (e.key==='Home') { e.preventDefault(); show(0); }
+        else if (e.key==='End') { e.preventDefault(); show(totalSlides-1); }
+        else if (e.key==='Escape') { if (document.fullscreenElement) document.exitFullscreen(); }
+        else if (e.key==='f'||e.key==='F') { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(function(){}); else document.exitFullscreen(); }
+    });
+
+    var sx = 0, sy = 0;
+    document.addEventListener('touchstart', function(e) {
+        if (e.target.closest('.step-simulation, .algebra-tiles, .concept-game, .padlock-game, .matching-game, .tutor-game, .grid-path-sim, .sim-activity, .venn-container, .dodeca-game, .lottery-sim, .dice-grid-game')) return;
+        sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    }, { passive: true });
+    document.addEventListener('touchend', function(e) {
+        var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) { if (dx < 0) tryNext(); else tryPrev(); }
+    }, { passive: true });
+
+    btnP.addEventListener('click', function() { tryPrev(); });
+    btnN.addEventListener('click', function() { tryNext(); });
+    document.getElementById('navFS').addEventListener('click', function() { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(function(){}); else document.exitFullscreen(); });
+
+    updateNav();
+    if (typeof renderMathInElement === 'function') renderMathInElement(slides[0], {delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false});
+})();
+</script>
+
+<!-- TOC -->
+<script>
+(function() {
+    var checkReady = setInterval(function() {
+        var slides = document.querySelectorAll('.slide');
+        var nav = document.querySelector('.slide-nav');
+        if (slides.length > 0 && nav) { clearInterval(checkReady); buildTOC(slides, nav); }
+    }, 200);
+    function buildTOC(slides, nav) {
+        var overlay = document.createElement('div'); overlay.className = 'toc-overlay';
+        var panel = document.createElement('div'); panel.className = 'toc-panel';
+        var title = document.createElement('div'); title.className = 'toc-title'; title.textContent = '\uBAA9\uCC28'; panel.appendChild(title);
+        for (var i = 0; i < slides.length; i++) {
+            var btn = document.createElement('button'); btn.className = 'toc-item'; btn.dataset.index = i;
+            var content = slides[i].querySelector('.slide-content'); var label = '';
+            if (content) { var h = content.querySelector('h1, h2, h3, .title-main'); if (h) label = h.textContent.trim(); }
+            if (!label) label = '\uC2AC\uB77C\uC774\uB4DC ' + (i + 1);
+            btn.innerHTML = '<span class="toc-num">' + (i+1) + '.</span>' + label.substring(0, 40);
+            btn.addEventListener('click', (function(idx) { return function() { if (typeof window.goToSlide === 'function') window.goToSlide(idx); overlay.classList.remove('active'); }; })(i));
+            panel.appendChild(btn);
+        }
+        overlay.appendChild(panel);
+        overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.classList.remove('active'); });
+        document.body.appendChild(overlay);
+        var tocBtn = document.createElement('button'); tocBtn.className = 'nav-btn nav-toc'; tocBtn.innerHTML = '&#9776;'; tocBtn.title = '\uBAA9\uCC28';
+        tocBtn.addEventListener('click', function() {
+            overlay.classList.toggle('active');
+            var items = panel.querySelectorAll('.toc-item'); var counter = document.getElementById('slideCounter'); var cur = 0;
+            if (counter) { var m = counter.textContent.match(/(\d+)/); if (m) cur = parseInt(m[1]) - 1; }
+            for (var j = 0; j < items.length; j++) items[j].classList.toggle('active', j === cur);
+            var activeItem = panel.querySelector('.toc-item.active'); if (activeItem) activeItem.scrollIntoView({ block: 'center' });
+        });
+        nav.insertBefore(tocBtn, nav.firstChild);
+    }
+})();
+</script>
+
+<!-- Auto-fit zoom -->
+<script>
+(function() {
+    var MIN_ZOOM = 0.72;
+    function autoFitSlide(slide) {
+        var content = slide.querySelector('.slide-content'); if (!content) return;
+        content.style.zoom = ''; content.style.overflow = 'visible'; content.style.maxHeight = 'none';
+        var vh = window.innerHeight;
+        var padTop = parseFloat(getComputedStyle(slide).paddingTop) || 30;
+        var padBot = parseFloat(getComputedStyle(slide).paddingBottom) || 70;
+        var availH = vh - padTop - padBot;
+        var contentH = content.scrollHeight;
+        if (contentH > availH && availH > 0) {
+            var zoom = availH / contentH; if (zoom < MIN_ZOOM) zoom = MIN_ZOOM;
+            zoom = Math.floor(zoom * 100) / 100; content.style.zoom = zoom; content.setAttribute('data-zoom', zoom);
+        } else content.removeAttribute('data-zoom');
+        content.style.overflow = ''; content.style.maxHeight = '';
+    }
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) { if (m.type === 'attributes' && m.attributeName === 'class') { var el = m.target; if (el.classList.contains('slide') && el.classList.contains('active')) setTimeout(function() { autoFitSlide(el); }, 80); } });
+    });
+    function init() {
+        var slides = document.querySelectorAll('.slide'); if (slides.length === 0) { setTimeout(init, 300); return; }
+        slides.forEach(function(s) { observer.observe(s, { attributes: true, attributeFilter: ['class'] }); });
+        var active = document.querySelector('.slide.active'); if (active) setTimeout(function() { autoFitSlide(active); }, 200);
+        window.addEventListener('resize', function() { var a = document.querySelector('.slide.active'); if (a) autoFitSlide(a); });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function() { setTimeout(init, 300); });
+    else setTimeout(init, 300);
+})();
+</script>
+
+</body>
+</html>

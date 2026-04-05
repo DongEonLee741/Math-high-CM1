@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>7-8차시 - 확률의 덧셈정리와 여사건의 확률</title>
+
+  <link rel="stylesheet" href="https://math-class.it.kr/lib/katex/katex.min.css">
+  <link rel="stylesheet" href="https://math-class.it.kr/lib/css/worksheet-common.css">
+  <link rel="stylesheet" href="https://math-class.it.kr/lib/css/auth-overlay.css">
+
+  <!-- 이 차시 고유 스타일 -->
+  <style>
+    /* ── ① 벤 다이어그램 탐구기 ── */
+    .venn-explorer { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .venn-explorer h3 { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .venn-step-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .venn-step-btns button { padding: 8px 16px; border: 1.5px solid #cbd5e1; border-radius: 8px; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; min-height: 44px; touch-action: manipulation; }
+    .venn-step-btns button.active { border-color: #2563eb; background: #eff6ff; color: #2563eb; }
+    .venn-step-btns button:disabled { opacity: 0.35; cursor: default; }
+    .venn-step-btns button:not(:disabled):active { transform: scale(0.97); }
+    .venn-svg-area { display: flex; justify-content: center; margin-bottom: 10px; }
+    .venn-svg-area svg { max-width: 100%; height: auto; }
+    .venn-formula { padding: 10px 14px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 15px; line-height: 1.8; text-align: center; margin-bottom: 8px; min-height: 40px; }
+    .venn-message { padding: 8px 12px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; font-size: 13px; color: #92400e; text-align: center; margin-bottom: 8px; min-height: 24px; }
+    .venn-message:empty { display: none; }
+    .venn-reset-wrap { text-align: center; margin-top: 8px; }
+    .venn-reset-wrap button { padding: 6px 16px; border: 1.5px solid #94a3b8; border-radius: 8px; background: #fff; font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer; font-family: inherit; min-height: 44px; touch-action: manipulation; }
+    .venn-reset-wrap button:active { transform: scale(0.97); }
+    .badge-x2 { display: inline-block; background: #ef4444; color: #fff; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 6px; margin-left: 2px; }
+
+    /* ── ② 여사건 전환 연습기 ── */
+    .complement-explorer { background: #f0fdf4; border: 1.5px solid #22c55e; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .complement-explorer h3 { font-size: 15px; font-weight: 700; color: #16a34a; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .complement-desc { font-size: 13px; color: #64748b; margin-bottom: 12px; }
+    .path-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .path-card { border: 2px solid #e2e8f0; border-radius: 10px; padding: 14px 12px; text-align: center; cursor: pointer; transition: all 0.15s; background: #fff; min-height: 44px; touch-action: manipulation; }
+    .path-card:active { transform: scale(0.97); }
+    .path-card.selected { border-color: #2563eb; background: #eff6ff; }
+    .path-card.path-a.selected { border-color: #f59e0b; background: #fffbeb; }
+    .path-card.path-b.selected { border-color: #22c55e; background: #f0fdf4; }
+    .path-card h4 { font-size: 14px; font-weight: 700; margin: 0 0 4px; }
+    .path-card p { font-size: 12px; color: #64748b; margin: 0; }
+    .path-detail { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 12px; font-size: 14px; line-height: 1.8; }
+    .path-detail .step-line { margin-bottom: 4px; }
+    .path-detail .step-count { display: inline-block; background: #f1f5f9; border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 600; color: #64748b; margin-top: 6px; }
+    .compare-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .compare-col { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; text-align: center; font-size: 13px; line-height: 1.7; }
+    .compare-col .result { font-size: 18px; font-weight: 700; color: #2563eb; }
+    .discovery-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px; font-size: 13px; color: #1e40af; line-height: 1.6; text-align: center; margin-bottom: 8px; }
+    .other-path-btn { display: block; margin: 8px auto 0; padding: 8px 20px; border: 1.5px solid #2563eb; border-radius: 8px; background: #fff; color: #2563eb; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; min-height: 44px; touch-action: manipulation; }
+    .other-path-btn:active { transform: scale(0.97); }
+
+    /* ── ③ 배반사건 판별 퀴즈 ── */
+    .exclusive-quiz { background: #eff6ff; border: 1.5px solid #3b82f6; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .exclusive-quiz h3 { font-size: 15px; font-weight: 700; color: #1d4ed8; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .quiz-desc { font-size: 13px; color: #64748b; margin-bottom: 10px; }
+    .quiz-progress { display: flex; gap: 6px; margin-bottom: 12px; justify-content: center; }
+    .quiz-dot { width: 14px; height: 14px; border-radius: 50%; background: #e2e8f0; transition: all 0.2s; }
+    .quiz-dot.current { background: #3b82f6; }
+    .quiz-dot.done { background: #22c55e; }
+    .quiz-question { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+    .quiz-context { font-size: 13px; color: #64748b; margin-bottom: 6px; }
+    .quiz-events { font-size: 14px; color: #1e293b; line-height: 1.7; }
+    .quiz-choices { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; }
+    .quiz-choices button { padding: 10px 22px; border: 2px solid #e2e8f0; border-radius: 8px; background: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; min-height: 44px; touch-action: manipulation; }
+    .quiz-choices button:active { transform: scale(0.97); }
+    .quiz-choices button.correct { border-color: #22c55e; background: #f0fdf4; color: #16a34a; }
+    .quiz-choices button.wrong { border-color: #ef4444; background: #fef2f2; color: #dc2626; }
+    .quiz-choices button:disabled { opacity: 0.6; cursor: default; }
+    .formula-choices { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; }
+    .formula-choices button { padding: 8px 14px; border: 2px solid #e2e8f0; border-radius: 8px; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; min-height: 44px; touch-action: manipulation; }
+    .formula-choices button:active { transform: scale(0.97); }
+    .formula-choices button.correct { border-color: #22c55e; background: #f0fdf4; color: #16a34a; }
+    .formula-choices button.wrong { border-color: #ef4444; background: #fef2f2; color: #dc2626; }
+    .formula-choices button:disabled { opacity: 0.6; cursor: default; }
+    .quiz-feedback { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; font-size: 13px; text-align: center; margin-bottom: 8px; min-height: 40px; line-height: 1.6; }
+    .quiz-feedback:empty { display: none; }
+    .quiz-summary { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; }
+    .quiz-summary h4 { font-size: 14px; font-weight: 700; margin: 0 0 10px; text-align: center; }
+    .summary-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-num { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .summary-num.ok { background: #22c55e; }
+    .summary-num.ng { background: #ef4444; }
+
+    /* ── 공통 데이터 테이블 ── */
+    .data-table { border-collapse: collapse; margin: 10px auto; font-size: 14px; }
+    .data-table th, .data-table td { border: 1px solid #d1d5db; padding: 8px 14px; text-align: center; }
+    .data-table th { background: #f1f5f9; color: #475569; font-weight: 600; font-size: 13px; }
+    .data-table td { background: #fff; color: #1e293b; }
+  </style>
+
+  <script defer src="https://math-class.it.kr/lib/katex/katex.min.js"></script>
+  <script defer src="https://math-class.it.kr/lib/katex/contrib/auto-render.min.js"></script>
+
+  <script type="module">
+    import { initWorksheetApp } from 'https://math-class.it.kr/lib/js/worksheet-app.js';
+    import { initFirebaseWorksheet } from 'https://math-class.it.kr/lib/js/firebase-worksheet.js';
+    const app = initWorksheetApp('worksheet_PS_7-8차시_덧셈정리');
+    initFirebaseWorksheet('PS_7-8차시_덧셈정리', { showAuth: true });
+  </script>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="header-unit">II. 확률</div>
+    <div class="header-title">
+      <h1>2. 확률의 덧셈정리 &mdash; 덧셈정리와 여사건의 확률</h1>
+      <div class="header-info"><span>교과서 50~52쪽</span></div>
+    </div>
+  </div>
+
+  <div class="student-info">
+    <div class="save-actions">
+      <button class="btn-save" id="btnSave">&#x1F4BE; 저장</button>
+      <button class="btn-records" id="btnRecords">&#x1F4CB; 기록</button>
+    </div>
+    <span class="student-display" id="studentDisplay"></span>
+  </div>
+
+  <div class="achievement">
+    <strong>성취기준</strong> &nbsp;
+    [12확통02-03] 확률의 덧셈정리를 이해하고 활용할 수 있다. &nbsp;
+    [12확통02-04] 여사건의 확률을 이해하고 활용할 수 있다.
+  </div>
+
+  <!-- ============ 카드 1: 확률의 덧셈정리 (7차시) ============ -->
+  <div class="card">
+    <div class="section-title">
+      <div class="section-number">1</div>
+      <h2>확률의 덧셈정리란 무엇일까? (7차시)</h2>
+    </div>
+
+    <!-- 1-1. 단원 도입 -->
+    <div class="concept-box">
+      <h3><span class="badge">도입</span> 확률의 덧셈정리</h3>
+      <p>강아지 산책 달력에서 '비가 오지 않은 날'을 세려면, 모든 날을 세고 '비 온 날'을 빼는 것이 더 빠릅니다. 이처럼 <b>여러 사건이 함께 일어나는 경우</b>의 확률을 구하는 방법을 알아봅시다.</p>
+    </div>
+
+    <!-- 1-2. 탐구 열기 -->
+    <div class="concept-box highlight">
+      <h3><span class="badge">탐구</span> 온라인 강의 이용 학생 수</h3>
+      <p>수빈이네 반 학생 35명을 대상으로 두 온라인 강의 A, B의 이용 여부를 조사하였다.</p>
+      <table class="data-table">
+        <tr><th></th><th>강의 A 이용</th><th>강의 A 미이용</th><th>합계</th></tr>
+        <tr><th>강의 B 이용</th><td>10</td><td>10</td><td>20</td></tr>
+        <tr><th>강의 B 미이용</th><td>9</td><td>6</td><td>15</td></tr>
+        <tr><th>합계</th><td>19</td><td>16</td><td>35</td></tr>
+      </table>
+    </div>
+
+    <!-- 탐구 ⑴ -->
+    <div class="problem">
+      <div class="problem-label">탐구 ⑴</div>
+      <p>A 또는 B를 이용한 학생의 수를 구하시오.</p>
+      <div class="writing-area" data-h="80">
+        <canvas></canvas>
+        <div class="canvas-toolbar"></div>
+      </div>
+      <div class="answer-reveal">
+        <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+        <div class="answer-content">
+          <div class="ans-label">정답</div>
+          <p>\( n(A \cup B) = n(A) + n(B) - n(A \cap B) = 19 + 20 - 10 = 29 \)명</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 탐구 ⑵ -->
+    <div class="problem">
+      <div class="problem-label">탐구 ⑵</div>
+      <p>35명 중 한 명을 임의로 선택할 때, A 또는 B를 이용한 학생일 확률을 구하시오.</p>
+      <div class="writing-area" data-h="80">
+        <canvas></canvas>
+        <div class="canvas-toolbar"></div>
+      </div>
+      <div class="answer-reveal">
+        <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+        <div class="answer-content">
+          <div class="ans-label">정답</div>
+          <p>\( P(A \cup B) = \dfrac{29}{35} \)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1-3. 생각 키우기 -->
+    <div class="concept-box blue">
+      <h3>생각 키우기</h3>
+      <p>두 사건 \( A \), \( B \)에 대하여 사건 \( A \) 또는 사건 \( B \)가 일어날 확률은 어떻게 구할까?</p>
+    </div>
+
+    <!-- 1-4. 본문: 덧셈정리 유도 -->
+    <div class="concept-box">
+      <h3><span class="badge">유도</span> 확률의 덧셈정리</h3>
+      <p>표본공간 \( S \)의 원소의 개수가 \( n(S) \)이고, 각 근원사건이 일어날 확률이 같을 때, 두 사건 \( A \), \( B \)에 대하여</p>
+      <p style="text-align:center;">집합의 원소 관계: \( n(A \cup B) = n(A) + n(B) - n(A \cap B) \)</p>
+      <p>양변을 \( n(S) \)로 나누면</p>
+      \[ \frac{n(A \cup B)}{n(S)} = \frac{n(A)}{n(S)} + \frac{n(B)}{n(S)} - \frac{n(A \cap B)}{n(S)} \]
+      <p>따라서</p>
+      \[ P(A \cup B) = P(A) + P(B) - P(A \cap B) \]
+      <p>특히, 두 사건 \( A \)와 \( B \)가 <b>배반사건</b>이면 \( A \cap B = \emptyset \)이므로 \( P(A \cap B) = 0 \)이다.</p>
+      \[ P(A \cup B) = P(A) + P(B) \]
+    </div>
+
+    <!-- 1-5. INTERACTIVE ① 벤 다이어그램 탐구기 -->
+    <div class="venn-explorer" id="vennExplorer">
+      <h3>&#x1F50D; 인터랙티브 &#x2460; &mdash; 벤 다이어그램으로 이해하는 덧셈정리</h3>
+      <p style="font-size:13px;color:#64748b;margin-bottom:12px;">버튼을 순서대로 눌러 왜 \( P(A \cap B) \)를 빼는지 직접 확인해 보세요.</p>
+
+      <div class="venn-step-btns" id="vennStepBtns">
+        <button data-step="1" class="active">STEP 1: 전체 보기</button>
+        <button data-step="2" disabled>STEP 2: A 세기</button>
+        <button data-step="3" disabled>STEP 3: B 세기</button>
+        <button data-step="4" disabled>STEP 4: 중복 빼기</button>
+        <button data-step="5" disabled>STEP 5: 배반인 경우</button>
+      </div>
+
+      <div class="venn-svg-area" id="vennSvgArea">
+        <!-- SVG inserted by JS -->
+      </div>
+
+      <div class="venn-formula" id="vennFormula"></div>
+      <div class="venn-message" id="vennMessage"></div>
+
+      <div class="venn-reset-wrap">
+        <button id="vennReset">&#x21BA; 처음으로</button>
+      </div>
+    </div>
+
+    <!-- 1-6. 개념 정리 -->
+    <div class="concept-box highlight">
+      <h3><span class="badge">개념 정리</span> 확률의 덧셈정리</h3>
+      <p>두 사건 \( A \), \( B \)에 대하여</p>
+      <ul>
+        <li><b>&#x2776;</b> \( P(A \cup B) = P(A) + P(B) - P(A \cap B) \)</li>
+        <li><b>&#x2777;</b> \( A \)와 \( B \)가 배반사건이면 \( P(A \cup B) = P(A) + P(B) \)</li>
+      </ul>
+    </div>
+
+    <!-- 1-7. INTERACTIVE ③ 배반사건 판별 퀴즈 -->
+    <div class="exclusive-quiz" id="exclusiveQuiz">
+      <h3>&#x1F3AF; 인터랙티브 &#x2462; &mdash; 배반사건 판별 퀴즈</h3>
+      <p class="quiz-desc">두 사건이 배반사건인지 판별하고, 알맞은 공식을 골라보세요.</p>
+
+      <div class="quiz-progress" id="quizProgress"></div>
+      <div id="quizBody">
+        <div class="quiz-question" id="quizQuestion"></div>
+        <div class="quiz-choices" id="quizChoices"></div>
+        <div class="formula-choices" id="formulaChoices" style="display:none;"></div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+      </div>
+      <div id="quizSummary" style="display:none;"></div>
+    </div>
+
+    <!-- 1-8. 예제 1 -->
+    <div class="problem">
+      <div class="problem-label">예제 1</div>
+      <p>한 개의 주사위를 던질 때, 소수 또는 10의 약수의 눈이 나올 확률을 구하시오.</p>
+      <div class="writing-area" data-h="120">
+        <canvas></canvas>
+        <div class="canvas-toolbar"></div>
+      </div>
+      <div class="answer-reveal">
+        <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+        <div class="answer-content">
+          <div class="ans-label">정답</div>
+          <p>소수인 사건 \( A = \{2, 3, 5\} \), 10의 약수인 사건 \( B = \{1, 2, 5\} \)</p>
+          <p>\( A \cap B = \{2, 5\} \)</p>
+          <p>\( P(A \cup B) = P(A) + P(B) - P(A \cap B) = \dfrac{3}{6} + \dfrac{3}{6} - \dfrac{2}{6} = \dfrac{4}{6} = \dfrac{2}{3} \)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1-9. 스스로 하기 -->
+    <div class="problem">
+      <div class="problem-label">스스로 하기</div>
+      <p>1부터 10까지의 자연수가 하나씩 적힌 카드 10장에서 한 장을 꺼낼 때, 2의 배수 또는 5의 배수가 적힌 카드가 나올 확률을 구하시오.</p>
+      <div class="writing-area" data-h="120">
+        <canvas></canvas>
+        <div class="canvas-toolbar"></div>
+      </div>
+      <div class="answer-reveal">
+        <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+        <div class="answer-content">
+          <div class="ans-label">정답</div>
+          <p>2의 배수: \( A = \{2, 4, 6, 8, 10\} \), 5의 배수: \( B = \{5, 10\} \)</p>
+          <p>\( A \cap B = \{10\} \)</p>
+          <p>\( P(A \cup B) = \dfrac{5}{10} + \dfrac{2}{10} - \dfrac{1}{10} = \dfrac{6}{10} = \dfrac{3}{5} \)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1-10. 문제 1 -->
+    <div class="problem">
+      <div class="problem-label">문제 1</div>
+      <p>어느 학교 학생 중 치킨을 좋아하는 학생은 30%, 피자를 좋아하는 학생은 20%, 둘 다 좋아하는 학생은 10%이다. 이 학교 학생 중 한 명을 임의로 선택할 때, 치킨 또는 피자를 좋아하는 학생일 확률을 구하시오.</p>
+      <div class="writing-area" data-h="91">
+        <canvas></canvas>
+        <div class="canvas-toolbar"></div>
+      </div>
+      <div class="answer-reveal">
+        <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+        <div class="answer-content">
+          <div class="ans-label">정답</div>
+          <p>치킨 사건 \( A \), 피자 사건 \( B \)로 놓으면</p>
+          <p>\( P(A \cup B) = P(A) + P(B) - P(A \cap B) = 0.3 + 0.2 - 0.1 = 0.4 \)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1-11. 문제 2 -->
+    <div class="problem">
+      <div class="problem-label">문제 2</div>
+      <p>흰 공 4개와 빨간 공 5개가 들어 있는 주머니에서 2개의 공을 동시에 꺼낼 때, 같은 색 공이 나올 확률을 구하시오.</p>
+      <div class="writing-area" data-h="120">
+        <canvas></canvas>
+        <div class="canvas-toolbar"></div>
+      </div>
+      <div class="answer-reveal">
+        <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+        <div class="answer-content">
+          <div class="ans-label">정답</div>
+          <p>흰 공 2개: \( {}_{4}\mathrm{C}_{2} = 6 \), 빨간 공 2개: \( {}_{5}\mathrm{C}_{2} = 10 \)</p>
+          <p>전체: \( {}_{9}\mathrm{C}_{2} = 36 \)</p>
+          <p>흰 공끼리 나오는 사건과 빨간 공끼리 나오는 사건은 <b>배반사건</b>이므로</p>
+          <p>\( P = \dfrac{6}{36} + \dfrac{10}{36} = \dfrac{16}{36} = \dfrac{4}{9} \)</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- card 1 끝 -->
+
+  <!-- ============ 카드 2: 여사건의 확률 (8차시) ============ -->
+  <div class="card">
+    <div class="section-title">
+      <div class="section-number">2</div>
+      <h2>여사건의 확률은 어떻게 구할까? (8차시)</h2>
+    </div>
+
+    <!-- 2-1. 본문: 여사건 확률 유도 -->
+    <div class="concept-box">
+      <h3><span class="badge">유도</span> 여사건의 확률</h3>
+      <div style="display:flex;justify-content:center;margin:10px 0;">
+        <svg width="280" height="160" viewBox="0 0 280 160" style="max-width:100%;height:auto;">
+          <rect x="10" y="10" width="260" height="140" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+          <text x="258" y="28" font-size="14" fill="#64748b" text-anchor="end" font-weight="600">S</text>
+          <circle cx="130" cy="85" r="50" fill="#93c5fd" fill-opacity="0.4" stroke="#3b82f6" stroke-width="1.5"/>
+          <text x="130" y="90" font-size="16" fill="#1d4ed8" text-anchor="middle" font-weight="700">A</text>
+          <text x="40" y="50" font-size="13" fill="#64748b" font-weight="600">A&#x1D9C;</text>
+          <path d="M10,10 h260 v140 h-260 Z M130,35 a50,50 0 1,0 0,100 a50,50 0 1,0 0,-100 Z" fill="#fde68a" fill-opacity="0.25" fill-rule="evenodd"/>
+        </svg>
+      </div>
+      <p>사건 \( A \)와 그 여사건 \( A^c \)는 배반사건이고, \( A \cup A^c = S \)이므로</p>
+      \[ P(A \cup A^c) = P(A) + P(A^c) = P(S) = 1 \]
+      <p>따라서</p>
+      \[ P(A^c) = 1 - P(A) \]
+      <div class="tip-box">
+        <b>활용 팁</b> &nbsp; "적어도 하나"가 포함된 문제는, 여사건("하나도 없는 경우")의 확률을 구해 1에서 빼면 계산이 훨씬 간단해집니다.
+      </div>
+    </div>
+
+    <!-- 2-2. 개념 정리 -->
+    <div class="concept-box highlight">
+      <h3><span class="badge">개념 정리</span> 여사건의 확률</h3>
+      <p>사건 \( A \)의 여사건 \( A^c \)에 대하여</p>
+      \[ P(A^c) = 1 - P(A) \]
+    </div>
+
+    <!-- 2-3. 예제 2 -->
+    <div class="problem">
+      <div class="problem-label">예제 2</div>
+      <p>10명의 학생 중에서 3명의 대표를 뽑을 때, 특정 학생 승재와 민희 중 적어도 한 명이 뽑힐 확률을 구하시오.</p>
+      <div class="writing-area" data-h="120">
+        <canvas></canvas>
+        <div class="canvas-toolbar"></div>
+      </div>
+      <div class="answer-reveal">
+        <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+        <div class="answer-content">
+          <div class="ans-label">정답</div>
+          <p>여사건: 승재, 민희 모두 뽑히지 않는 경우</p>
+          <p>전체: \( {}_{10}\mathrm{C}_{3} = 120 \)</p>
+          <p>여사건: 나머지 8명에서 3명 선택 = \( {}_{8}\mathrm{C}_{3} = 56 \)</p>
+          <p>\( P(A^c) = \dfrac{56}{120} = \dfrac{7}{15} \)</p>
+          <p>\( P(A) = 1 - \dfrac{7}{15} = \dfrac{8}{15} \)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2-4. INTERACTIVE ② 여사건 전환 연습기 -->
+    <div class="complement-explorer" id="complementExplorer">
+      <h3>&#x1F504; 인터랙티브 &#x2461; &mdash; "적어도 하나" 여사건 전환 연습기</h3>
+      <p class="complement-desc">10명 중 3명을 뽑을 때, 승재와 민희 중 적어도 한 명이 뽑힐 확률을 두 가지 방법으로 풀어봅시다.</p>
+
+      <div id="compStep1">
+        <p style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:10px;">어떤 경로로 풀어볼까요?</p>
+        <div class="path-cards" id="pathCards">
+          <div class="path-card path-a" data-path="a">
+            <h4>경로 A</h4>
+            <p>직접 세기</p>
+          </div>
+          <div class="path-card path-b" data-path="b">
+            <h4>경로 B</h4>
+            <p>여사건으로 풀기</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="compDetail" style="display:none;"></div>
+      <div id="compCompare" style="display:none;"></div>
+    </div>
+
+    <!-- 2-5. 문제 3 -->
+    <div class="problem">
+      <div class="problem-label">문제 3</div>
+      <p>1부터 20까지의 자연수가 하나씩 적힌 카드 20장에서 2장을 동시에 뽑을 때, 뽑은 두 수의 곱이 짝수일 확률을 구하시오.</p>
+      <div class="writing-area" data-h="120">
+        <canvas></canvas>
+        <div class="canvas-toolbar"></div>
+      </div>
+      <div class="answer-reveal">
+        <div class="answer-toggle"><span class="arrow">&#9654;</span> 정답 확인</div>
+        <div class="answer-content">
+          <div class="ans-label">정답</div>
+          <p>여사건: 두 수의 곱이 홀수 = 두 수 모두 홀수</p>
+          <p>전체: \( {}_{20}\mathrm{C}_{2} = 190 \)</p>
+          <p>홀수 10개 중 2개: \( {}_{10}\mathrm{C}_{2} = 45 \)</p>
+          <p>\( P(\text{여사건}) = \dfrac{45}{190} = \dfrac{9}{38} \)</p>
+          <p>\( P(\text{곱이 짝수}) = 1 - \dfrac{9}{38} = \dfrac{29}{38} \)</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- card 2 끝 -->
+
+</div><!-- container 끝 -->
+
+<!-- ===== 인터랙티브 스크립트 ===== -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  /* ── KaTeX 자동 렌더링 ── */
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false},
+        {left: '\\[', right: '\\]', display: true},
+        {left: '\\(', right: '\\)', display: false}
+      ],
+      throwOnError: false
+    });
+  }
+
+  function renderKaTeX(el) {
+    if (typeof renderMathInElement === 'function') {
+      renderMathInElement(el, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\[', right: '\\]', display: true},
+          {left: '\\(', right: '\\)', display: false}
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  /* ════════════════════════════════════════════════════
+     INTERACTIVE ① — 벤 다이어그램 탐구기
+     ════════════════════════════════════════════════════ */
+  (function() {
+    var svgArea = document.getElementById('vennSvgArea');
+    var formulaEl = document.getElementById('vennFormula');
+    var messageEl = document.getElementById('vennMessage');
+    var stepBtns = document.getElementById('vennStepBtns');
+    var resetBtn = document.getElementById('vennReset');
+    var currentStep = 1;
+
+    function makeVennSVG(opts) {
+      // opts: { highlightA, highlightB, highlightAB, showX2, exclusive }
+      var o = opts || {};
+      if (o.exclusive) {
+        return '<svg width="360" height="180" viewBox="0 0 360 180" style="max-width:100%;height:auto;">'
+          + '<rect x="5" y="5" width="350" height="170" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>'
+          + '<text x="340" y="24" font-size="13" fill="#64748b" text-anchor="end" font-weight="600">S={1,2,3,4,5,6}</text>'
+          + '<circle cx="120" cy="95" r="55" fill="' + (o.highlightA ? '#93c5fd' : '#e2e8f0') + '" fill-opacity="0.5" stroke="#3b82f6" stroke-width="1.5"/>'
+          + '<circle cx="260" cy="95" r="45" fill="' + (o.highlightB ? '#86efac' : '#e2e8f0') + '" fill-opacity="0.5" stroke="#22c55e" stroke-width="1.5"/>'
+          + '<text x="120" y="80" font-size="13" fill="#1d4ed8" text-anchor="middle" font-weight="700">A</text>'
+          + '<text x="120" y="100" font-size="15" fill="#334155" text-anchor="middle">{1, 2, 3}</text>'
+          + '<text x="260" y="80" font-size="13" fill="#16a34a" text-anchor="middle" font-weight="700">B</text>'
+          + '<text x="260" y="100" font-size="15" fill="#334155" text-anchor="middle">{5, 6}</text>'
+          + '<text x="30" y="170" font-size="12" fill="#94a3b8">4는 어디에도 해당 없음</text>'
+          + '</svg>';
+      }
+
+      var aOnlyFill = o.highlightA ? '#93c5fd' : '#e2e8f0';
+      var bOnlyFill = o.highlightB ? '#86efac' : '#e2e8f0';
+      var abFill = (o.highlightA || o.highlightB) ? '#fbbf24' : '#e2e8f0';
+      if (o.highlightAB === false) abFill = '#e2e8f0';
+
+      var svg = '<svg width="340" height="200" viewBox="0 0 340 200" style="max-width:100%;height:auto;">'
+        + '<rect x="5" y="5" width="330" height="190" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>'
+        + '<text x="322" y="24" font-size="13" fill="#64748b" text-anchor="end" font-weight="600">S (35명)</text>';
+
+      // Clip paths for exclusive regions
+      svg += '<defs>'
+        + '<clipPath id="clipA"><circle cx="140" cy="110" r="65"/></clipPath>'
+        + '<clipPath id="clipB"><circle cx="210" cy="110" r="65"/></clipPath>'
+        + '<clipPath id="clipNotA"><rect x="5" y="5" width="330" height="190"/></clipPath>'
+        + '</defs>';
+
+      // A only (A minus B)
+      svg += '<circle cx="140" cy="110" r="65" fill="' + aOnlyFill + '" fill-opacity="0.4"/>';
+      // B only
+      svg += '<circle cx="210" cy="110" r="65" fill="' + bOnlyFill + '" fill-opacity="0.4"/>';
+      // Intersection
+      var intPath = 'M175,60 '
+        + 'a65,65 0 0,1 0,100 '
+        + 'a65,65 0 0,1 0,-100 Z';
+      // Use the actual intersection area
+      svg += '<path d="M' + intersectionPath(140,210,110,65) + '" fill="' + abFill + '" fill-opacity="0.6"/>';
+
+      // Outlines
+      svg += '<circle cx="140" cy="110" r="65" fill="none" stroke="#3b82f6" stroke-width="1.5"/>';
+      svg += '<circle cx="210" cy="110" r="65" fill="none" stroke="#22c55e" stroke-width="1.5"/>';
+
+      // Labels
+      svg += '<text x="110" y="90" font-size="13" fill="#1d4ed8" text-anchor="middle" font-weight="700">A</text>';
+      svg += '<text x="240" y="90" font-size="13" fill="#16a34a" text-anchor="middle" font-weight="700">B</text>';
+
+      // Numbers in regions
+      svg += '<text x="110" y="118" font-size="18" fill="#334155" text-anchor="middle" font-weight="700">9</text>';
+      svg += '<text x="175" y="118" font-size="18" fill="#92400e" text-anchor="middle" font-weight="700">10</text>';
+      svg += '<text x="240" y="118" font-size="18" fill="#334155" text-anchor="middle" font-weight="700">10</text>';
+      svg += '<text x="40" y="180" font-size="14" fill="#94a3b8" text-anchor="middle">6</text>';
+      svg += '<text x="40" y="194" font-size="10" fill="#94a3b8" text-anchor="middle">(미이용)</text>';
+
+      // x2 badge
+      if (o.showX2) {
+        svg += '<rect x="185" y="96" width="28" height="18" rx="5" fill="#ef4444"/>';
+        svg += '<text x="199" y="109" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">&times;2</text>';
+      }
+
+      svg += '</svg>';
+      return svg;
+    }
+
+    function intersectionPath(cx1, cx2, cy, r) {
+      // Calculate intersection points of two circles with same radius and cy
+      var d = cx2 - cx1;
+      var a = d / 2;
+      var h = Math.sqrt(r * r - a * a);
+      var mx = (cx1 + cx2) / 2;
+      var y1 = cy - h;
+      var y2 = cy + h;
+      // Arc from top intersection to bottom via right circle, then back via left circle
+      return mx + ',' + y1 + ' A' + r + ',' + r + ' 0 0,1 ' + mx + ',' + y2 + ' A' + r + ',' + r + ' 0 0,1 ' + mx + ',' + y1;
+    }
+
+    function setStep(step) {
+      currentStep = step;
+      var btns = stepBtns.querySelectorAll('button');
+      btns.forEach(function(b) {
+        var s = parseInt(b.dataset.step);
+        b.classList.toggle('active', s === step);
+        b.disabled = s > step;
+      });
+
+      if (step === 1) {
+        svgArea.innerHTML = makeVennSVG({});
+        formulaEl.innerHTML = '\\( n(A \\cup B) = \\underline{\\quad} + \\underline{\\quad} - \\underline{\\quad} = \\underline{\\quad} \\)';
+        messageEl.textContent = '';
+      } else if (step === 2) {
+        svgArea.innerHTML = makeVennSVG({ highlightA: true });
+        formulaEl.innerHTML = '\\( n(A \\cup B) = \\mathbf{19} + \\underline{\\quad} - \\underline{\\quad} = \\underline{\\quad} \\)';
+        messageEl.innerHTML = 'A를 세면: A에만 속한 9명 + A&cap;B에 속한 10명 = <b>19명</b>';
+      } else if (step === 3) {
+        svgArea.innerHTML = makeVennSVG({ highlightA: true, highlightB: true, showX2: true });
+        formulaEl.innerHTML = '\\( n(A \\cup B) = \\mathbf{19} + \\mathbf{20} - \\underline{\\quad} = \\underline{\\quad} \\)';
+        messageEl.innerHTML = '19 + 20 = 39인데, 실제 A&cup;B는 29명입니다. <b>A&cap;B의 10명이 두 번 세어졌네요!</b>';
+      } else if (step === 4) {
+        svgArea.innerHTML = makeVennSVG({ highlightA: true, highlightB: true });
+        formulaEl.innerHTML = '\\( n(A \\cup B) = 19 + 20 - \\mathbf{10} = \\mathbf{29} \\)<br>\\( P(A \\cup B) = \\dfrac{29}{35} \\)';
+        messageEl.innerHTML = '중복으로 센 A&cap;B = 10명을 한 번 빼주면 정확한 합집합의 크기를 구할 수 있습니다.';
+      } else if (step === 5) {
+        svgArea.innerHTML = makeVennSVG({ highlightA: true, highlightB: true, exclusive: true });
+        formulaEl.innerHTML = '\\( P(A \\cup B) = P(A) + P(B) = \\dfrac{3}{6} + \\dfrac{2}{6} = \\dfrac{5}{6} \\)';
+        messageEl.innerHTML = '배반사건이면 A&cap;B = &empty; &rarr; 중복이 없으므로 빼줄 것도 없습니다!';
+      }
+      renderKaTeX(formulaEl);
+    }
+
+    stepBtns.addEventListener('click', function(e) {
+      var btn = e.target.closest('button');
+      if (!btn || btn.disabled) return;
+      var s = parseInt(btn.dataset.step);
+      // Enable next step
+      var nextBtn = stepBtns.querySelector('[data-step="' + (s + 1) + '"]');
+      if (nextBtn) nextBtn.disabled = false;
+      setStep(s);
+    });
+
+    resetBtn.addEventListener('click', function() {
+      var btns = stepBtns.querySelectorAll('button');
+      btns.forEach(function(b, i) { b.disabled = i > 0; b.classList.remove('active'); });
+      btns[0].classList.add('active');
+      setStep(1);
+    });
+
+    // Init
+    setStep(1);
+  })();
+
+
+  /* ════════════════════════════════════════════════════
+     INTERACTIVE ③ — 배반사건 판별 퀴즈
+     ════════════════════════════════════════════════════ */
+  (function() {
+    var questions = [
+      {
+        context: '주사위 한 개를 던질 때',
+        eventA: 'A = {2, 3, 5} (소수)',
+        eventB: 'B = {2, 4, 6} (짝수)',
+        exclusive: false,
+        intersection: '{2}',
+        explain: 'A&cap;B = {2}이므로 배반사건이 아닙니다.'
+      },
+      {
+        context: '주사위 한 개를 던질 때',
+        eventA: 'A = {1, 2, 3} (3 이하)',
+        eventB: 'B = {5, 6} (5 이상)',
+        exclusive: true,
+        intersection: '&empty;',
+        explain: 'A&cap;B = &empty;이므로 배반사건입니다.'
+      },
+      {
+        context: '1~10 카드에서 한 장을 뽑을 때',
+        eventA: 'A = {2, 4, 6, 8, 10} (2의 배수)',
+        eventB: 'B = {5, 10} (5의 배수)',
+        exclusive: false,
+        intersection: '{10}',
+        explain: 'A&cap;B = {10}이므로 배반사건이 아닙니다.'
+      },
+      {
+        context: '혈액형 검사에서',
+        eventA: 'A = A형인 사건',
+        eventB: 'B = B형인 사건',
+        exclusive: true,
+        intersection: '&empty;',
+        explain: '한 사람의 혈액형은 하나이므로 A&cap;B = &empty;, 배반사건입니다.'
+      },
+      {
+        context: '학생들의 음식 선호 조사에서',
+        eventA: 'A = 치킨을 먹은 학생',
+        eventB: 'B = 피자를 먹은 학생',
+        exclusive: false,
+        intersection: '(둘 다 먹은 학생 존재 가능)',
+        explain: '치킨과 피자를 둘 다 먹은 학생이 있을 수 있으므로 배반사건이 아닙니다.'
+      },
+      {
+        context: '주사위 한 개를 던질 때',
+        eventA: 'A = {1, 3, 5} (홀수)',
+        eventB: 'B = {2, 4, 6} (짝수)',
+        exclusive: true,
+        intersection: '&empty;',
+        explain: 'A&cap;B = &empty;이므로 배반사건입니다. 홀수와 짝수는 동시에 나올 수 없습니다.'
+      }
+    ];
+
+    var qIdx = 0;
+    var answers = []; // { exclusive: bool, formulaOk: bool }
+    var step = 1; // 1=exclusive choice, 2=formula choice
+
+    var progressEl = document.getElementById('quizProgress');
+    var questionEl = document.getElementById('quizQuestion');
+    var choicesEl = document.getElementById('quizChoices');
+    var formulaEl = document.getElementById('formulaChoices');
+    var feedbackEl = document.getElementById('quizFeedback');
+    var summaryEl = document.getElementById('quizSummary');
+    var bodyEl = document.getElementById('quizBody');
+
+    function renderProgress() {
+      var html = '';
+      for (var i = 0; i < questions.length; i++) {
+        var cls = 'quiz-dot';
+        if (i < qIdx) cls += ' done';
+        else if (i === qIdx) cls += ' current';
+        html += '<div class="' + cls + '"></div>';
+      }
+      progressEl.innerHTML = html;
+    }
+
+    function showQuestion() {
+      if (qIdx >= questions.length) { showSummary(); return; }
+      step = 1;
+      var q = questions[qIdx];
+      renderProgress();
+      questionEl.innerHTML = '<div class="quiz-context">' + (qIdx+1) + '/' + questions.length + ' &mdash; ' + q.context + '</div>'
+        + '<div class="quiz-events"><b>사건 A</b>: ' + q.eventA + '<br><b>사건 B</b>: ' + q.eventB + '</div>';
+      choicesEl.innerHTML = '<button data-ans="true">배반이다</button><button data-ans="false">배반이 아니다</button>';
+      choicesEl.style.display = '';
+      formulaEl.style.display = 'none';
+      feedbackEl.textContent = '';
+      renderKaTeX(questionEl);
+    }
+
+    function showFormulaStep() {
+      step = 2;
+      formulaEl.style.display = '';
+      formulaEl.innerHTML = '<button data-formula="minus">\\( P(A)+P(B)-P(A\\cap B) \\)</button>'
+        + '<button data-formula="add">\\( P(A)+P(B) \\)</button>';
+      renderKaTeX(formulaEl);
+    }
+
+    function finishQuestion(exclusiveCorrect, formulaCorrect) {
+      answers.push({ exclusive: exclusiveCorrect, formula: formulaCorrect });
+      var q = questions[qIdx];
+      feedbackEl.innerHTML = (exclusiveCorrect && formulaCorrect ? '&#x2705; ' : '&#x274C; ')
+        + q.explain + '<br>A&cap;B = ' + q.intersection
+        + ' &rarr; ' + (q.exclusive ? '\\( P(A \\cup B) = P(A) + P(B) \\)' : '\\( P(A \\cup B) = P(A) + P(B) - P(A \\cap B) \\)');
+      renderKaTeX(feedbackEl);
+      qIdx++;
+      setTimeout(function() { showQuestion(); }, 1800);
+    }
+
+    choicesEl.addEventListener('click', function(e) {
+      var btn = e.target.closest('button');
+      if (!btn || step !== 1) return;
+      var userAns = btn.dataset.ans === 'true';
+      var q = questions[qIdx];
+      var correct = userAns === q.exclusive;
+      // Disable buttons and show feedback
+      choicesEl.querySelectorAll('button').forEach(function(b) {
+        b.disabled = true;
+        if (b.dataset.ans === String(q.exclusive)) b.classList.add('correct');
+        else b.classList.add('wrong');
+      });
+      answers._tempExclusive = correct;
+      setTimeout(function() { showFormulaStep(); }, 600);
+    });
+
+    formulaEl.addEventListener('click', function(e) {
+      var btn = e.target.closest('button');
+      if (!btn || step !== 2) return;
+      var q = questions[qIdx];
+      var correctFormula = q.exclusive ? 'add' : 'minus';
+      var formulaCorrect = btn.dataset.formula === correctFormula;
+      formulaEl.querySelectorAll('button').forEach(function(b) {
+        b.disabled = true;
+        if (b.dataset.formula === correctFormula) b.classList.add('correct');
+        else b.classList.add('wrong');
+      });
+      finishQuestion(answers._tempExclusive, formulaCorrect);
+    });
+
+    function showSummary() {
+      bodyEl.style.display = 'none';
+      var html = '<div class="quiz-summary"><h4>퀴즈 결과</h4>';
+      for (var i = 0; i < questions.length; i++) {
+        var a = answers[i];
+        var ok = a.exclusive && a.formula;
+        html += '<div class="summary-row">'
+          + '<div class="summary-num ' + (ok ? 'ok' : 'ng') + '">' + (i+1) + '</div>'
+          + '<span>' + questions[i].context + ' &mdash; '
+          + (questions[i].exclusive ? '배반' : '비배반')
+          + (ok ? ' &#x2705;' : ' &#x274C;') + '</span></div>';
+      }
+      html += '</div>';
+      summaryEl.innerHTML = html;
+      summaryEl.style.display = '';
+      renderProgress();
+    }
+
+    // Init
+    showQuestion();
+  })();
+
+
+  /* ════════════════════════════════════════════════════
+     INTERACTIVE ② — 여사건 전환 연습기
+     ════════════════════════════════════════════════════ */
+  (function() {
+    var pathCards = document.getElementById('pathCards');
+    var step1 = document.getElementById('compStep1');
+    var detailEl = document.getElementById('compDetail');
+    var compareEl = document.getElementById('compCompare');
+    var selectedPath = null;
+
+    function showPathA() {
+      detailEl.style.display = '';
+      detailEl.innerHTML = '<div class="path-detail">'
+        + '<p style="font-weight:700;margin-bottom:8px;">경로 A: 직접 세기</p>'
+        + '<div class="step-line"><b>경우 1)</b> 승재만 뽑힘: \\( 1 \\times {}_{8}\\mathrm{C}_{2} = 28 \\)</div>'
+        + '<div class="step-line"><b>경우 2)</b> 민희만 뽑힘: \\( 1 \\times {}_{8}\\mathrm{C}_{2} = 28 \\)</div>'
+        + '<div class="step-line"><b>경우 3)</b> 둘 다 뽑힘: \\( 1 \\times 1 \\times {}_{8}\\mathrm{C}_{1} = 8 \\)</div>'
+        + '<div class="step-line" style="margin-top:8px;font-weight:700;">합계: 28 + 28 + 8 = <b>64</b></div>'
+        + '<div class="step-line">\\( P(A) = \\dfrac{64}{120} = \\dfrac{8}{15} \\)</div>'
+        + '<div class="step-count">계산 단계: 3가지 분기 + 합산</div>'
+        + '</div>';
+      renderKaTeX(detailEl);
+    }
+
+    function showPathB() {
+      detailEl.style.display = '';
+      detailEl.innerHTML = '<div class="path-detail">'
+        + '<p style="font-weight:700;margin-bottom:8px;">경로 B: 여사건으로 풀기</p>'
+        + '<div class="step-line"><b>여사건</b>: 승재, 민희 둘 다 안 뽑힘</div>'
+        + '<div class="step-line">나머지 8명 중 3명 선택: \\( {}_{8}\\mathrm{C}_{3} = 56 \\)</div>'
+        + '<div class="step-line">\\( P(A^c) = \\dfrac{56}{120} = \\dfrac{7}{15} \\)</div>'
+        + '<div class="step-line" style="margin-top:8px;font-weight:700;">\\( P(A) = 1 - \\dfrac{7}{15} = \\dfrac{8}{15} \\)</div>'
+        + '<div class="step-count">계산 단계: 1가지 계산 + 뺄셈</div>'
+        + '</div>';
+      renderKaTeX(detailEl);
+    }
+
+    function showComparison() {
+      compareEl.style.display = '';
+      compareEl.innerHTML = '<div class="compare-box">'
+        + '<div class="compare-col"><b>경로 A (직접 세기)</b><br>3가지 분기 계산<br><div class="result">\\( \\dfrac{8}{15} \\)</div></div>'
+        + '<div class="compare-col"><b>경로 B (여사건)</b><br>1가지 계산<br><div class="result">\\( \\dfrac{8}{15} \\)</div></div>'
+        + '</div>'
+        + '<div style="text-align:center;font-size:18px;font-weight:700;color:#22c55e;margin-bottom:8px;">&#x2714; 같은 답!</div>'
+        + '<div class="discovery-box">"적어도 하나"가 나오면, 여사건("하나도 없는 경우")을 먼저 생각하면 계산이 간단해집니다.</div>'
+        + '<button class="other-path-btn" id="otherPathBtn">다른 경로도 볼래요?</button>';
+      renderKaTeX(compareEl);
+
+      document.getElementById('otherPathBtn').addEventListener('click', function() {
+        if (selectedPath === 'a') { showPathB(); }
+        else { showPathA(); }
+        this.style.display = 'none';
+      });
+    }
+
+    pathCards.addEventListener('click', function(e) {
+      var card = e.target.closest('.path-card');
+      if (!card) return;
+      selectedPath = card.dataset.path;
+      pathCards.querySelectorAll('.path-card').forEach(function(c) { c.classList.remove('selected'); });
+      card.classList.add('selected');
+
+      if (selectedPath === 'a') showPathA();
+      else showPathB();
+
+      setTimeout(function() { showComparison(); }, 300);
+    });
+  })();
+
+});
+</script>
+
+</body>
+</html>

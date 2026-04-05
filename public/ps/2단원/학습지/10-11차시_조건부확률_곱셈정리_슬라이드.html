@@ -1670,7 +1670,13 @@ document.addEventListener('DOMContentLoaded', function () {
         var simEl = cs.querySelector('.step-simulation');
         if (simEl) {
             var nextBtn = simEl.querySelector('.sim-btn[data-dir="next"]');
-            if (nextBtn && !nextBtn.disabled) { nextBtn.click(); return; }
+            if (nextBtn && !nextBtn.disabled) {
+                var prog = simEl.querySelector('.sim-progress');
+                var before = prog ? prog.textContent : '';
+                nextBtn.click();
+                var after = prog ? prog.textContent : '';
+                if (before !== after) return;
+            }
         }
         var ur = cs.querySelectorAll('.answer-content:not(.revealed), .solution-content:not(.revealed), .example-solution:not(.revealed)');
         if (ur.length > 0) {
@@ -1749,6 +1755,42 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             document.exitFullscreen();
         }
+    });
+
+    // ── Minimal StepSimulation for slide-mode ──
+    deck.querySelectorAll('.step-simulation').forEach(function(simEl) {
+        var steps = simEl.querySelectorAll('.sim-step');
+        if (steps.length === 0) return;
+        var cur = 0;
+        var total = steps.length;
+        var prog = simEl.querySelector('.sim-progress');
+        var prevBtn = simEl.querySelector('.sim-btn[data-dir="prev"]');
+        var nextBtn = simEl.querySelector('.sim-btn[data-dir="next"]');
+
+        function showStep(idx) {
+            if (idx < 0 || idx >= total) return;
+            steps[cur].classList.remove('active');
+            cur = idx;
+            steps[cur].classList.add('active');
+            if (prog) prog.textContent = (cur + 1) + ' / ' + total;
+            if (prevBtn) prevBtn.disabled = (cur === 0);
+            if (nextBtn) nextBtn.disabled = (cur === total - 1);
+            // Re-render KaTeX in the newly visible step
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(steps[cur], {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '\\(', right: '\\)', display: false },
+                        { left: '$', right: '$', display: false }
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        if (nextBtn) nextBtn.addEventListener('click', function() { showStep(cur + 1); });
+        if (prevBtn) prevBtn.addEventListener('click', function() { showStep(cur - 1); });
+        showStep(0);
     });
 
     updateNav();

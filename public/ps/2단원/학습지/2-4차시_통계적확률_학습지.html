@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2-4차시 - 통계적 확률</title>
+
+  <!-- 공통 라이브러리 (Firebase Hosting) -->
+  <link rel="stylesheet" href="https://math-class.it.kr/lib/katex/katex.min.css">
+  <link rel="stylesheet" href="https://math-class.it.kr/lib/css/worksheet-common.css">
+  <link rel="stylesheet" href="https://math-class.it.kr/lib/css/auth-overlay.css">
+
+  <!-- 이 차시 고유 스타일 -->
+  <style>
+    /* ── 탐구 상자 ── */
+    .inquiry-box {
+      background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 12px;
+      padding: 16px; margin: 12px 0; font-size: 14px; line-height: 1.75; color: #1e293b;
+    }
+    .inquiry-box .inquiry-label {
+      font-size: 13px; font-weight: 700; color: #2563eb; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    /* ── 데이터 테이블 ── */
+    .data-table-wrap { overflow-x: auto; margin: 12px 0; }
+    .data-table {
+      width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px;
+    }
+    .data-table th {
+      background: #f1f5f9; padding: 8px 10px; font-weight: 700; color: #334155;
+      border: 1px solid #e2e8f0; white-space: nowrap; text-align: center;
+    }
+    .data-table td {
+      padding: 8px 10px; border: 1px solid #e2e8f0; text-align: center;
+      color: #1e293b; background: #fff;
+    }
+    .data-table td.highlight {
+      background: #dbeafe; font-weight: 700; color: #1d4ed8;
+    }
+    .data-table .row-header {
+      background: #f8fafc; font-weight: 600; color: #475569; text-align: left;
+      white-space: nowrap;
+    }
+
+    /* ── 큰 수의 법칙 시뮬레이션 ── */
+    .lln-sim {
+      background: #f8fafc; border: 2px solid #a8c4e0; border-radius: 14px;
+      padding: 16px; margin: 16px 0; user-select: none; -webkit-user-select: none;
+    }
+    .lln-sim h3 {
+      font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .lln-sim h3 .badge {
+      background: #dbeafe; color: #1d4ed8; font-size: 11px; padding: 2px 8px;
+      border-radius: 6px; font-weight: 700;
+    }
+
+    /* 탭 */
+    .lln-tabs {
+      display: flex; border: 2px solid #2563eb; border-radius: 10px;
+      overflow: hidden; margin-bottom: 14px; max-width: 340px;
+    }
+    .lln-tabs button {
+      flex: 1; padding: 10px 8px; background: #fff; color: #2563eb; border: none;
+      font-size: 14px; font-weight: 600; cursor: pointer; min-height: 44px;
+      touch-action: manipulation; font-family: inherit; transition: all 0.15s;
+    }
+    .lln-tabs button.active { background: #2563eb; color: #fff; }
+    .lln-tabs button:active { opacity: 0.85; }
+
+    /* 사건 선택 버튼 */
+    .lln-events {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;
+    }
+    .lln-events button {
+      padding: 6px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px;
+      background: #fff; font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: all 0.15s; touch-action: manipulation;
+    }
+    .lln-events button.active {
+      border-color: #2563eb; background: #eff6ff; color: #2563eb;
+    }
+    .lln-events button:active { transform: scale(0.97); }
+
+    /* 차트 영역 */
+    .lln-chart-wrap {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+      padding: 10px; margin-bottom: 14px; position: relative;
+    }
+    .lln-chart-wrap canvas { width: 100% !important; max-height: 280px; }
+
+    /* 예측 입력 */
+    .lln-predict {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+      font-size: 13px; color: #475569; margin-bottom: 12px;
+      padding: 10px; background: #fefce8; border: 1px solid #fde68a;
+      border-radius: 8px;
+    }
+    .lln-predict input {
+      width: 70px; padding: 5px 8px; border: 1.5px solid #cbd5e1;
+      border-radius: 6px; font-size: 13px; text-align: center;
+      font-family: inherit;
+    }
+    .lln-predict input:focus {
+      border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+      outline: none;
+    }
+
+    /* 컨트롤 버튼 */
+    .lln-controls {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;
+      justify-content: center;
+    }
+    .lln-controls button {
+      padding: 8px 16px; border: none; border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: all 0.15s; min-height: 44px;
+      touch-action: manipulation;
+    }
+    .lln-controls button:active { transform: scale(0.97); }
+    .lln-btn-throw { background: #2563eb; color: #fff; }
+    .lln-btn-throw:hover { background: #1d4ed8; }
+    .lln-btn-reset { background: #e2e8f0; color: #64748b; }
+    .lln-btn-reset:hover { background: #cbd5e1; }
+
+    /* 상태 표시 */
+    .lln-status {
+      text-align: center; font-size: 13px; color: #475569;
+      padding: 10px; background: #fff; border: 1px solid #e2e8f0;
+      border-radius: 8px; line-height: 1.6;
+    }
+    .lln-status .stat-highlight {
+      font-weight: 700; color: #1d4ed8;
+    }
+    .lln-feedback {
+      margin-top: 8px; padding: 10px; background: #f0fdf4;
+      border: 1px solid #86efac; border-radius: 8px;
+      font-size: 13px; color: #166534; text-align: center;
+      display: none;
+    }
+    .lln-predict-result {
+      margin-top: 8px; padding: 8px; background: #fef3c7;
+      border: 1px solid #fcd34d; border-radius: 8px;
+      font-size: 13px; color: #92400e; text-align: center;
+      display: none;
+    }
+
+    /* ── 통계적 확률 계산 연습 ── */
+    .stat-calc {
+      background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 14px;
+      padding: 16px; margin: 12px 0;
+    }
+    .stat-calc h3 {
+      font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .stat-calc h3 .badge {
+      background: #dbeafe; color: #1d4ed8; font-size: 11px;
+      padding: 2px 8px; border-radius: 6px; font-weight: 700;
+    }
+    .stat-problem { margin-bottom: 20px; }
+    .stat-problem:last-child { margin-bottom: 0; }
+    .stat-problem-label {
+      font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 8px;
+    }
+    .stat-step {
+      display: flex; align-items: center; gap: 8px; margin: 8px 0;
+      flex-wrap: wrap; font-size: 14px;
+    }
+    .stat-step label { font-weight: 600; color: #475569; white-space: nowrap; }
+    .stat-step input {
+      width: 90px; padding: 6px 10px; border: 1.5px solid #cbd5e1;
+      border-radius: 8px; font-size: 14px; text-align: center;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .stat-step input:focus {
+      border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+      outline: none;
+    }
+    .stat-auto-result {
+      padding: 10px; background: #fff; border: 1.5px solid #e2e8f0;
+      border-radius: 8px; font-size: 14px; text-align: center;
+      margin-top: 8px; min-height: 24px; line-height: 1.8;
+    }
+    .stat-feedback {
+      font-size: 13px; color: #64748b; margin-top: 6px;
+      padding: 6px 10px; border-radius: 6px; line-height: 1.6;
+    }
+    .stat-feedback.hint {
+      background: #fef3c7; border: 1px solid #fcd34d; color: #92400e;
+    }
+    .stat-speech {
+      margin-top: 10px; padding: 12px 16px; background: #f0fdf4;
+      border: 1.5px solid #86efac; border-radius: 12px;
+      font-size: 13px; color: #166534; line-height: 1.7;
+      display: none; position: relative;
+    }
+    .stat-speech::before {
+      content: ''; position: absolute; top: -8px; left: 24px;
+      width: 16px; height: 16px; background: #f0fdf4;
+      border-left: 1.5px solid #86efac; border-top: 1.5px solid #86efac;
+      transform: rotate(45deg);
+    }
+    .stat-rounding {
+      font-size: 14px; line-height: 2;
+    }
+    .stat-rounding .target-digit {
+      color: #dc2626; font-weight: 700; font-size: 16px;
+    }
+    .stat-rounding .gray-digit {
+      color: #9ca3af;
+    }
+    .stat-rounding .result-val {
+      font-weight: 700; color: #1d4ed8; font-size: 16px;
+    }
+
+    /* ── 확률값 판별 탐구 (드래그) ── */
+    .prob-judge {
+      background: #f8fafc; border: 2px solid #a8c4e0; border-radius: 14px;
+      padding: 16px; margin: 16px 0; user-select: none; -webkit-user-select: none;
+    }
+    .prob-judge h3 {
+      font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .prob-judge h3 .badge {
+      background: #dbeafe; color: #1d4ed8; font-size: 11px;
+      padding: 2px 8px; border-radius: 6px; font-weight: 700;
+    }
+
+    /* 수직선 */
+    .pj-numberline-area {
+      position: relative; margin: 20px 10px 60px; min-height: 80px;
+    }
+    .pj-line {
+      position: absolute; left: 0; right: 0; top: 30px;
+      height: 3px; background: #94a3b8; border-radius: 2px;
+    }
+    .pj-tick {
+      position: absolute; top: 20px; width: 2px; height: 22px;
+      background: #64748b;
+    }
+    .pj-tick-label {
+      position: absolute; top: 46px; font-size: 12px; font-weight: 700;
+      color: #475569; transform: translateX(-50%); white-space: nowrap;
+    }
+    .pj-end-label {
+      position: absolute; top: -6px; font-size: 11px; color: #94a3b8;
+      transform: translateX(-50%); white-space: nowrap;
+    }
+
+    /* 드래그 카드 */
+    .pj-cards-pool {
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+      margin: 16px 0; min-height: 60px;
+    }
+    .pj-card {
+      width: 120px; padding: 8px 6px; background: #fff;
+      border: 2px solid #cbd5e1; border-radius: 10px;
+      font-size: 12px; font-weight: 600; color: #334155;
+      text-align: center; cursor: grab; touch-action: none;
+      transition: box-shadow 0.15s, transform 0.1s;
+      z-index: 1; line-height: 1.4;
+    }
+    .pj-card:active { cursor: grabbing; }
+    .pj-card.dragging {
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      z-index: 100; opacity: 0.9;
+    }
+    .pj-card .card-label {
+      font-size: 14px; font-weight: 700; color: #2563eb; margin-bottom: 2px;
+    }
+    .pj-card.placed {
+      position: absolute;
+    }
+
+    /* 드래그 툴팁 */
+    .pj-tooltip {
+      position: fixed; padding: 3px 8px; background: #1e293b; color: #fff;
+      border-radius: 6px; font-size: 12px; font-weight: 700;
+      pointer-events: none; z-index: 200; display: none;
+      transform: translate(-50%, -100%);
+    }
+
+    /* 정답 마커 */
+    .pj-correct-marker {
+      position: absolute; top: 16px; width: 10px; height: 10px;
+      background: #ef4444; border-radius: 50%; transform: translateX(-50%);
+      z-index: 5; display: none;
+    }
+    .pj-correct-line {
+      position: absolute; top: 30px;
+      border-left: 1.5px dashed #ef4444; z-index: 4; display: none;
+    }
+
+    /* 컨트롤 */
+    .pj-controls {
+      display: flex; gap: 8px; justify-content: center;
+      margin-top: 12px; flex-wrap: wrap;
+    }
+    .pj-controls button {
+      padding: 8px 20px; border: none; border-radius: 8px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: all 0.15s; min-height: 44px;
+      touch-action: manipulation;
+    }
+    .pj-controls button:active { transform: scale(0.97); }
+    .pj-btn-confirm { background: #2563eb; color: #fff; }
+    .pj-btn-confirm:disabled { opacity: 0.4; cursor: default; }
+    .pj-btn-retry { background: #e2e8f0; color: #64748b; display: none; }
+
+    /* 정답 계산 과정 */
+    .pj-solution {
+      margin-top: 12px; display: none;
+    }
+    .pj-solution summary {
+      cursor: pointer; font-size: 14px; font-weight: 700; color: #2563eb;
+      padding: 8px 0;
+    }
+    .pj-solution .sol-content {
+      padding: 12px; background: #fff; border: 1px solid #e2e8f0;
+      border-radius: 8px; font-size: 13px; line-height: 1.8;
+    }
+
+    /* 관찰 텍스트 */
+    .pj-observation {
+      margin-top: 12px; padding: 12px; background: #fefce8;
+      border: 1px solid #fde68a; border-radius: 8px;
+      font-size: 13px; line-height: 1.7; color: #78350f; display: none;
+    }
+
+    /* ── 보라색 성질 박스 ── */
+    .property-box {
+      background: #faf5ff; border: 2px solid #7c3aed; border-radius: 14px;
+      padding: 18px; margin: 16px 0;
+    }
+    .property-box h4 {
+      font-size: 15px; font-weight: 700; color: #5b21b6; margin-bottom: 12px;
+    }
+    .property-box .prop-item {
+      font-size: 14px; line-height: 1.8; color: #1e293b; margin: 4px 0;
+    }
+
+    /* ── 로봇 질문 ── */
+    .robot-qa {
+      display: flex; flex-direction: column; gap: 12px; margin: 12px 0;
+    }
+    .robot-bubble {
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .robot-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .robot-avatar.boy { background: #dbeafe; }
+    .robot-avatar.girl { background: #fce7f3; }
+    .robot-text {
+      background: #f1f5f9; border-radius: 12px; padding: 10px 14px;
+      font-size: 13px; line-height: 1.6; color: #334155; flex: 1;
+    }
+    .robot-text .answer {
+      margin-top: 6px; font-weight: 700; color: #1d4ed8;
+    }
+
+    /* ── 풀이 토글 ── */
+    .solution-toggle {
+      margin: 12px 0;
+    }
+    .solution-toggle summary {
+      cursor: pointer; font-size: 14px; font-weight: 700; color: #2563eb;
+      padding: 8px 0; user-select: none;
+    }
+    .solution-toggle .sol-body {
+      padding: 12px; background: #fff; border: 1px solid #e2e8f0;
+      border-radius: 10px; font-size: 14px; line-height: 1.9;
+    }
+
+    /* ── 연결 텍스트 ── */
+    .connection-text {
+      margin: 12px 0; padding: 12px 16px; background: #eff6ff;
+      border-left: 4px solid #2563eb; border-radius: 0 8px 8px 0;
+      font-size: 13px; line-height: 1.7; color: #1e3a5f;
+    }
+
+    /* ── 출생아 테이블 (세로 레이아웃) ── */
+    .birth-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .birth-table th {
+      background: #f1f5f9; padding: 6px 8px; font-weight: 700;
+      color: #334155; border: 1px solid #e2e8f0; text-align: center;
+    }
+    .birth-table td {
+      padding: 6px 8px; border: 1px solid #e2e8f0; text-align: center;
+      background: #fff;
+    }
+    .birth-table td.highlight {
+      background: #dbeafe; font-weight: 700; color: #1d4ed8;
+    }
+    .birth-table tr.total-row td {
+      background: #f8fafc; font-weight: 700;
+    }
+  </style>
+
+  <script defer src="https://math-class.it.kr/lib/katex/katex.min.js"></script>
+  <script defer src="https://math-class.it.kr/lib/katex/contrib/auto-render.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <script type="module">
+    import { initWorksheetApp } from 'https://math-class.it.kr/lib/js/worksheet-app.js';
+    import { initFirebaseWorksheet } from 'https://math-class.it.kr/lib/js/firebase-worksheet.js';
+    const app = initWorksheetApp('worksheet_PS_2-4차시_통계적확률');
+    initFirebaseWorksheet('PS_2-4차시_통계적확률', { showAuth: true });
+  </script>
+</head>
+<body>
+<div class="container">
+
+  <!-- ========== 헤더 ========== -->
+  <div class="header">
+    <div class="header-unit">II. 확률</div>
+    <div class="header-title">
+      <h1>1. 확률의 뜻과 활용 — 통계적 확률</h1>
+      <div class="header-info"><span>교과서 45~47쪽</span></div>
+    </div>
+  </div>
+
+  <div class="student-info">
+    <div class="save-actions">
+      <button class="btn-save" id="btnSave">💾 저장</button>
+      <button class="btn-records" id="btnRecords">📋 기록</button>
+    </div>
+    <span class="student-display" id="studentDisplay"></span>
+  </div>
+
+  <div class="achievement">
+    <strong>성취기준</strong> &nbsp;
+    [12확통01-03] 통계적 확률의 의미를 이해한다.
+    [12확통01-04] 확률의 기본 성질을 이해한다.
+  </div>
+
+  <!-- ================================================================ -->
+  <!--  Phase 1: 4차시 — 통계적 확률이란 무엇일까?                        -->
+  <!-- ================================================================ -->
+
+  <div class="card">
+    <div class="section-title">
+            <div class="section-number">1</div>
+            <h2>통계적 확률이란 무엇일까?</h2>
+        </div>
+
+    <!-- [1-1] 탐구 도입 -->
+    <div class="concept-box highlight">
+      <h3><span class="badge">탐구</span></h3>
+      <p>다음 표는 컴퓨터 프로그램을 이용하여 한 개의 동전을 던지는 시행을 반복했을 때, 앞면이 나온 횟수를 조사하여 상대도수를 나타낸 것이다. 시행 횟수가 커지면 상대도수가 어떻게 되는지 추측해 보자.</p>
+    </div>
+
+    <div class="data-table-wrap">
+      <table class="data-table" id="textbookTable">
+        <thead>
+          <tr>
+            <th class="row-header">시행 횟수</th>
+            <th>200</th><th>400</th><th>600</th><th>800</th><th>1000</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-header">앞면이 나온 횟수</td>
+            <td>92</td><td>212</td><td>288</td><td>408</td><td>500</td>
+          </tr>
+          <tr>
+            <td class="row-header">상대도수</td>
+            <td>0.46</td><td>0.53</td><td>0.48</td><td>0.51</td><td>0.5</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- [1-2] Interactive ① — 큰 수의 법칙 시뮬레이션 -->
+    <div class="lln-sim" id="llnSim">
+      <h3><span class="badge">Interactive</span> 큰 수의 법칙 시뮬레이션</h3>
+
+      <!-- 탭 -->
+      <div class="lln-tabs" id="llnTabs">
+        <button class="active" data-tab="coin">동전 던지기</button>
+        <button data-tab="dice">주사위 던지기</button>
+      </div>
+
+      <!-- 주사위 사건 선택 (dice 탭에서만 표시) -->
+      <div class="lln-events" id="llnEvents" style="display:none;">
+        <button class="active" data-event="odd" data-prob="0.5">홀수</button>
+        <button data-event="lte3" data-prob="0.5">3 이하</button>
+        <button data-event="six" data-prob="0.16667">6</button>
+        <button data-event="even" data-prob="0.5">짝수</button>
+      </div>
+
+      <!-- 차트 -->
+      <div class="lln-chart-wrap">
+        <canvas id="llnChart"></canvas>
+      </div>
+
+      <!-- 예측 입력 -->
+      <div class="lln-predict">
+        <span>예측:&nbsp;</span>
+        <input type="number" id="llnPredN" placeholder="횟수" min="1" style="width:60px;">
+        <span>회 던지면 상대도수가 약&nbsp;</span>
+        <input type="text" id="llnPredV" placeholder="0.xx" style="width:60px;">
+        <span>일 것 같아요 (선택)</span>
+      </div>
+
+      <!-- 컨트롤 -->
+      <div class="lln-controls">
+        <button class="lln-btn-throw" data-n="10">10회</button>
+        <button class="lln-btn-throw" data-n="50">50회</button>
+        <button class="lln-btn-throw" data-n="100">100회</button>
+        <button class="lln-btn-throw" data-n="500">500회</button>
+        <button class="lln-btn-reset">초기화</button>
+      </div>
+
+      <!-- 상태 표시 -->
+      <div class="lln-status" id="llnStatus">
+        시뮬레이션 버튼을 눌러 시행을 시작해 보세요.
+      </div>
+
+      <!-- 1000회 이상 피드백 -->
+      <div class="lln-feedback" id="llnFeedback">
+        시행 횟수가 커질수록 상대도수가 기준선에 가까워지고 있나요?
+      </div>
+
+      <!-- 예측 비교 -->
+      <div class="lln-predict-result" id="llnPredictResult"></div>
+    </div>
+
+    <!-- [1-3] 키우기 질문 -->
+    <div class="concept-box highlight">
+      <h3><span class="badge">생각 키우기</span></h3>
+      <p>같은 시행을 여러 번 반복하여 얻은 상대도수를 이용하여 사건이 일어날 확률을 구할 수 있을까?</p>
+    </div>
+
+    <!-- [1-4] 통계적 확률 본문 -->
+    <div class="concept-box">
+      <p>수학적 확률은 어떤 시행에서 각 근원사건이 일어날 가능성이 모두 같다는 가정에서 정의하였다.</p>
+      <p>그러나 우리 주변의 여러 가지 현상 중에는 각 근원사건이 일어날 가능성이 같다고 볼 수 없는 시행도 있다. 예를 들어 윷놀이에서 윷을 던질 때, 평평한 면과 둥근 면이 나올 가능성은 같다고 할 수 없다.</p>
+      <p>이와 같은 경우에는 많은 자료를 수집하여 조사하거나 같은 시행을 여러 번 반복하여 얻어지는 상대도수를 통해 그 사건이 일어날 확률을 구할 수 있다.</p>
+    </div>
+
+    <!-- [1-5] 통계적 확률 정의 -->
+    <div class="concept-box" style="border-color:#2563eb; background:#eff6ff;">
+      <h4 style="color:#1d4ed8; font-size:15px; margin-bottom:8px;">통계적 확률</h4>
+      <p>어떤 시행에서 사건 $A$가 일어나는 횟수를 $r_n$이라 하면, 시행 횟수 $n$을 한없이 크게 할 때, 상대도수 $\displaystyle\frac{r_n}{n}$이 일정한 값 $p$에 가까워지면</p>
+      <p style="text-align:center; font-size:16px; margin:10px 0;">$$\frac{r_n}{n} \to p$$</p>
+      <p>이 $p$를 사건 $A$가 일어날 <strong>통계적 확률</strong>이라 한다.</p>
+      <p style="margin-top:8px; font-size:13px; color:#475569;">통계적 확률은 경험적 확률이라고도 한다. 시행을 반복하기 어려운 경우에는 오랜 기간에 걸쳐 축적된 통계 자료로부터 상대도수를 구하여 그 값을 통계적 확률로 사용한다.</p>
+    </div>
+
+    <!-- [1-6] Interactive ② — 통계적 확률 계산 연습 -->
+    <div class="stat-calc" id="statCalc">
+      <h3><span class="badge">Interactive</span> 통계적 확률 계산 연습</h3>
+
+      <!-- Problem A: 농구 자유투 -->
+      <div class="stat-problem" id="problemA">
+        <div class="stat-problem-label">문제 A. 농구 자유투</div>
+        <p style="font-size:13px; color:#475569; margin-bottom:10px;">
+          다음은 농구 선수 A의 시즌별 자유투 기록이다. 이 선수가 자유투를 성공할 통계적 확률을 구하시오.
+        </p>
+        <div class="data-table-wrap">
+          <table class="data-table" id="basketTable">
+            <thead>
+              <tr><th>시즌</th><th>시도</th><th>성공</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>2021-2022</td><td>210</td><td>156</td></tr>
+              <tr><td>2022-2023</td><td>240</td><td>177</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="stat-step">
+          <label>자유투 성공 합계는?</label>
+          <input type="number" id="basketSuccess" placeholder="?">
+        </div>
+        <div class="stat-feedback" id="basketSuccessFb"></div>
+
+        <div class="stat-step">
+          <label>자유투 시도 합계는?</label>
+          <input type="number" id="basketTotal" placeholder="?">
+        </div>
+        <div class="stat-feedback" id="basketTotalFb"></div>
+
+        <div class="stat-auto-result" id="basketResult" style="display:none;"></div>
+        <div class="stat-speech" id="basketSpeech">
+          두 시즌의 자유투 시도 합계 450은 충분히 큰 수이므로 농구 선수 A가 자유투를 성공할 통계적 확률은
+          $\displaystyle\frac{333}{450} = 0.74$이다.
+        </div>
+      </div>
+
+      <!-- Problem B: 출생아 통계 -->
+      <div class="stat-problem" id="problemB">
+        <div class="stat-problem-label">문제 B. 출생아 통계</div>
+        <p style="font-size:13px; color:#475569; margin-bottom:10px;">
+          다음은 2023년 4월의 지역별 출생아 수이다.
+          2023년 4월에 태어난 아이가 경기도에서 태어났을 확률을 구하시오. (단, 소수점 아래 둘째 자리에서 반올림한다.)
+        </p>
+        <div class="data-table-wrap">
+          <table class="birth-table" id="birthTable">
+            <thead>
+              <tr><th>지역</th><th>출생아 수 (명)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>경기도</td><td>5657</td></tr>
+              <tr><td>강원도</td><td>545</td></tr>
+              <tr><td>충청북도</td><td>638</td></tr>
+              <tr><td>충청남도</td><td>763</td></tr>
+              <tr><td>전라북도</td><td>518</td></tr>
+              <tr><td>전라남도</td><td>622</td></tr>
+              <tr><td>경상북도</td><td>868</td></tr>
+              <tr><td>경상남도</td><td>1144</td></tr>
+              <tr><td>서울특별시</td><td>3892</td></tr>
+              <tr><td>기타</td><td>3837</td></tr>
+              <tr class="total-row"><td><strong>합계</strong></td><td><strong>18484</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="stat-step">
+          <label>해당 사건의 수는?</label>
+          <input type="number" id="birthEvent" placeholder="?">
+        </div>
+        <div class="stat-feedback" id="birthEventFb"></div>
+
+        <div class="stat-step">
+          <label>전체 수는?</label>
+          <input type="number" id="birthTotal" placeholder="?">
+        </div>
+        <div class="stat-feedback" id="birthTotalFb"></div>
+
+        <div class="stat-auto-result" id="birthResult" style="display:none;"></div>
+      </div>
+    </div>
+  </div><!-- /card Phase1 -->
+
+
+  <!-- ================================================================ -->
+  <!--  Phase 2: 5차시 — 확률의 기본 성질은 무엇일까?                     -->
+  <!-- ================================================================ -->
+
+  <div class="card">
+    <div class="section-title">
+            <div class="section-number">2</div>
+            <h2>확률의 기본 성질은 무엇일까?</h2>
+        </div>
+
+    <!-- [2-1] Interactive ③ — 확률값 판별 탐구 -->
+    <div class="prob-judge" id="probJudge">
+      <h3><span class="badge">Interactive</span> 확률값 판별 탐구</h3>
+      <p style="font-size:13px; color:#475569; margin-bottom:14px;">
+        확률의 성질을 알아보기 전에, 먼저 여러 가지 사건의 확률을 직관적으로 추측해 봅시다.<br>
+        주사위 한 개를 던질 때의 사건입니다. 각 카드를 수직선 위 알맞은 위치에 놓아 보세요.
+      </p>
+
+      <!-- 수직선 -->
+      <div class="pj-numberline-area" id="pjNumberline">
+        <div class="pj-line"></div>
+        <!-- 0 -->
+        <div class="pj-tick" style="left:0;"></div>
+        <div class="pj-tick-label" style="left:0;">0</div>
+        <div class="pj-end-label" style="left:0;">절대 불가능</div>
+        <!-- 0.5 -->
+        <div class="pj-tick" style="left:50%;"></div>
+        <div class="pj-tick-label" style="left:50%;">0.5</div>
+        <!-- 1 -->
+        <div class="pj-tick" style="left:100%;"></div>
+        <div class="pj-tick-label" style="left:100%;">1</div>
+        <div class="pj-end-label" style="left:100%;">반드시 일어남</div>
+
+        <!-- 정답 마커 (확인 후 표시) -->
+        <div class="pj-correct-marker" id="pjMarkerA" style="left:0%;"></div>
+        <div class="pj-correct-marker" id="pjMarkerB" style="left:16.67%;"></div>
+        <div class="pj-correct-marker" id="pjMarkerC" style="left:50%;"></div>
+        <div class="pj-correct-marker" id="pjMarkerD" style="left:66.67%;"></div>
+        <div class="pj-correct-marker" id="pjMarkerE" style="left:100%;"></div>
+      </div>
+
+      <!-- 카드 풀 -->
+      <div class="pj-cards-pool" id="pjCardsPool">
+        <div class="pj-card" data-card="A" data-true="0">
+          <div class="card-label">카드 A</div>
+          눈의 수가 7이다
+        </div>
+        <div class="pj-card" data-card="B" data-true="0.16667">
+          <div class="card-label">카드 B</div>
+          눈의 수가 6이다
+        </div>
+        <div class="pj-card" data-card="C" data-true="0.5">
+          <div class="card-label">카드 C</div>
+          눈의 수가 짝수이다
+        </div>
+        <div class="pj-card" data-card="D" data-true="0.66667">
+          <div class="card-label">카드 D</div>
+          눈의 수가 4 이하이다
+        </div>
+        <div class="pj-card" data-card="E" data-true="1">
+          <div class="card-label">카드 E</div>
+          눈의 수가 6 이하이다
+        </div>
+      </div>
+
+      <!-- 드래그 툴팁 -->
+      <div class="pj-tooltip" id="pjTooltip"></div>
+
+      <!-- 컨트롤 -->
+      <div class="pj-controls">
+        <button class="pj-btn-confirm" id="pjConfirm" disabled>확인</button>
+        <button class="pj-btn-retry" id="pjRetry">다시 배치</button>
+      </div>
+
+      <!-- 정답 해설 -->
+      <details class="pj-solution" id="pjSolution">
+        <summary>정답 확률 계산 과정</summary>
+        <div class="sol-content">
+          <p><strong>카드 A</strong> "눈의 수가 7이다" → 주사위에 7이 없으므로 $n(A)=0$, $P(A)=\frac{0}{6}=0$</p>
+          <p><strong>카드 B</strong> "눈의 수가 6이다" → $A=\{6\}$, $P(B)=\frac{1}{6}\approx 0.17$</p>
+          <p><strong>카드 C</strong> "눈의 수가 짝수이다" → $C=\{2,4,6\}$, $P(C)=\frac{3}{6}=0.5$</p>
+          <p><strong>카드 D</strong> "눈의 수가 4 이하이다" → $D=\{1,2,3,4\}$, $P(D)=\frac{4}{6}\approx 0.67$</p>
+          <p><strong>카드 E</strong> "눈의 수가 6 이하이다" → $E=\{1,2,3,4,5,6\}=S$, $P(E)=\frac{6}{6}=1$</p>
+        </div>
+      </details>
+
+      <!-- 관찰 텍스트 -->
+      <div class="pj-observation" id="pjObservation">
+        <p>카드 A와 카드 E는 수직선의 양 끝에 위치합니다.</p>
+        <p>나머지 카드들은 모두 0과 1 사이에 있습니다.</p>
+        <p style="margin-top:6px; font-weight:700;">이것이 우연일까요? 아래에서 그 이유를 알아봅시다.</p>
+      </div>
+    </div>
+
+    <!-- [2-2] 확률의 기본 성질 유도 -->
+    <div class="concept-box">
+      <h4 style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:10px;">확률의 기본 성질 유도</h4>
+      <p>표본공간 $S$의 부분집합인 사건 $A$에 대하여</p>
+      <p style="text-align:center; margin:8px 0;">$$0 \le n(A) \le n(S)$$</p>
+      <p>$n(S) > 0$이므로, 각 변을 $n(S)$로 나누면</p>
+      <p style="text-align:center; margin:8px 0;">$$0 \le \frac{n(A)}{n(S)} \le 1$$</p>
+      <p>$\displaystyle P(A) = \frac{n(A)}{n(S)}$이므로</p>
+      <p style="text-align:center; margin:8px 0; font-size:16px;">$$0 \le P(A) \le 1$$</p>
+      <p style="margin-top:10px;">또한,</p>
+      <ul style="margin:6px 0 0 20px; line-height:2;">
+        <li>$A = S$이면 $n(A) = n(S)$이므로 $P(S) = \frac{n(S)}{n(S)} = 1$</li>
+        <li>$A = \varnothing$이면 $n(A) = 0$이므로 $P(\varnothing) = \frac{0}{n(S)} = 0$</li>
+      </ul>
+    </div>
+
+    <!-- [2-3] 확률의 기본 성질 정리 박스 -->
+    <div class="property-box">
+      <h4>확률의 기본 성질</h4>
+      <div class="prop-item">&#10122; 임의의 사건 $A$에 대하여 $\;0 \le P(A) \le 1$</div>
+      <div class="prop-item">&#10123; 반드시 일어나는 사건 $S$에 대하여 $\;P(S) = 1$</div>
+      <div class="prop-item">&#10124; 절대로 일어나지 않는 사건 $\varnothing$에 대하여 $\;P(\varnothing) = 0$</div>
+    </div>
+
+    <div class="connection-text">
+      위에서 카드를 배치해 본 결과를 떠올려 보세요.
+      카드 A(눈의 수가 7)의 확률이 0이었던 것이 성질 &#10124;,
+      카드 E(눈의 수가 6 이하)의 확률이 1이었던 것이 성질 &#10123;에 해당합니다.
+    </div>
+
+    <!-- [2-4] 로봇 질문 -->
+    <div class="robot-qa">
+      <div class="robot-bubble">
+        <div class="robot-avatar boy">Q</div>
+        <div class="robot-text">
+          주사위를 한 번 던질 때 나오는 눈의 수가 7일 확률은?
+          <div class="answer">$P(\text{눈의 수가 7}) = 0$입니다.</div>
+        </div>
+      </div>
+      <div class="robot-bubble">
+        <div class="robot-avatar girl">Q</div>
+        <div class="robot-text">
+          주사위를 한 번 던질 때 나오는 눈의 수가 6 이하일 확률은?
+          <div class="answer">$P(\text{눈의 수} \le 6) = 1$입니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- [2-5] 문제 6 -->
+    <div class="concept-box" style="background:#fff;">
+      <h4 style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:8px;">문제 6</h4>
+      <p style="font-size:14px; line-height:1.8;">
+        세 개의 숫자 1, 2, 3이 하나씩 적힌 3개의 공이 들어 있는 주머니에서 임의로 2개의 공을 동시에 꺼낼 때, 다음을 구하시오.
+      </p>
+      <p style="font-size:14px; margin-top:6px;">(1) 꺼낸 공에 적힌 수의 합이 1보다 클 확률</p>
+      <p style="font-size:14px;">(2) 같은 숫자가 적힌 공을 꺼낼 확률</p>
+    </div>
+
+    <details class="solution-toggle">
+      <summary>풀이 보기</summary>
+      <div class="sol-body">
+        <p><strong>풀이</strong></p>
+        <p>2개의 공을 동시에 꺼내는 모든 경우:</p>
+        <p style="text-align:center;">$S = \{\{1,2\},\;\{1,3\},\;\{2,3\}\}$, &nbsp; $n(S) = 3$</p>
+        <p style="margin-top:10px;"><strong>(1)</strong> 합이 1보다 큰 경우</p>
+        <p>$\{1,2\} \to 3$, &nbsp; $\{1,3\} \to 4$, &nbsp; $\{2,3\} \to 5$ &nbsp; → 모두 1보다 크다.</p>
+        <p>$A = S$이므로</p>
+        <p style="text-align:center;">$P(A) = \frac{3}{3} = \mathbf{1}$ &nbsp; (성질 &#10123;)</p>
+        <p style="margin-top:10px;"><strong>(2)</strong> 같은 숫자가 적힌 공을 꺼내는 경우</p>
+        <p>공에 적힌 숫자가 모두 다르므로 같은 숫자가 적힌 공은 없다.</p>
+        <p>$B = \varnothing$이므로</p>
+        <p style="text-align:center;">$P(B) = \frac{0}{3} = \mathbf{0}$ &nbsp; (성질 &#10124;)</p>
+      </div>
+    </details>
+
+  </div><!-- /card Phase2 -->
+
+    <div class="footer">확률과 통계 &middot; II. 확률 &middot; 1. 확률의 뜻과 활용</div>
+</div><!-- /container -->
+
+<button class="global-answer-btn" id="globalAnswerBtn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    정답 전체 보기
+</button>
+
+<div class="records-overlay" id="recordsOverlay">
+    <div class="records-panel">
+        <div class="records-header">
+            <h3>📋 저장 기록</h3>
+            <button class="close-btn" id="btnCloseRecords">&times;</button>
+        </div>
+        <div class="records-list" id="recordsList"></div>
+    </div>
+</div>
+
+
+<!-- ================================================================ -->
+<!--  스크립트                                                         -->
+<!-- ================================================================ -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // ── KaTeX auto-render ──
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ],
+      throwOnError: false
+    });
+  }
+
+  // ============================================================
+  //  [1-2] 큰 수의 법칙 시뮬레이션
+  // ============================================================
+  (function() {
+    var currentTab = 'coin';
+    var currentEvent = 'odd';
+    var currentProb = 0.5;
+    var totalTrials = 0;
+    var totalSuccess = 0;
+    var chartData = [];        // {x: cumTrials, y: relFreq}
+    var chart = null;
+
+    var textbookData = [
+      {x: 200, y: 0.46},
+      {x: 400, y: 0.53},
+      {x: 600, y: 0.48},
+      {x: 800, y: 0.51},
+      {x: 1000, y: 0.50}
+    ];
+
+    // 차트 초기화
+    function initChart() {
+      var ctx = document.getElementById('llnChart').getContext('2d');
+      if (chart) chart.destroy();
+
+      var refProb = getRefProb();
+
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          datasets: [
+            {
+              label: '상대도수',
+              data: [],
+              borderColor: '#2196F3',
+              backgroundColor: 'rgba(33,150,243,0.1)',
+              pointRadius: 3,
+              pointBackgroundColor: '#2196F3',
+              borderWidth: 2,
+              tension: 0.1,
+              order: 1
+            },
+            {
+              label: '교과서 데이터',
+              data: currentTab === 'coin' ? textbookData.map(function(d) { return {x: d.x, y: d.y}; }) : [],
+              borderColor: 'transparent',
+              backgroundColor: '#9E9E9E',
+              pointRadius: 5,
+              pointStyle: 'circle',
+              showLine: false,
+              order: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          aspectRatio: 1.8,
+          scales: {
+            x: {
+              type: 'linear',
+              title: { display: true, text: '시행 횟수', font: { size: 12, weight: 'bold' } },
+              min: 0,
+              ticks: { font: { size: 11 } }
+            },
+            y: {
+              title: { display: true, text: '상대도수', font: { size: 12, weight: 'bold' } },
+              min: Math.max(0, refProb - 0.3),
+              max: Math.min(1, refProb + 0.3),
+              ticks: { font: { size: 11 } }
+            }
+          },
+          plugins: {
+            legend: { display: true, position: 'top', labels: { font: { size: 11 } } },
+            annotation: undefined
+          },
+          animation: { duration: 300 }
+        },
+        plugins: [{
+          id: 'refLine',
+          beforeDraw: function(ch) {
+            var yScale = ch.scales.y;
+            var xScale = ch.scales.x;
+            var ctx2 = ch.ctx;
+            var yPixel = yScale.getPixelForValue(getRefProb());
+            ctx2.save();
+            ctx2.beginPath();
+            ctx2.setLineDash([6, 4]);
+            ctx2.strokeStyle = '#F44336';
+            ctx2.lineWidth = 2;
+            ctx2.moveTo(xScale.left, yPixel);
+            ctx2.lineTo(xScale.right, yPixel);
+            ctx2.stroke();
+            ctx2.restore();
+          }
+        }]
+      });
+    }
+
+    function getRefProb() {
+      if (currentTab === 'coin') return 0.5;
+      return currentProb;
+    }
+
+    function runTrials(n) {
+      var successes = 0;
+      for (var i = 0; i < n; i++) {
+        if (currentTab === 'coin') {
+          if (Math.random() < 0.5) successes++;
+        } else {
+          var die = Math.floor(Math.random() * 6) + 1;
+          var hit = false;
+          switch(currentEvent) {
+            case 'odd': hit = (die % 2 === 1); break;
+            case 'lte3': hit = (die <= 3); break;
+            case 'six': hit = (die === 6); break;
+            case 'even': hit = (die % 2 === 0); break;
+          }
+          if (hit) successes++;
+        }
+      }
+      totalTrials += n;
+      totalSuccess += successes;
+
+      var relFreq = totalTrials > 0 ? totalSuccess / totalTrials : 0;
+      chartData.push({x: totalTrials, y: relFreq});
+
+      updateChart();
+      updateStatus();
+    }
+
+    function updateChart() {
+      chart.data.datasets[0].data = chartData.map(function(d) { return {x: d.x, y: d.y}; });
+
+      // 교과서 데이터
+      chart.data.datasets[1].data = currentTab === 'coin'
+        ? textbookData.map(function(d) { return {x: d.x, y: d.y}; })
+        : [];
+
+      // y축 범위 동적 조정
+      var refP = getRefProb();
+      var minY = refP - 0.3;
+      var maxY = refP + 0.3;
+      chartData.forEach(function(d) {
+        if (d.y < minY + 0.05) minY = d.y - 0.05;
+        if (d.y > maxY - 0.05) maxY = d.y + 0.05;
+      });
+      chart.options.scales.y.min = Math.max(0, minY);
+      chart.options.scales.y.max = Math.min(1, maxY);
+
+      chart.update();
+    }
+
+    function updateStatus() {
+      var statusEl = document.getElementById('llnStatus');
+      var feedbackEl = document.getElementById('llnFeedback');
+      var predictEl = document.getElementById('llnPredictResult');
+
+      if (totalTrials === 0) {
+        statusEl.innerHTML = '시뮬레이션 버튼을 눌러 시행을 시작해 보세요.';
+        feedbackEl.style.display = 'none';
+        predictEl.style.display = 'none';
+        return;
+      }
+
+      var relFreq = totalSuccess / totalTrials;
+      var relFreqStr = relFreq.toFixed(4);
+      var eventName = currentTab === 'coin' ? '앞면' : getEventName();
+
+      statusEl.innerHTML =
+        '총 <span class="stat-highlight">' + totalTrials + '회</span> 시행 | ' +
+        eventName + ' 발생 <span class="stat-highlight">' + totalSuccess + '회</span> | ' +
+        '상대도수 ' + totalSuccess + '/' + totalTrials + ' = <span class="stat-highlight">' + relFreqStr + '</span>';
+
+      // 1000회 이상 피드백
+      if (totalTrials >= 1000) {
+        feedbackEl.style.display = 'block';
+      } else {
+        feedbackEl.style.display = 'none';
+      }
+
+      // 예측 비교
+      var predN = document.getElementById('llnPredN').value;
+      var predV = document.getElementById('llnPredV').value;
+      if (predN && predV && totalTrials >= parseInt(predN)) {
+        var predVal = parseFloat(predV);
+        if (!isNaN(predVal)) {
+          var diff = Math.abs(relFreq - predVal);
+          predictEl.style.display = 'block';
+          predictEl.innerHTML =
+            '예측값: ' + predVal.toFixed(2) + ' | 실제 상대도수: ' + relFreq.toFixed(4) +
+            ' | 차이: ' + diff.toFixed(4);
+        }
+      }
+    }
+
+    function getEventName() {
+      switch(currentEvent) {
+        case 'odd': return '홀수';
+        case 'lte3': return '3 이하';
+        case 'six': return '6';
+        case 'even': return '짝수';
+        default: return '';
+      }
+    }
+
+    function resetSim() {
+      totalTrials = 0;
+      totalSuccess = 0;
+      chartData = [];
+      updateChart();
+      updateStatus();
+    }
+
+    // 탭 전환
+    document.getElementById('llnTabs').addEventListener('click', function(e) {
+      var btn = e.target.closest('button');
+      if (!btn) return;
+      var tab = btn.dataset.tab;
+      if (tab === currentTab) return;
+
+      currentTab = tab;
+      document.querySelectorAll('#llnTabs button').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+
+      document.getElementById('llnEvents').style.display = tab === 'dice' ? 'flex' : 'none';
+
+      if (tab === 'coin') {
+        currentProb = 0.5;
+      } else {
+        var activeEvt = document.querySelector('#llnEvents button.active');
+        currentProb = parseFloat(activeEvt.dataset.prob);
+        currentEvent = activeEvt.dataset.event;
+      }
+
+      resetSim();
+      initChart();
+    });
+
+    // 사건 선택
+    document.getElementById('llnEvents').addEventListener('click', function(e) {
+      var btn = e.target.closest('button');
+      if (!btn) return;
+
+      document.querySelectorAll('#llnEvents button').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentEvent = btn.dataset.event;
+      currentProb = parseFloat(btn.dataset.prob);
+
+      resetSim();
+      initChart();
+    });
+
+    // 시행 버튼
+    document.querySelector('.lln-controls').addEventListener('click', function(e) {
+      var btn = e.target.closest('button');
+      if (!btn) return;
+      if (btn.classList.contains('lln-btn-reset')) {
+        resetSim();
+        initChart();
+        return;
+      }
+      var n = parseInt(btn.dataset.n);
+      if (n) runTrials(n);
+    });
+
+    // Chart.js가 로드된 후 초기화
+    function waitForChartJs() {
+      if (typeof Chart !== 'undefined') {
+        initChart();
+      } else {
+        setTimeout(waitForChartJs, 100);
+      }
+    }
+    waitForChartJs();
+  })();
+
+
+  // ============================================================
+  //  [1-6] 통계적 확률 계산 연습
+  // ============================================================
+  (function() {
+    // Problem A: 농구 자유투
+    var basketSuccessInput = document.getElementById('basketSuccess');
+    var basketTotalInput = document.getElementById('basketTotal');
+    var basketSuccessFb = document.getElementById('basketSuccessFb');
+    var basketTotalFb = document.getElementById('basketTotalFb');
+    var basketResult = document.getElementById('basketResult');
+    var basketSpeech = document.getElementById('basketSpeech');
+    var basketTable = document.getElementById('basketTable');
+
+    var bSuccessCorrect = false;
+    var bTotalCorrect = false;
+
+    function highlightBasketCol(colIdx) {
+      var rows = basketTable.querySelectorAll('tbody tr');
+      // Clear highlights
+      rows.forEach(function(row) {
+        row.querySelectorAll('td').forEach(function(td) { td.classList.remove('highlight'); });
+      });
+      if (colIdx >= 0) {
+        rows.forEach(function(row) {
+          var tds = row.querySelectorAll('td');
+          if (tds[colIdx]) tds[colIdx].classList.add('highlight');
+        });
+      }
+    }
+
+    function checkBasketComplete() {
+      if (bSuccessCorrect && bTotalCorrect) {
+        basketResult.style.display = 'block';
+        basketResult.innerHTML = '$\\displaystyle\\frac{333}{450} = 0.74$';
+        basketSpeech.style.display = 'block';
+        // Re-render KaTeX
+        if (typeof renderMathInElement === 'function') {
+          renderMathInElement(basketResult, {
+            delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false}],
+            throwOnError: false
+          });
+          renderMathInElement(basketSpeech, {
+            delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false}],
+            throwOnError: false
+          });
+        }
+      } else if (bSuccessCorrect || bTotalCorrect) {
+        // Show partial calculation
+        var s = bSuccessCorrect ? 333 : (parseInt(basketSuccessInput.value) || '?');
+        var t = bTotalCorrect ? 450 : (parseInt(basketTotalInput.value) || '?');
+        if (s !== '?' && t !== '?') {
+          var val = (parseInt(s) / parseInt(t)).toFixed(4);
+          basketResult.style.display = 'block';
+          basketResult.innerHTML = '$\\displaystyle\\frac{' + s + '}{' + t + '} = ' + val + '$';
+          if (typeof renderMathInElement === 'function') {
+            renderMathInElement(basketResult, {
+              delimiters: [{left: '$', right: '$', display: false}],
+              throwOnError: false
+            });
+          }
+        }
+      }
+    }
+
+    basketSuccessInput.addEventListener('input', function() {
+      var val = parseInt(this.value);
+      if (isNaN(val) || this.value === '') {
+        basketSuccessFb.className = 'stat-feedback';
+        basketSuccessFb.textContent = '';
+        bSuccessCorrect = false;
+        highlightBasketCol(-1);
+        return;
+      }
+      highlightBasketCol(2); // 성공 열
+      if (val === 333) {
+        bSuccessCorrect = true;
+        basketSuccessFb.className = 'stat-feedback';
+        basketSuccessFb.textContent = '';
+      } else {
+        bSuccessCorrect = false;
+        basketSuccessFb.className = 'stat-feedback hint';
+        basketSuccessFb.textContent = '이 값은 어디서 나온 수인지 표에서 다시 확인해 보세요.';
+      }
+      checkBasketComplete();
+    });
+
+    basketTotalInput.addEventListener('input', function() {
+      var val = parseInt(this.value);
+      if (isNaN(val) || this.value === '') {
+        basketTotalFb.className = 'stat-feedback';
+        basketTotalFb.textContent = '';
+        bTotalCorrect = false;
+        highlightBasketCol(-1);
+        return;
+      }
+      highlightBasketCol(1); // 시도 열
+      if (val === 450) {
+        bTotalCorrect = true;
+        basketTotalFb.className = 'stat-feedback';
+        basketTotalFb.textContent = '';
+      } else {
+        bTotalCorrect = false;
+        basketTotalFb.className = 'stat-feedback hint';
+        basketTotalFb.textContent = '이 값은 어디서 나온 수인지 표에서 다시 확인해 보세요.';
+      }
+      checkBasketComplete();
+    });
+
+
+    // Problem B: 출생아 통계
+    var birthEventInput = document.getElementById('birthEvent');
+    var birthTotalInput = document.getElementById('birthTotal');
+    var birthEventFb = document.getElementById('birthEventFb');
+    var birthTotalFb = document.getElementById('birthTotalFb');
+    var birthResult = document.getElementById('birthResult');
+    var birthTable = document.getElementById('birthTable');
+
+    var birthEventCorrect = false;
+    var birthTotalCorrect = false;
+
+    function highlightBirthRow(region) {
+      var rows = birthTable.querySelectorAll('tbody tr');
+      rows.forEach(function(row) {
+        row.querySelectorAll('td').forEach(function(td) { td.classList.remove('highlight'); });
+      });
+      if (region === 'gyeonggi') {
+        var firstRow = rows[0];
+        if (firstRow) firstRow.querySelectorAll('td').forEach(function(td) { td.classList.add('highlight'); });
+      } else if (region === 'total') {
+        var lastRow = rows[rows.length - 1];
+        if (lastRow) lastRow.querySelectorAll('td').forEach(function(td) { td.classList.add('highlight'); });
+      }
+    }
+
+    function checkBirthComplete() {
+      if (birthEventCorrect && birthTotalCorrect) {
+        birthResult.style.display = 'block';
+        birthResult.innerHTML =
+          '<div class="stat-rounding">' +
+          '$\\displaystyle\\frac{5657}{18484} = 0.3059\\cdots$' +
+          '<br><br>' +
+          '소수점 아래 둘째 자리에서 반올림:<br>' +
+          '0.3<span class="target-digit">0</span><span class="gray-digit">59...</span> ' +
+          '&rarr; 둘째 자리 <span class="target-digit">0</span>은 5 미만이므로 버림 ' +
+          '&rarr; <span class="result-val">0.3</span>' +
+          '</div>';
+        if (typeof renderMathInElement === 'function') {
+          renderMathInElement(birthResult, {
+            delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false}],
+            throwOnError: false
+          });
+        }
+      } else if (birthEventCorrect || birthTotalCorrect) {
+        var ev = birthEventCorrect ? 5657 : (parseInt(birthEventInput.value) || '?');
+        var tot = birthTotalCorrect ? 18484 : (parseInt(birthTotalInput.value) || '?');
+        if (ev !== '?' && tot !== '?') {
+          var val = (parseInt(ev) / parseInt(tot)).toFixed(4);
+          birthResult.style.display = 'block';
+          birthResult.innerHTML = '$\\displaystyle\\frac{' + ev + '}{' + tot + '} = ' + val + '$';
+          if (typeof renderMathInElement === 'function') {
+            renderMathInElement(birthResult, {
+              delimiters: [{left: '$', right: '$', display: false}],
+              throwOnError: false
+            });
+          }
+        }
+      }
+    }
+
+    birthEventInput.addEventListener('input', function() {
+      var val = parseInt(this.value);
+      if (isNaN(val) || this.value === '') {
+        birthEventFb.className = 'stat-feedback';
+        birthEventFb.textContent = '';
+        birthEventCorrect = false;
+        highlightBirthRow(null);
+        return;
+      }
+      highlightBirthRow('gyeonggi');
+      if (val === 5657) {
+        birthEventCorrect = true;
+        birthEventFb.className = 'stat-feedback';
+        birthEventFb.textContent = '';
+      } else {
+        birthEventCorrect = false;
+        birthEventFb.className = 'stat-feedback hint';
+        birthEventFb.textContent = '이 값은 어디서 나온 수인지 표에서 다시 확인해 보세요.';
+      }
+      checkBirthComplete();
+    });
+
+    birthTotalInput.addEventListener('input', function() {
+      var val = parseInt(this.value);
+      if (isNaN(val) || this.value === '') {
+        birthTotalFb.className = 'stat-feedback';
+        birthTotalFb.textContent = '';
+        birthTotalCorrect = false;
+        highlightBirthRow(null);
+        return;
+      }
+      highlightBirthRow('total');
+      if (val === 18484) {
+        birthTotalCorrect = true;
+        birthTotalFb.className = 'stat-feedback';
+        birthTotalFb.textContent = '';
+      } else {
+        birthTotalCorrect = false;
+        birthTotalFb.className = 'stat-feedback hint';
+        birthTotalFb.textContent = '이 값은 어디서 나온 수인지 표에서 다시 확인해 보세요.';
+      }
+      checkBirthComplete();
+    });
+  })();
+
+
+  // ============================================================
+  //  [2-1] 확률값 판별 탐구 (Drag & Drop on Number Line)
+  // ============================================================
+  (function() {
+    var numberlineArea = document.getElementById('pjNumberline');
+    var cardsPool = document.getElementById('pjCardsPool');
+    var tooltip = document.getElementById('pjTooltip');
+    var confirmBtn = document.getElementById('pjConfirm');
+    var retryBtn = document.getElementById('pjRetry');
+    var solutionEl = document.getElementById('pjSolution');
+    var observationEl = document.getElementById('pjObservation');
+
+    var cards = document.querySelectorAll('.pj-card');
+    var cardStates = {}; // card name -> { placed: bool, posRatio: 0-1 }
+    var draggingCard = null;
+    var dragOffsetX = 0;
+    var dragOffsetY = 0;
+    var confirmed = false;
+
+    // 카드 초기 위치 저장
+    cards.forEach(function(card) {
+      cardStates[card.dataset.card] = { placed: false, posRatio: -1 };
+    });
+
+    function getNumberlineRect() {
+      return numberlineArea.getBoundingClientRect();
+    }
+
+    function ratioToLeft(ratio) {
+      return (ratio * 100) + '%';
+    }
+
+    function xToRatio(clientX) {
+      var rect = getNumberlineRect();
+      var ratio = (clientX - rect.left) / rect.width;
+      return Math.max(0, Math.min(1, ratio));
+    }
+
+    function isOnNumberline(clientY) {
+      var rect = getNumberlineRect();
+      return clientY >= rect.top - 40 && clientY <= rect.bottom + 40;
+    }
+
+    function countPlaced() {
+      var count = 0;
+      for (var k in cardStates) {
+        if (cardStates[k].placed) count++;
+      }
+      return count;
+    }
+
+    function placeCard(card, ratio) {
+      var name = card.dataset.card;
+      cardStates[name].placed = true;
+      cardStates[name].posRatio = ratio;
+
+      card.classList.add('placed');
+      card.style.position = 'absolute';
+      card.style.left = ratioToLeft(ratio);
+      card.style.top = '50px';
+      card.style.transform = 'translateX(-50%)';
+
+      // 수직선 영역에 붙이기
+      if (card.parentNode !== numberlineArea) {
+        numberlineArea.appendChild(card);
+      }
+
+      // 겹침 방지: 같은 위치 근처 카드 오프셋
+      var placedCards = numberlineArea.querySelectorAll('.pj-card.placed');
+      var samePos = [];
+      placedCards.forEach(function(pc) {
+        if (pc !== card && Math.abs(cardStates[pc.dataset.card].posRatio - ratio) < 0.05) {
+          samePos.push(pc);
+        }
+      });
+      if (samePos.length > 0) {
+        card.style.top = (50 + samePos.length * 50) + 'px';
+      }
+    }
+
+    function returnCard(card) {
+      var name = card.dataset.card;
+      cardStates[name].placed = false;
+      cardStates[name].posRatio = -1;
+
+      card.classList.remove('placed');
+      card.style.position = '';
+      card.style.left = '';
+      card.style.top = '';
+      card.style.transform = '';
+
+      if (card.parentNode !== cardsPool) {
+        cardsPool.appendChild(card);
+      }
+    }
+
+    // Pointer events
+    function onPointerDown(e) {
+      if (confirmed) return;
+      var card = e.target.closest('.pj-card');
+      if (!card) return;
+
+      e.preventDefault();
+      card.setPointerCapture(e.pointerId);
+      draggingCard = card;
+      card.classList.add('dragging');
+
+      var cardRect = card.getBoundingClientRect();
+      dragOffsetX = e.clientX - cardRect.left - cardRect.width / 2;
+      dragOffsetY = e.clientY - cardRect.top - cardRect.height / 2;
+
+      // 카드를 body에 임시로 고정 위치에 배치
+      if (cardStates[card.dataset.card].placed) {
+        // 이미 배치된 카드를 다시 집는 경우
+        cardStates[card.dataset.card].placed = false;
+      }
+      card.style.position = 'fixed';
+      card.style.left = (e.clientX - dragOffsetX - cardRect.width / 2) + 'px';
+      card.style.top = (e.clientY - dragOffsetY - cardRect.height / 2) + 'px';
+      card.style.transform = '';
+      card.style.zIndex = '100';
+      document.body.appendChild(card);
+
+      tooltip.style.display = 'block';
+    }
+
+    function onPointerMove(e) {
+      if (!draggingCard) return;
+      e.preventDefault();
+
+      var cardRect = draggingCard.getBoundingClientRect();
+      draggingCard.style.left = (e.clientX - cardRect.width / 2) + 'px';
+      draggingCard.style.top = (e.clientY - cardRect.height / 2) + 'px';
+
+      // 툴팁
+      if (isOnNumberline(e.clientY)) {
+        var ratio = xToRatio(e.clientX);
+        tooltip.textContent = ratio.toFixed(2);
+        tooltip.style.left = e.clientX + 'px';
+        tooltip.style.top = (e.clientY - 40) + 'px';
+        tooltip.style.display = 'block';
+      } else {
+        tooltip.style.display = 'none';
+      }
+    }
+
+    function onPointerUp(e) {
+      if (!draggingCard) return;
+      e.preventDefault();
+
+      draggingCard.classList.remove('dragging');
+      draggingCard.style.zIndex = '';
+      tooltip.style.display = 'none';
+
+      if (isOnNumberline(e.clientY)) {
+        var ratio = xToRatio(e.clientX);
+        // 카드를 수직선에 배치
+        draggingCard.style.position = '';
+        draggingCard.style.left = '';
+        draggingCard.style.top = '';
+        placeCard(draggingCard, ratio);
+      } else {
+        // 수직선 밖 → 원래 위치로
+        draggingCard.style.position = '';
+        draggingCard.style.left = '';
+        draggingCard.style.top = '';
+        returnCard(draggingCard);
+      }
+
+      draggingCard = null;
+
+      // 확인 버튼 활성화
+      confirmBtn.disabled = countPlaced() < 5;
+    }
+
+    // 이벤트 등록 (pointer events)
+    document.addEventListener('pointerdown', function(e) {
+      if (e.target.closest('.pj-card')) onPointerDown(e);
+    });
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerup', onPointerUp);
+
+    // 확인 버튼
+    confirmBtn.addEventListener('click', function() {
+      if (confirmed) return;
+      confirmed = true;
+      confirmBtn.disabled = true;
+      retryBtn.style.display = 'inline-block';
+
+      // 정답 마커 표시
+      var markers = {
+        'A': document.getElementById('pjMarkerA'),
+        'B': document.getElementById('pjMarkerB'),
+        'C': document.getElementById('pjMarkerC'),
+        'D': document.getElementById('pjMarkerD'),
+        'E': document.getElementById('pjMarkerE')
+      };
+
+      for (var k in markers) {
+        markers[k].style.display = 'block';
+      }
+
+      // 연결선 그리기 (학생 배치 → 정답 위치)
+      cards.forEach(function(card) {
+        var name = card.dataset.card;
+        var trueVal = parseFloat(card.dataset.true);
+        var studentVal = cardStates[name].posRatio;
+
+        if (cardStates[name].placed && Math.abs(studentVal - trueVal) > 0.02) {
+          // 대시선 연결
+          var line = document.createElement('div');
+          line.className = 'pj-correct-line';
+          line.style.display = 'block';
+
+          var leftPos = Math.min(studentVal, trueVal) * 100;
+          var width = Math.abs(studentVal - trueVal) * 100;
+
+          line.style.left = leftPos + '%';
+          line.style.width = width + '%';
+          line.style.height = '2px';
+          line.style.borderLeft = 'none';
+          line.style.borderTop = '1.5px dashed #ef4444';
+          line.style.top = '22px';
+          numberlineArea.appendChild(line);
+        }
+      });
+
+      // 솔루션 & 관찰 표시
+      solutionEl.style.display = 'block';
+      observationEl.style.display = 'block';
+
+      // KaTeX re-render
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(solutionEl, {
+          delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false}],
+          throwOnError: false
+        });
+      }
+    });
+
+    // 다시 배치 버튼
+    retryBtn.addEventListener('click', function() {
+      confirmed = false;
+      confirmBtn.disabled = true;
+      retryBtn.style.display = 'none';
+      solutionEl.style.display = 'none';
+      observationEl.style.display = 'none';
+
+      // 정답 마커 숨기기
+      document.querySelectorAll('.pj-correct-marker').forEach(function(m) { m.style.display = 'none'; });
+      // 연결선 제거
+      document.querySelectorAll('.pj-correct-line').forEach(function(l) { l.remove(); });
+
+      // 모든 카드를 풀로 반환
+      cards.forEach(function(card) { returnCard(card); });
+    });
+
+  })();
+
+});
+</script>
+
+</body>
+</html>
